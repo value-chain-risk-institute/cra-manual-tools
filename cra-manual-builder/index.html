@@ -614,7 +614,7 @@ $("#tabPrev").addEventListener("click",()=>{document.body.classList.add("show-pr
 /* output mode: full B2B manual vs light end-user version */
 $("#mode").addEventListener("click",e=>{const b=e.target.closest("button[data-m]");if(!b)return;MODE=b.dataset.m;[...$("#mode").children].forEach(x=>x.classList.toggle("on",x===b));render();});
 
-$("#foot").innerHTML='Template, guidance &amp; boilerplate © the <strong>Cyber Manual Movement</strong> working group (v0.20). This free populator built on that template by the <strong>Value Chain Risk Institute</strong> · CC BY 4.0 · runs entirely in your browser.';
+$("#foot").innerHTML='Template, guidance &amp; boilerplate © the <strong>Cyber Manual Movement</strong> working group (v0.20). This free populator built on that template by the <strong>Value Chain Risk Institute</strong> · CC BY 4.0 · runs entirely in your browser · <a href="https://github.com/value-chain-risk-institute/cra-manual-tools" target="_blank" rel="noopener">Source on GitHub</a>';
 
 buildForm();render();
 </script>
