@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRA Example-Product Coverage Matrix · VCRI</title>
+<meta name="description" content="Axes, not realms: a minimal set of exemplar products that covers every dimension that changes a CRA user manual — a companion to the CRA Manual Builder.">
+<meta name="author" content="Value Chain Risk Institute">
+<link rel="canonical" href="https://valuechainrisk.org/cra-manual-builder/exemplars/">
+<meta property="og:title" content="CRA Example-Product Coverage Matrix">
+<meta property="og:description" content="Define the axes that change the manual, then pick the smallest exemplar set that covers them all.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://valuechainrisk.org/cra-manual-builder/exemplars/">
+<meta property="og:site_name" content="Value Chain Risk Institute">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --paper: #FCFCFA; --panel: #F1F2EE; --ink: #21272E; --ink-soft: #5A6672;
+    --rule: #D4D8D2; --primary: #0E5F80; --primary-soft: #E2EDF2;
+    --amber: #A86410; --amber-soft: #F5E8D4; --crit: #A23A2B; --crit-soft: #F5E0DB;
+    --chip: #E7EAE5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #14191E; --panel: #1B222A; --ink: #DDE4E9; --ink-soft: #97A5B0;
+      --rule: #34404A; --primary: #5FB2D1; --primary-soft: #14303C;
+      --amber: #DBA050; --amber-soft: #302410; --crit: #D07A6A; --crit-soft: #36201B;
+      --chip: #242E37;
+    }
+  }
+  :root[data-theme="light"] {
+    --paper: #FCFCFA; --panel: #F1F2EE; --ink: #21272E; --ink-soft: #5A6672;
+    --rule: #D4D8D2; --primary: #0E5F80; --primary-soft: #E2EDF2;
+    --amber: #A86410; --amber-soft: #F5E8D4; --crit: #A23A2B; --crit-soft: #F5E0DB;
+    --chip: #E7EAE5;
+  }
+  :root[data-theme="dark"] {
+    --paper: #14191E; --panel: #1B222A; --ink: #DDE4E9; --ink-soft: #97A5B0;
+    --rule: #34404A; --primary: #5FB2D1; --primary-soft: #14303C;
+    --amber: #DBA050; --amber-soft: #302410; --crit: #D07A6A; --crit-soft: #36201B;
+    --chip: #242E37;
+  }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 16px; line-height: 1.6;
+  }
+  .sheet { max-width: 62rem; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  h1, h2, h3 { line-height: 1.2; text-wrap: balance; margin: 0 0 .6rem; letter-spacing: -.015em; }
+  h1 { font-size: 2.1rem; font-weight: 800; }
+  h2 { font-size: 1.35rem; font-weight: 750; margin-top: 2.6rem; border-bottom: 2px solid var(--ink); padding-bottom: .45rem; }
+  p { margin: .8rem 0; max-width: 46rem; }
+  a { color: var(--primary); }
+  .mono, th, .axis-key, .val { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; }
+  .eyebrow { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: .72rem;
+    letter-spacing: .13em; text-transform: uppercase; color: var(--primary); font-weight: 600; margin: 0 0 .8rem; }
+  .lede { font-size: 1.08rem; color: var(--ink-soft); max-width: 46rem; }
+
+  .method { border-left: 3px solid var(--primary); background: var(--primary-soft); padding: .9rem 1.2rem; margin: 1.4rem 0; max-width: 46rem; }
+  .method p { margin: .35rem 0; }
+
+  /* axes list */
+  .axes { display: grid; grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin: 1.2rem 0; }
+  .axis { background: var(--panel); padding: .85rem 1rem; }
+  .axis-key { font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--amber); font-weight: 700; }
+  .axis b { display: block; font-size: .95rem; margin: .15rem 0 .3rem; }
+  .axis .vals { font-size: .82rem; color: var(--ink-soft); }
+  .axis .changes { font-size: .82rem; margin-top: .45rem; border-top: 1px dashed var(--rule); padding-top: .4rem; }
+  .axis .changes::before { content: "Changes in the manual: "; font-weight: 650; color: var(--ink); }
+
+  /* matrix */
+  .tablewrap { overflow-x: auto; margin: 1.3rem 0; border: 1px solid var(--rule); }
+  table { border-collapse: collapse; width: 100%; font-size: .8rem; min-width: 66rem; }
+  th { position: sticky; top: 0; background: var(--panel); text-align: left; font-size: .66rem;
+    letter-spacing: .09em; text-transform: uppercase; color: var(--ink-soft);
+    border-bottom: 2px solid var(--ink); padding: .5rem .6rem; white-space: nowrap; }
+  td { border-bottom: 1px solid var(--rule); padding: .5rem .6rem; vertical-align: top; }
+  td.name { font-weight: 650; white-space: nowrap; }
+  td.name small { display: block; font-weight: 400; color: var(--ink-soft); }
+  .val { font-size: .72rem; white-space: nowrap; background: var(--chip); padding: .1rem .4rem; border-radius: 3px; display: inline-block; margin: .06rem 0; }
+  .val.cls-none { background: var(--chip); }
+  .val.cls-1, .val.cls-2 { background: var(--amber-soft); color: var(--amber); font-weight: 650; }
+  .val.cls-c { background: var(--crit-soft); color: var(--crit); font-weight: 700; }
+  .val.cls-x { background: var(--crit-soft); color: var(--crit); font-weight: 700; text-decoration: line-through; }
+  tr.exempt td { opacity: .75; }
+  tr.exempt td.name { opacity: 1; }
+
+  /* coverage check */
+  .cover { display: grid; grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); gap: 1rem; margin: 1.2rem 0; }
+  .cover-box { background: var(--panel); border: 1px solid var(--rule); padding: .8rem 1rem; font-size: .84rem; }
+  .cover-box b { display: block; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--primary); margin-bottom: .4rem; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; }
+  .cover-box li { margin: .2rem 0; }
+  .cover-box ul { margin: 0; padding-left: 1.1rem; }
+
+  .note { border-left: 3px solid var(--amber); background: var(--amber-soft); padding: .8rem 1.1rem; margin: 1.4rem 0; max-width: 46rem; font-size: .92rem; }
+
+  footer { margin-top: 3.5rem; border-top: 2px solid var(--ink); padding-top: 1rem; font-size: .82rem; color: var(--ink-soft); }
+  @media print {
+    body { font-size: 10pt; }
+    .tablewrap { border: none; }
+    th { position: static; }
+    a[href^="http"]::after { content: " (" attr(href) ")"; font-size: .8em; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <p class="eyebrow">A companion to the <a href="/cra-manual-builder/">CRA Manual Builder</a> · Value Chain Risk Institute · CC BY 4.0</p>
+  <h1>CRA Example-Product Coverage Matrix</h1>
+  <p class="lede">Which example products does a CRA user-manual template suite need? Realms multiply forever — <strong>axes don't</strong>. This page defines the dimensions that actually change what a manual must say, then picks the smallest exemplar set that covers every value of every axis at least once.</p>
+
+  <div class="method">
+    <p><strong>Method (borrowed from test engineering):</strong> enumerate the axes whose value changes the manual's content or audience; select exemplars for <em>coverage</em>, not for popularity. Twelve in-scope products + two boundary cases cover all values below. Any real product then maps to its nearest exemplar.</p>
+  </div>
+
+  <h2>The eight axes</h2>
+  <div class="axes">
+    <div class="axis"><span class="axis-key">A · CRA class</span><b>Regulatory classification</b>
+      <span class="vals">Default · Important Class I · Important Class II · Critical · Out of scope</span>
+      <span class="changes">conformity-assessment route; depth of the security-properties section; CE-marking narrative.</span></div>
+    <div class="axis"><span class="axis-key">B · Audience</span><b>Who reads the manual</b>
+      <span class="vals">Lay consumer · Child-adjacent user · Installer / integrator · Trained operator · OEM engineer (B2B component)</span>
+      <span class="changes">language level; Pxx vs CUxx balance; whether "conditions of use" are instructions or contractual integration requirements.</span></div>
+    <div class="axis"><span class="axis-key">C · Form</span><b>Product form</b>
+      <span class="vals">Hardware + firmware · Embedded component / module · Device + app + cloud · Pure software · Open source w/ steward</span>
+      <span class="changes">SBOM presentation; what "the product" even is; steward vs manufacturer obligations.</span></div>
+    <div class="axis"><span class="axis-key">D · Radio</span><b>RED relevance</b>
+      <span class="vals">Radio equipment (RED 3.3 d/e/f lineage) · Wired-only · N/A (software)</span>
+      <span class="changes">interplay statement with RED delegated-act history; spectrum-related conditions of use.</span></div>
+    <div class="axis"><span class="axis-key">E · Connectivity</span><b>Connectivity model</b>
+      <span class="vals">Cloud-dependent · Local network only · Air-gapped capable · Fully offline</span>
+      <span class="changes">remote-data-processing disclosures; what happens at end of cloud service; offline fallback behavior.</span></div>
+    <div class="axis"><span class="axis-key">F · Updates</span><b>Update delivery path</b>
+      <span class="vals">OTA automatic · Store/package distributed · Manual / technician · Safety-recertification constrained</span>
+      <span class="changes">update instructions; user consent language; the OT case where patching collides with functional-safety certification.</span></div>
+    <div class="axis"><span class="axis-key">G · Lifecycle</span><b>Support horizon</b>
+      <span class="vals">Short (&lt;3y) · Medium (5–10y) · Long (15y+)</span>
+      <span class="changes">support-period statement; spare-parts/firmware availability; end-of-life and secure-disposal guidance.</span></div>
+    <div class="axis"><span class="axis-key">H · Scope</span><b>Scope boundary</b>
+      <span class="vals">In scope · Exempt via sectoral law (MDR, vehicle type-approval, …)</span>
+      <span class="changes">nothing — and that's the point: boundary exemplars teach template users where the CRA manual is <em>not</em> the right document.</span></div>
+  </div>
+
+  <h2>The exemplar set — 12 in scope + 2 boundary cases</h2>
+  <div class="tablewrap">
+  <table>
+    <thead>
+      <tr><th>Exemplar</th><th>A · Class</th><th>B · Audience</th><th>C · Form</th><th>D · Radio</th><th>E · Connectivity</th><th>F · Updates</th><th>G · Lifecycle</th><th>H · Scope</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="name">Smart doorbell camera<small>the canonical consumer IoT case</small></td>
+        <td><span class="val cls-1">Important I</span></td><td><span class="val">Lay consumer</span></td><td><span class="val">Device+app+cloud</span></td><td><span class="val">Radio</span></td><td><span class="val">Cloud-dependent</span></td><td><span class="val">OTA</span></td><td><span class="val">Short</span></td><td><span class="val">In scope</span></td></tr>
+      <tr><td class="name">Connected toy<small>social-interactive features</small></td>
+        <td><span class="val cls-1">Important I</span></td><td><span class="val">Child-adjacent</span></td><td><span class="val">Device+app+cloud</span></td><td><span class="val">Radio</span></td><td><span class="val">Cloud-dependent</span></td><td><span class="val">OTA</span></td><td><span class="val">Short</span></td><td><span class="val">In scope</span></td></tr>
+      <tr><td class="name">Fitness wearable<small>health monitoring, not a medical device</small></td>
+        <td><span class="val cls-1">Important I</span></td><td><span class="val">Lay consumer</span></td><td><span class="val">Device+app+cloud</span></td><td><span class="val">Radio</span></td><td><span class="val">Cloud + offline capable</span></td><td><span class="val">OTA</span></td><td><span class="val">Short</span></td><td><span class="val">In scope</span></td></tr>
+      <tr><td class="name">SOHO router<small>consumer network equipment</small></td>
+        <td><span class="val cls-1">Important I</span></td><td><span class="val">Lay consumer</span></td><td><span class="val">HW + firmware</span></td><td><span class="val">Radio</span></td><td><span class="val">Local network</span></td><td><span class="val">OTA</span></td><td><span class="val">Medium</span></td><td><span class="val">In scope</span></td></tr>
+      <tr><td class="name">Enterprise firewall<small>security appliance</small></td>
+        <td><span class="val cls-2">Important II</span></td><td><span class="val">Trained operator</span></td><td><span class="val">HW + firmware</span></td><td><span class="val">Wired-only</span></td><td><span class="val">Local network</span></td><td><span class="val">Manual + OTA</span></td><td><span class="val">Medium</span></td><td><span class="val">In scope</span></td></tr>
+      <tr><td class="name">Secure element / HSM<small>sold to OEMs, never to end users</small></td>
+        <td><span class="val cls-c">Critical</span></td><td><span class="val">OEM engineer</span></td><td><span class="val">Embedded component</span></td><td><span class="val">Wired-only</span></td><td><span class="val">Fully offline</span></td><td><span class="val">Via OEM firmware</span></td><td><span class="val">Long</span></td><td><span class="val">In scope</span></td></tr>
+      <tr><td class="name">Smart meter gateway<small>national metering schemes</small></td>
+        <td><span class="val cls-c">Critical</span></td><td><span class="val">Installer / integrator</span></td><td><span class="val">HW + firmware</span></td><td><span class="val">Radio (cellular/mesh)</span></td><td><span class="val">Local + WAN</span></td><td><span class="val">Manual / technician</span></td><td><span class="val">Long</span></td><td><span class="val">In scope</span></td></tr>
+      <tr><td class="name">PLC<small>industrial control, brownfield reality</small></td>
+        <td><span class="val cls-none">Default</span></td><td><span class="val">Operator + integrator</span></td><td><span class="val">HW + firmware</span></td><td><span class="val">Wired-only</span></td><td><span class="val">Air-gapped capable</span></td><td><span class="val cls-2">Safety-recert constrained</span></td><td><span class="val">Long (20y+)</span></td><td><span class="val">In scope</span></td></tr>
+      <tr><td class="name">Public EV charger<small>unattended kiosk, physical exposure</small></td>
+        <td><span class="val cls-none">Default</span></td><td><span class="val">Lay public + operator</span></td><td><span class="val">HW + cloud backend</span></td><td><span class="val">Radio (cellular)</span></td><td><span class="val">Cloud-managed</span></td><td><span class="val">OTA</span></td><td><span class="val">Long</span></td><td><span class="val">In scope</span></td></tr>
+      <tr><td class="name">Building HVAC controller<small>installed trade product</small></td>
+        <td><span class="val cls-none">Default</span></td><td><span class="val">Installer / integrator</span></td><td><span class="val">HW + firmware</span></td><td><span class="val">Wired + radio variants</span></td><td><span class="val">Local network</span></td><td><span class="val">Manual / technician</span></td><td><span class="val">Long</span></td><td><span class="val">In scope</span></td></tr>
+      <tr><td class="name">Password manager<small>pure software, security function</small></td>
+        <td><span class="val cls-1">Important I</span></td><td><span class="val">Lay consumer</span></td><td><span class="val">Pure software</span></td><td><span class="val">N/A</span></td><td><span class="val">Cloud sync + offline</span></td><td><span class="val">Store distributed</span></td><td><span class="val">Medium</span></td><td><span class="val">In scope</span></td></tr>
+      <tr><td class="name">Open-source crypto library<small>steward model, embedded everywhere</small></td>
+        <td><span class="val cls-none">Component</span></td><td><span class="val">OEM engineer / dev</span></td><td><span class="val">OSS + steward</span></td><td><span class="val">N/A</span></td><td><span class="val">N/A</span></td><td><span class="val">Package manager</span></td><td><span class="val">Medium</span></td><td><span class="val">In scope (steward regime)</span></td></tr>
+      <tr class="exempt"><td class="name">Blood-pressure monitor<small>boundary case — where CRA stops</small></td>
+        <td><span class="val cls-x">MDR</span></td><td><span class="val">Lay consumer</span></td><td><span class="val">Device+app</span></td><td><span class="val">Radio</span></td><td><span class="val">Cloud</span></td><td><span class="val">OTA</span></td><td><span class="val">Medium</span></td><td><span class="val cls-x">Exempt — MDR</span></td></tr>
+      <tr class="exempt"><td class="name">In-vehicle telematics unit<small>boundary case — type-approval</small></td>
+        <td><span class="val cls-x">UNECE/type-approval</span></td><td><span class="val">OEM engineer</span></td><td><span class="val">Embedded component</span></td><td><span class="val">Radio (cellular)</span></td><td><span class="val">Cloud</span></td><td><span class="val">OTA</span></td><td><span class="val">Long</span></td><td><span class="val cls-x">Exempt — vehicle type-approval</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>Coverage check — every axis value, at least one exemplar</h2>
+  <div class="cover">
+    <div class="cover-box"><b>A · Class</b><ul>
+      <li>Default → PLC, EV charger, HVAC</li>
+      <li>Important I → doorbell, toy, wearable, router, password manager</li>
+      <li>Important II → firewall</li>
+      <li>Critical → secure element, smart meter gateway</li>
+      <li>Out of scope → BP monitor, telematics</li></ul></div>
+    <div class="cover-box"><b>B · Audience</b><ul>
+      <li>Lay consumer → doorbell, wearable, router, password manager</li>
+      <li>Child-adjacent → toy</li>
+      <li>Installer/integrator → smart meter gateway, HVAC</li>
+      <li>Trained operator → firewall, PLC</li>
+      <li>OEM engineer → secure element, crypto library</li></ul></div>
+    <div class="cover-box"><b>C · Form</b><ul>
+      <li>HW+firmware → router, firewall, PLC, HVAC, meter gateway</li>
+      <li>Embedded component → secure element</li>
+      <li>Device+app+cloud → doorbell, toy, wearable</li>
+      <li>Pure software → password manager</li>
+      <li>OSS + steward → crypto library</li></ul></div>
+    <div class="cover-box"><b>D · Radio / E · Connectivity</b><ul>
+      <li>Radio → doorbell, toy, wearable, router, meter gateway, EV charger</li>
+      <li>Wired-only → firewall, PLC, secure element</li>
+      <li>Cloud-dependent → doorbell, toy, EV charger</li>
+      <li>Local-only → router, firewall, HVAC</li>
+      <li>Air-gapped → PLC · Offline → secure element</li></ul></div>
+    <div class="cover-box"><b>F · Updates</b><ul>
+      <li>OTA → doorbell, toy, wearable, router, EV charger</li>
+      <li>Store/package → password manager, crypto library</li>
+      <li>Manual/technician → meter gateway, HVAC, firewall</li>
+      <li>Safety-recert constrained → PLC</li></ul></div>
+    <div class="cover-box"><b>G · Lifecycle / H · Scope</b><ul>
+      <li>Short → doorbell, toy, wearable</li>
+      <li>Medium → router, firewall, password manager</li>
+      <li>Long → PLC, EV charger, HVAC, meter gateway, secure element</li>
+      <li>Exempt boundary → BP monitor (MDR), telematics (type-approval)</li></ul></div>
+  </div>
+
+  <div class="note">
+    <strong>Two notes for the working group.</strong> (1) Class assignments were verified against the final text of Regulation (EU) 2024/2847, Annexes III/IV, on 17 July 2026. Two corrections were made in that pass and are worth knowing: the smart doorbell camera is <em>Important Class I</em> (Annex III lists smart home security products including security cameras), and the PLC is <em>Default</em> class — PLCs appear nowhere in the final Annex III, having been removed from earlier drafts. The Commission's implementing regulation on technical descriptions for Annex III/IV categories may further refine boundaries; treat it as the tie-breaker for edge cases. (2) The set optimizes for <em>manual-content coverage</em>, not market importance — a deliberately boring CAD desktop application could replace the password manager if the group prefers a non-security pure-software exemplar (Default class), at the cost of losing an Important-I software case.
+  </div>
+
+  <h2>How to use this</h2>
+  <p>For each exemplar, the group writes (or the <a href="/cra-manual-builder/">CRA Manual Builder</a> generates) one reference manual. A manufacturer approaching the template then maps their product to its nearest exemplar by walking the axes — not by guessing which "realm" they belong to. If a real product hits an axis-value combination no exemplar covers, that's a signal to extend the set, and the matrix shows exactly which cell is missing.</p>
+
+  <footer>
+    <p>A <a href="https://www.valuechainrisk.org/">Value Chain Risk Institute</a> contribution to the Cyber Manual working group · July 2026 · CC BY 4.0 — share, adapt, reprint with attribution. Feedback: info@valuechainrisk.org · Companion tool: <a href="/cra-manual-builder/">valuechainrisk.org/cra-manual-builder</a></p>
+  </footer>
+
+</div>
+</body>
+</html>

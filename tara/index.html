@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VCRI TARA Builder — CRA Annex VII Risk Assessment</title>
+<style>
+:root{
+  --ui:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --doc:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Code",Consolas,monospace;
+  --bg:#eaeef1; --panel:#ffffff; --paper:#fcfcf9;
+  --ink:#16212b; --muted:#5b6b78; --line:#d7dee3; --line2:#e8edf0;
+  --accent:#0b6b80; --accent-ink:#ffffff; --accent-soft:#e2f0f3;
+  --mfr:#2f7d5b; --mfr-soft:#e7f3ec; --usr:#a9660f; --usr-soft:#f6ecdc;
+  --field:#f6f8f9; --shadow:0 1px 2px rgba(20,33,43,.06),0 8px 24px rgba(20,33,43,.06);
+  --low:#2f7d5b; --med:#a9660f; --high:#c0492b; --crit:#8b1a1a;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0d141a; --panel:#141d25; --paper:#f5f3ed;
+  --ink:#e7eef3; --muted:#93a3af; --line:#26333f; --line2:#1c2731;
+  --accent:#34b3cb; --accent-ink:#06222a; --accent-soft:#123039;
+  --mfr:#54c191; --mfr-soft:#12291f; --usr:#d69a4a; --usr-soft:#2c2211;
+  --field:#0f1820; --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  --low:#54c191; --med:#d69a4a; --high:#e0745a; --crit:#e05a5a;
+}}
+:root[data-theme="light"]{--bg:#eaeef1;--panel:#fff;--paper:#fcfcf9;--ink:#16212b;--muted:#5b6b78;--line:#d7dee3;--line2:#e8edf0;--accent:#0b6b80;--accent-ink:#fff;--accent-soft:#e2f0f3;--field:#f6f8f9;--low:#2f7d5b;--med:#a9660f;--high:#c0492b;--crit:#8b1a1a}
+:root[data-theme="dark"]{--bg:#0d141a;--panel:#141d25;--paper:#f5f3ed;--ink:#e7eef3;--muted:#93a3af;--line:#26333f;--line2:#1c2731;--accent:#34b3cb;--accent-ink:#06222a;--accent-soft:#123039;--field:#0f1820;--low:#54c191;--med:#d69a4a;--high:#e0745a;--crit:#e05a5a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+header{background:var(--panel);border-bottom:1px solid var(--line);padding:14px 20px;position:sticky;top:0;z-index:10;box-shadow:var(--shadow)}
+header .row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;max-width:1100px;margin:0 auto}
+header h1{font-size:16px;margin:0;font-weight:650}
+header .tag{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:2px 9px}
+header .sp{flex:1}
+button{font-family:var(--ui);font-size:13px;border:1px solid var(--line);background:var(--field);color:var(--ink);border-radius:7px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.mini{padding:3px 8px;font-size:12px}
+main{max-width:1100px;margin:0 auto;padding:20px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:0 0 18px;box-shadow:var(--shadow)}
+.panel h2{font-size:14px;margin:0 0 4px;letter-spacing:.02em;text-transform:uppercase;color:var(--accent)}
+.panel .hint{color:var(--muted);font-size:12.5px;margin:0 0 14px}
+label{display:block;font-size:12px;color:var(--muted);margin:10px 0 3px}
+input[type=text],textarea,select{width:100%;font-family:var(--ui);font-size:13.5px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:7px;padding:7px 9px}
+textarea{min-height:52px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0}
+.chip{border:1px solid var(--line);border-radius:20px;padding:4px 11px;font-size:12.5px;cursor:pointer;background:var(--field);user-select:none}
+.chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+.item{border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin:8px 0;background:var(--paper)}
+.item .top{display:flex;align-items:center;gap:8px}
+.item .top strong{font-size:13px}
+.item .meta{font-size:12px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:8px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line2);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em}
+.pill{display:inline-block;border-radius:20px;padding:2px 9px;font-size:11.5px;font-weight:600;color:#fff}
+.pill.low{background:var(--low)} .pill.medium{background:var(--med)} .pill.high{background:var(--high)} .pill.critical{background:var(--crit)}
+.mfrtag{color:var(--mfr);font-weight:600} .usrtag{color:var(--usr);font-weight:600}
+.ladder{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:4px 0 2px}
+.ladder .lv{border:1px solid var(--line);border-radius:6px;padding:5px 6px;font-size:11px;cursor:pointer;text-align:center;background:var(--field)}
+.ladder .lv.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.small{font-size:11.5px;color:var(--muted)}
+.privacy{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--mfr);margin-left:auto}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--mfr)}
+details{margin:6px 0} summary{cursor:pointer;font-size:12.5px;color:var(--accent)}
+.right{margin-left:auto}
+.muted{color:var(--muted)}
+@media(max-width:720px){.grid2,.ladder{grid-template-columns:1fr}}
+@media print{header,.noprint{display:none}body{background:#fff}.panel{box-shadow:none;border-color:#ccc;break-inside:avoid}}
+</style>
+</head>
+<body>
+<header>
+  <div class="row">
+    <h1>VCRI TARA Builder</h1>
+    <span class="tag">CRA Annex VII · v0.1 MVP</span>
+    <span class="privacy"><span class="dot"></span>All local. Nothing is transmitted.</span>
+    <span class="sp"></span>
+    <button class="mini" onclick="toggleTheme()">Theme</button>
+    <button class="mini" onclick="seedExample()">Load example</button>
+    <button class="mini" onclick="exportJSON()">Export JSON</button>
+    <button class="mini" onclick="document.getElementById('imp').click()">Import</button>
+    <input id="imp" type="file" accept="application/json" style="display:none" onchange="importJSON(event)">
+    <button class="mini" onclick="window.print()">Print / PDF</button>
+    <button class="mini" onclick="wipe()">Reset</button>
+  </div>
+</header>
+<main>
+
+<div class="panel" style="border-left:4px solid var(--accent);background:var(--accent-soft)">
+  <p style="margin:0;font-size:13px">
+    <strong>A Cyber Manual Movement tool.</strong> The Value Chain Risk Institute is a member of the
+    <a href="/cra-manual-builder/">Cyber Manual Movement</a> working group. This is the Annex VII (product cybersecurity risk assessment)
+    companion to the Movement's CRA user-information manual template — the risk-assessment half of the pair, built in the Movement's
+    established mode: VCRI provides the engine and drafting aids; the working group owns the scenario libraries and worked examples.
+  </p>
+</div>
+
+<div class="panel">
+  <h2>1 · Product model</h2>
+  <p class="hint">The product with digital elements under assessment. In the full tool this pre-populates from a Manual Builder export (Annex II ↔ Annex VII loop); in this MVP, enter it directly.</p>
+  <div class="grid2">
+    <div><label>Product name</label><input type="text" id="pname" oninput="save()" placeholder="e.g. FlowSense PLC Gateway 200"></div>
+    <div><label>Version / model</label><input type="text" id="pver" oninput="save()" placeholder="e.g. HW rev C, FW 3.2"></div>
+  </div>
+  <label>Intended purpose &amp; environment</label>
+  <textarea id="ppurpose" oninput="save()" placeholder="One or two sentences: what it does, where it runs (e.g. industrial control network, air-gapped by policy)."></textarea>
+
+  <label>Interfaces (the attack surface). Click to toggle; add custom ones.</label>
+  <div class="chips" id="ifchips"></div>
+  <div style="display:flex;gap:8px;margin-top:6px">
+    <input type="text" id="ifcustom" placeholder="Add a custom interface (e.g. proprietary service port)" onkeydown="if(event.key==='Enter'){addCustomIf();}">
+    <button class="mini" onclick="addCustomIf()">Add</button>
+  </div>
+
+  <label style="margin-top:14px">Assets &amp; damage scenarios — what an attacker could harm, and the resulting damage.</label>
+  <div id="assets"></div>
+  <button class="mini" onclick="addAsset()">+ Asset</button>
+</div>
+
+<div class="panel">
+  <h2>2 · Threat scenarios</h2>
+  <p class="hint">Generated, not blank-page: eight assumption-violation classes crossed with your interfaces produce candidate scenarios. Accept, edit, or discard. <span class="small">(Classes authored by VCRI; no text reproduced from paywalled standards.)</span></p>
+  <button class="mini primary" onclick="generate()">⚙ Generate candidate scenarios</button>
+  <span class="small" id="gennote"></span>
+  <div id="scenarios" style="margin-top:12px"></div>
+</div>
+
+<div class="panel noprint">
+  <h2>3 · How scoring works</h2>
+  <p class="hint">Per scenario: rate five feasibility factors (higher barrier → lower feasibility) and four impact domains (overall impact = worst domain). Feasibility × Impact → risk, by a fixed matrix. Deterministic and versioned — the same inputs always give the same risk.</p>
+  <details><summary>Feasibility factors &amp; anchors</summary><div id="rubricdocF" class="small"></div></details>
+  <details><summary>Impact domains &amp; anchors</summary><div id="rubricdocI" class="small"></div></details>
+  <details><summary>Risk matrix</summary><div id="rubricdocM" class="small"></div></details>
+</div>
+
+<div class="panel">
+  <h2>4 · Risk register &amp; treatment</h2>
+  <p class="hint">Feasibility × impact → risk. Choose a treatment per scenario. <span class="usrtag">User-borne</span> treatments emit Condition-of-Use candidates that flow back into the Annex II manual; <span class="mfrtag">manufacturer-borne</span> ones become product security properties.</p>
+  <div id="register"></div>
+</div>
+
+<div class="panel">
+  <h2>5 · Annex VII summary &amp; Annex I trace</h2>
+  <p class="hint">The assessment as a CRA-shaped summary. Each accepted risk can be traced to the Annex I essential requirement it justifies. Indicative, not a conformance claim.</p>
+  <div id="summary"></div>
+</div>
+
+<p class="small muted" style="text-align:center;margin:24px 0">
+  A <strong>Cyber Manual Movement</strong> tool. Built by the Value Chain Risk Institute, a member of the Cyber Manual Movement working group, as the Annex VII companion to the Movement's CRA user-information manual template.<br>
+  Value Chain Risk Institute · valuechainrisk.org/tara · CC BY 4.0 · Companion: /cra-manual-builder/ (Annex II) · /scorer/ (posture)<br>
+  Methodology informed by ISO/SAE 21434-style TARA practice; all anchors authored originally. This tool makes no conformance determination.
+</p>
+</main>
+
+<script>
+// ---------- versioned rubric (rubrics-as-JSON, the chassis pattern) ----------
+const RUBRIC = {
+  version: "tara-rubric/0.1",
+  interfaces_default: ["Ethernet/IP","Wi-Fi","USB","Bluetooth","NFC","Serial/UART","Cellular","Cloud/API","Physical console","Removable media"],
+  // 8 assumption-violation classes (authored). Each: which interfaces it applies to (or all), and a scenario template.
+  classes: [
+    {id:"AUTH", name:"Identity assumption violated", tpl:"An actor reaches {iface} without being the identity the product assumes, bypassing or forging authentication."},
+    {id:"INTEG", name:"Integrity assumption violated", tpl:"Data or firmware crossing {iface} is altered in a way the product treats as trusted and unmodified."},
+    {id:"CONF", name:"Confidentiality assumption violated", tpl:"Information the product assumes is private is observed via {iface} (eavesdropping, readout, or leakage)."},
+    {id:"AVAIL", name:"Availability assumption violated", tpl:"{iface} is flooded, jammed, or exhausted so the product cannot perform its function when needed."},
+    {id:"AUTHZ", name:"Authorization assumption violated", tpl:"An actor with some access to {iface} escalates beyond the privilege the product intends to grant."},
+    {id:"FRESH", name:"Freshness assumption violated", tpl:"A valid {iface} message is captured and replayed, and the product acts on stale data as if current."},
+    {id:"PROV", name:"Provenance assumption violated", tpl:"A component, update, or peer delivered via {iface} is not from the source the product assumes (supply-chain / substitution)."},
+    {id:"PHYS", name:"Physical assumption violated", tpl:"Physical or side-channel access at {iface} defeats a protection the product assumes the environment provides."}
+  ],
+  // feasibility factors: level 0 = easiest for attacker (highest feasibility); level 4 = hardest (lowest). points = level.
+  feasibility: [
+    {id:"time", name:"Elapsed time", anchors:["< 1 day","< 1 week","< 1 month","< 6 months","> 6 months"]},
+    {id:"expertise", name:"Expertise", anchors:["Layperson","Some skill","Proficient","Expert","Multiple experts"]},
+    {id:"knowledge", name:"Knowledge of the item", anchors:["Public","Restricted","Sensitive","Confidential","Critical/secret"]},
+    {id:"window", name:"Window of opportunity", anchors:["Unlimited/remote","Easy","Moderate","Difficult","Rare/none"]},
+    {id:"equipment", name:"Equipment", anchors:["Standard","Specialized","Bespoke","Multiple bespoke","Lab-grade"]}
+  ],
+  // feasibility total (0..20) -> level. Lower barrier total => more feasible.
+  feasBands:[{max:5,level:"High"},{max:10,level:"Medium"},{max:14,level:"Low"},{max:20,level:"Very Low"}],
+  impact: [
+    {id:"safety", name:"Safety", anchors:["None","Minor injury","Serious injury","Life-threatening/fatal"]},
+    {id:"operational", name:"Operational", anchors:["None","Degraded","Major disruption","Loss of function"]},
+    {id:"financial", name:"Financial", anchors:["Negligible","Moderate","Major","Severe"]},
+    {id:"privacy", name:"Privacy", anchors:["None","Limited data","Sensitive data","Large-scale/special-category"]}
+  ],
+  impactLevels:["Negligible","Moderate","Major","Severe"],
+  feasLevels:["High","Medium","Low","Very Low"],
+  // risk matrix[feasIndex][impactIndex] ; feas 0=High..3=VeryLow ; impact 0=Negligible..3=Severe
+  matrix:[
+    ["Medium","High","Critical","Critical"],
+    ["Low","Medium","High","Critical"],
+    ["Low","Low","Medium","High"],
+    ["Low","Low","Low","Medium"]
+  ],
+  annexI:[
+    {id:"2b",t:"Secure by default"},{id:"2c",t:"Secure update mechanism"},{id:"2d",t:"Protection from unauthorized access"},
+    {id:"2e",t:"Confidentiality protection"},{id:"2f",t:"Integrity protection"},{id:"2g",t:"Data minimisation"},
+    {id:"2h",t:"Availability protection"},{id:"2i",t:"Minimise impact on other services"},{id:"2j",t:"Attack-surface limitation"},
+    {id:"2k",t:"Impact reduction / resilience"},{id:"2l",t:"Recording &amp; monitoring"},{id:"2m",t:"Secure data removal"}
+  ],
+  // default class -> Annex I suggestion (indicative)
+  classToAnnex:{AUTH:"2d",AUTHZ:"2d",CONF:"2e",INTEG:"2f",AVAIL:"2h",FRESH:"2f",PROV:"2c",PHYS:"2j"}
+};
+
+// ---------- state ----------
+let S = load() || blank();
+function blank(){return{product:{name:"",ver:"",purpose:""},interfaces:[...RUBRIC.interfaces_default.slice(0,4)],custIf:[],assets:[],scenarios:[]};}
+function save(){collectProduct();localStorage.setItem("vcri-tara",JSON.stringify(S));}
+function load(){try{return JSON.parse(localStorage.getItem("vcri-tara"));}catch(e){return null;}}
+function uid(){return "s"+Math.random().toString(36).slice(2,8);}
+
+function collectProduct(){
+  S.product.name=val("pname");S.product.ver=val("pver");S.product.purpose=val("ppurpose");
+}
+function val(id){return document.getElementById(id).value;}
+
+// ---------- render ----------
+function render(){
+  document.getElementById("pname").value=S.product.name||"";
+  document.getElementById("pver").value=S.product.ver||"";
+  document.getElementById("ppurpose").value=S.product.purpose||"";
+  renderIfaces();renderAssets();renderScenarios();renderRegister();renderSummary();renderRubricDocs();
+}
+function renderIfaces(){
+  const all=[...RUBRIC.interfaces_default,...S.custIf];
+  const c=document.getElementById("ifchips");c.innerHTML="";
+  all.forEach(name=>{
+    const on=S.interfaces.includes(name);
+    const el=document.createElement("span");el.className="chip"+(on?" on":"");el.textContent=name;
+    el.onclick=()=>{if(on){S.interfaces=S.interfaces.filter(x=>x!==name);}else{S.interfaces.push(name);}save();renderIfaces();};
+    c.appendChild(el);
+  });
+}
+function addCustomIf(){const v=val("ifcustom").trim();if(!v)return;if(!S.custIf.includes(v))S.custIf.push(v);if(!S.interfaces.includes(v))S.interfaces.push(v);document.getElementById("ifcustom").value="";save();renderIfaces();}
+
+function renderAssets(){
+  const d=document.getElementById("assets");d.innerHTML="";
+  S.assets.forEach((a,i)=>{
+    const el=document.createElement("div");el.className="item";
+    el.innerHTML=`<div class="grid2">
+      <div><label>Asset ${i+1}</label><input type="text" value="${esc(a.name)}" oninput="S.assets[${i}].name=this.value;save()" placeholder="e.g. PLC control logic"></div>
+      <div><label>Damage if harmed</label><input type="text" value="${esc(a.damage)}" oninput="S.assets[${i}].damage=this.value;save()" placeholder="e.g. unsafe actuator command"></div>
+    </div><div style="text-align:right;margin-top:6px"><button class="mini" onclick="S.assets.splice(${i},1);save();renderAssets()">Remove</button></div>`;
+    d.appendChild(el);
+  });
+}
+function addAsset(){S.assets.push({name:"",damage:""});save();renderAssets();}
+
+function generate(){
+  const existing=new Set(S.scenarios.map(s=>s.key));
+  let added=0;
+  S.interfaces.forEach(iface=>{
+    RUBRIC.classes.forEach(cls=>{
+      const key=cls.id+"|"+iface;
+      if(existing.has(key))return;
+      S.scenarios.push({
+        id:uid(),key,cls:cls.id,clsName:cls.name,iface,
+        text:cls.tpl.replace("{iface}",iface),
+        accepted:false,
+        feas:{time:1,expertise:1,knowledge:0,window:1,equipment:1},
+        imp:{safety:0,operational:1,financial:1,privacy:0},
+        treatment:"", bearer:"", annex:RUBRIC.classToAnnex[cls.id]||""
+      });
+      added++;
+    });
+  });
+  save();renderScenarios();renderRegister();renderSummary();
+  document.getElementById("gennote").textContent=` ${added} new candidate(s) from ${S.interfaces.length} interface(s) × ${RUBRIC.classes.length} classes. Accept the ones that apply.`;
+}
+
+function renderScenarios(){
+  const d=document.getElementById("scenarios");d.innerHTML="";
+  if(!S.scenarios.length){d.innerHTML='<p class="small">No scenarios yet. Add interfaces above, then Generate.</p>';return;}
+  const byIface={};S.scenarios.forEach(s=>{(byIface[s.iface]=byIface[s.iface]||[]).push(s);});
+  Object.keys(byIface).forEach(iface=>{
+    const h=document.createElement("div");h.innerHTML=`<div class="small mfrtag" style="margin:10px 0 2px">▸ ${esc(iface)}</div>`;d.appendChild(h);
+    byIface[iface].forEach(s=>{
+      const idx=S.scenarios.indexOf(s);
+      const el=document.createElement("div");el.className="item";
+      el.innerHTML=`<div class="top"><input type="checkbox" ${s.accepted?"checked":""} onchange="S.scenarios[${idx}].accepted=this.checked;save();renderRegister();renderSummary()">
+        <strong>${esc(s.clsName)}</strong><span class="meta right">${s.cls}</span></div>
+        <textarea oninput="S.scenarios[${idx}].text=this.value;save()">${esc(s.text)}</textarea>
+        <div style="text-align:right"><button class="mini" onclick="S.scenarios.splice(${idx},1);save();renderScenarios();renderRegister();renderSummary()">Discard</button></div>`;
+      d.appendChild(el);
+    });
+  });
+}
+
+// ---------- scoring ----------
+function feasTotal(s){return RUBRIC.feasibility.reduce((a,f)=>a+(s.feas[f.id]||0),0);}
+function feasLevel(s){const t=feasTotal(s);for(const b of RUBRIC.feasBands){if(t<=b.max)return b.level;}return"Very Low";}
+function impLevelIdx(s){return Math.max(...RUBRIC.impact.map(d=>s.imp[d.id]||0));}
+function impLevel(s){return RUBRIC.impactLevels[impLevelIdx(s)];}
+function riskOf(s){const fi=RUBRIC.feasLevels.indexOf(feasLevel(s));const ii=impLevelIdx(s);return RUBRIC.matrix[fi][ii];}
+function riskClass(r){return r.toLowerCase();}
+
+function renderRegister(){
+  const d=document.getElementById("register");
+  const acc=S.scenarios.filter(s=>s.accepted);
+  if(!acc.length){d.innerHTML='<p class="small">Accept scenarios above to populate the register.</p>';return;}
+  d.innerHTML="";
+  acc.forEach(s=>{
+    const idx=S.scenarios.indexOf(s);
+    const el=document.createElement("div");el.className="item";
+    el.innerHTML=`<div class="top"><strong>${esc(s.clsName)}</strong> <span class="meta">· ${esc(s.iface)}</span>
+      <span class="right pill ${riskClass(riskOf(s))}">${riskOf(s)}</span></div>
+      <div class="small" style="margin:2px 0 8px">${esc(s.text)}</div>
+      <div class="grid2">
+        <div><div class="small mfrtag">Feasibility — ${feasLevel(s)} (barrier ${feasTotal(s)}/20)</div>${ladders(idx,"feas",RUBRIC.feasibility)}</div>
+        <div><div class="small usrtag">Impact — ${impLevel(s)} (worst domain)</div>${ladders(idx,"imp",RUBRIC.impact)}</div>
+      </div>
+      <div class="grid2" style="margin-top:10px">
+        <div><label>Treatment</label><select onchange="S.scenarios[${idx}].treatment=this.value;save();renderSummary()">
+          ${opt(["","Reduce (add control)","Retain (accept residual)","Avoid (remove function)","Transfer (contract/insurance)"],s.treatment)}</select></div>
+        <div><label>Borne by</label><select onchange="S.scenarios[${idx}].bearer=this.value;save();renderSummary()">
+          ${opt(["","Manufacturer → security property","User → condition of use"],s.bearer)}</select></div>
+      </div>
+      <div style="margin-top:8px"><label>Justifies CRA Annex I requirement</label><select onchange="S.scenarios[${idx}].annex=this.value;save();renderSummary()">
+        ${annexOpt(s.annex)}</select></div>`;
+    d.appendChild(el);
+  });
+}
+function ladders(idx,kind,defs){
+  return defs.map(f=>{
+    const cur=S.scenarios[idx][kind][f.id]||0;
+    const cells=f.anchors.map((a,l)=>`<div class="lv ${l===cur?"on":""}" title="${esc(a)}" onclick="S.scenarios[${idx}].${kind}['${f.id}']=${l};save();renderRegister();renderSummary()">${l}</div>`).join("");
+    return `<div class="small" style="margin-top:6px">${f.name}: <b>${esc(f.anchors[cur])}</b></div><div class="ladder">${cells}</div>`;
+  }).join("");
+}
+function opt(arr,cur){return arr.map(o=>`<option ${o===cur?"selected":""}>${o}</option>`).join("");}
+function annexOpt(cur){return ['<option value="">— none —</option>'].concat(RUBRIC.annexI.map(a=>`<option value="${a.id}" ${a.id===cur?"selected":""}>${a.id} · ${a.t}</option>`)).join("");}
+
+function renderSummary(){
+  const d=document.getElementById("summary");
+  const acc=S.scenarios.filter(s=>s.accepted);
+  if(!acc.length){d.innerHTML='<p class="small">No accepted risks yet.</p>';return;}
+  const counts={Low:0,Medium:0,High:0,Critical:0};acc.forEach(s=>counts[riskOf(s)]++);
+  let html=`<div style="margin-bottom:10px">`+["Critical","High","Medium","Low"].map(k=>`<span class="pill ${k.toLowerCase()}" style="margin-right:6px">${counts[k]} ${k}</span>`).join("")+`</div>`;
+  html+=`<table><thead><tr><th>Threat scenario</th><th>Interface</th><th>Feas.</th><th>Impact</th><th>Risk</th><th>Treatment</th><th>Bearer</th><th>Annex I</th></tr></thead><tbody>`;
+  acc.forEach(s=>{
+    const bearer=s.bearer.startsWith("User")?`<span class="usrtag">User CoU</span>`:s.bearer.startsWith("Manuf")?`<span class="mfrtag">Mfr SP</span>`:'<span class="muted">—</span>';
+    const ax=RUBRIC.annexI.find(a=>a.id===s.annex);
+    html+=`<tr><td>${esc(s.text)}</td><td>${esc(s.iface)}</td><td>${feasLevel(s)}</td><td>${impLevel(s)}</td>
+      <td><span class="pill ${riskClass(riskOf(s))}">${riskOf(s)}</span></td><td>${esc(s.treatment||"—")}</td><td>${bearer}</td>
+      <td>${ax?ax.id:"—"}</td></tr>`;
+  });
+  html+=`</tbody></table>`;
+  // condition-of-use feedback (Annex VII -> Annex II loop)
+  const cous=acc.filter(s=>s.bearer.startsWith("User")&&s.treatment);
+  if(cous.length){
+    html+=`<div style="margin-top:14px"><div class="small usrtag">Condition-of-Use candidates for the Annex II manual (${cous.length}):</div><ul class="small">`;
+    cous.forEach(s=>{html+=`<li>Because of “${esc(s.clsName)}” on ${esc(s.iface)}: <b>${esc(s.treatment)}</b> — the operator must act.</li>`;});
+    html+=`</ul></div>`;
+  }
+  d.innerHTML=html;
+}
+function renderRubricDocs(){
+  document.getElementById("rubricdocF").innerHTML=RUBRIC.feasibility.map(f=>`<b>${f.name}:</b> `+f.anchors.map((a,i)=>`${i}=${a}`).join(" · ")).join("<br>");
+  document.getElementById("rubricdocI").innerHTML=RUBRIC.impact.map(f=>`<b>${f.name}:</b> `+f.anchors.map((a,i)=>`${i}=${a}`).join(" · ")).join("<br>")+"<br><i>Overall impact = worst single domain.</i>";
+  let m=`<table><thead><tr><th>Feas ↓ / Impact →</th>`+RUBRIC.impactLevels.map(i=>`<th>${i}</th>`).join("")+`</tr></thead><tbody>`;
+  RUBRIC.matrix.forEach((row,fi)=>{m+=`<tr><td><b>${RUBRIC.feasLevels[fi]}</b></td>`+row.map(r=>`<td><span class="pill ${r.toLowerCase()}">${r}</span></td>`).join("")+`</tr>`;});
+  document.getElementById("rubricdocM").innerHTML=m+"</tbody></table>";
+}
+
+// ---------- io ----------
+function exportJSON(){collectProduct();const blob=new Blob([JSON.stringify({schema:"vcri.tara/v0",rubric:RUBRIC.version,generated:new Date().toISOString(),data:S},null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(S.product.name||"tara").replace(/\W+/g,"_")+"_tara.json";a.click();}
+function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);S=o.data||o;save();render();}catch(err){alert("Invalid JSON");}};r.readAsText(f);}
+function wipe(){if(confirm("Clear this assessment?")){S=blank();save();render();}}
+function toggleTheme(){const r=document.documentElement;const cur=r.getAttribute("data-theme");r.setAttribute("data-theme",cur==="dark"?"light":cur==="light"?"dark":(matchMedia("(prefers-color-scheme:dark)").matches?"light":"dark"));}
+
+function seedExample(){
+  S={product:{name:"FlowSense PLC Gateway 200",ver:"HW rev C · FW 3.2",purpose:"Industrial protocol gateway bridging field sensors to a plant SCADA network; deployed inside a segmented OT network, remote firmware updates over TLS."},
+     interfaces:["Ethernet/IP","USB","Cloud/API","Serial/UART"],custIf:[],
+     assets:[{name:"PLC control logic",damage:"unsafe or out-of-range actuator command"},{name:"Firmware image",damage:"persistent implant / loss of trust in the device"}],
+     scenarios:[]};
+  save();render();generate();
+  // pre-accept + score two for a live demo
+  const pick=(cls,iface)=>S.scenarios.find(s=>s.cls===cls&&s.iface===iface);
+  const a=pick("PROV","Cloud/API");if(a){a.accepted=true;a.feas={time:1,expertise:2,knowledge:1,window:0,equipment:0};a.imp={safety:3,operational:3,financial:2,privacy:0};a.treatment="Reduce (add control)";a.bearer="Manufacturer → security property";a.annex="2c";}
+  const b=pick("PHYS","USB");if(b){b.accepted=true;b.feas={time:0,expertise:1,knowledge:1,window:3,equipment:1};b.imp={safety:2,operational:2,financial:1,privacy:0};b.treatment="Reduce (add control)";b.bearer="User → condition of use";b.annex="2j";}
+  save();render();
+}
+
+const esc=s=>(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+render();
+</script>
+</body>
+</html>

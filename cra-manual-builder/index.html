@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CRA Manual Builder — VCRI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --ui:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --doc:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Code",Consolas,monospace;
+  --bg:#eaeef1; --panel:#ffffff; --paper:#fcfcf9;
+  --ink:#16212b; --muted:#5b6b78; --line:#d7dee3; --line2:#e8edf0;
+  --accent:#0b6b80; --accent-ink:#ffffff; --accent-soft:#e2f0f3;
+  --mfr:#2f7d5b; --mfr-soft:#e7f3ec; --usr:#a9660f; --usr-soft:#f6ecdc;
+  --field:#f6f8f9; --shadow:0 1px 2px rgba(20,33,43,.06),0 8px 24px rgba(20,33,43,.06);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0d141a; --panel:#141d25; --paper:#f5f3ed;
+  --ink:#e7eef3; --muted:#93a3af; --line:#26333f; --line2:#1c2731;
+  --accent:#34b3cb; --accent-ink:#06222a; --accent-soft:#123039;
+  --mfr:#54c191; --mfr-soft:#12291f; --usr:#d69a4a; --usr-soft:#2c2211;
+  --field:#0f1820; --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+}}
+:root[data-theme="light"]{
+  --bg:#eaeef1; --panel:#ffffff; --paper:#fcfcf9;
+  --ink:#16212b; --muted:#5b6b78; --line:#d7dee3; --line2:#e8edf0;
+  --accent:#0b6b80; --accent-ink:#ffffff; --accent-soft:#e2f0f3;
+  --mfr:#2f7d5b; --mfr-soft:#e7f3ec; --usr:#a9660f; --usr-soft:#f6ecdc;
+  --field:#f6f8f9; --shadow:0 1px 2px rgba(20,33,43,.06),0 8px 24px rgba(20,33,43,.06);
+}
+:root[data-theme="dark"]{
+  --bg:#0d141a; --panel:#141d25; --paper:#f5f3ed;
+  --ink:#e7eef3; --muted:#93a3af; --line:#26333f; --line2:#1c2731;
+  --accent:#34b3cb; --accent-ink:#06222a; --accent-soft:#123039;
+  --mfr:#54c191; --mfr-soft:#12291f; --usr:#d69a4a; --usr-soft:#2c2211;
+  --field:#0f1820; --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font:inherit;color:inherit}
+h1,h2,h3{text-wrap:balance;margin:0}
+a{color:var(--accent)}
+
+/* ---- top bar ---- */
+header{position:sticky;top:0;z-index:20;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:10px 16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto}
+.mark{width:30px;height:30px;border-radius:7px;background:var(--accent);display:grid;place-items:center;color:var(--accent-ink);flex:none}
+.mark svg{width:18px;height:18px}
+.brand b{font-size:15px;letter-spacing:.2px}
+.brand span{display:block;font-size:11px;color:var(--muted);letter-spacing:.3px;text-transform:uppercase}
+.tools{display:flex;gap:7px;flex-wrap:wrap}
+.btn{background:var(--field);border:1px solid var(--line);border-radius:8px;padding:7px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:13px;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.btn svg{width:15px;height:15px}
+.btn:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+
+/* ---- layout ---- */
+main{display:grid;grid-template-columns:minmax(360px,1fr) minmax(420px,1.15fr);gap:0;height:calc(100vh - 53px)}
+.pane{overflow-y:auto;height:100%}
+.edit{padding:16px 16px 80px;border-right:1px solid var(--line)}
+.preview{background:var(--bg);padding:22px 22px 80px}
+.tabbar{display:none}
+
+.note{background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);color:var(--ink);border-radius:9px;padding:9px 12px;font-size:12.5px;display:flex;gap:8px;align-items:flex-start;margin-bottom:14px}
+.note svg{width:15px;height:15px;flex:none;margin-top:1px;color:var(--accent)}
+.credit{background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:9px;padding:10px 12px;font-size:12.5px;color:var(--ink);margin-bottom:12px;line-height:1.5}
+.credit strong{color:var(--accent)}
+
+/* ---- accordion sections ---- */
+.sec{border:1px solid var(--line);border-radius:11px;background:var(--panel);margin-bottom:10px;overflow:hidden}
+.sec>summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;align-items:center;gap:10px;font-weight:600;font-size:13.5px}
+.sec>summary::-webkit-details-marker{display:none}
+.sec>summary .chev{margin-left:auto;transition:transform .15s;color:var(--muted)}
+.sec[open]>summary .chev{transform:rotate(90deg)}
+.sec>summary .ix{font:600 11px/1 var(--mono);color:var(--accent);background:var(--accent-soft);border-radius:5px;padding:4px 6px;min-width:26px;text-align:center}
+.body{padding:4px 14px 16px;display:flex;flex-direction:column;gap:11px}
+.guide{background:var(--field);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:7px;padding:8px 10px;font-size:11.5px;color:var(--muted);line-height:1.45}
+.guide b{color:var(--accent);font-family:var(--mono);font-size:10.5px;letter-spacing:.3px}
+.seg2{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg2 button{background:var(--field);border:none;padding:7px 12px;cursor:pointer;font-size:12.5px;color:var(--muted);font-weight:600}
+.seg2 button.on{background:var(--accent);color:var(--accent-ink)}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:500}
+.f{display:flex;flex-direction:column}
+input[type=text],input[type=date],textarea,select{width:100%;background:var(--field);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px}
+textarea{resize:vertical;min-height:52px;line-height:1.45}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+/* repeatable rows */
+.rows{display:flex;flex-direction:column;gap:9px}
+.row{border:1px solid var(--line);border-radius:9px;padding:10px;background:var(--field);position:relative}
+.row.pxx{border-left:3px solid var(--mfr)}
+.row.cuxx{border-left:3px solid var(--usr)}
+.row .rm{position:absolute;top:7px;right:7px;background:none;border:none;color:var(--muted);cursor:pointer;padding:2px;border-radius:5px;line-height:0}
+.row .rm:hover{color:#c0392b}
+.row .rid{font:600 11px/1 var(--mono);color:var(--muted);margin-bottom:7px;display:inline-block}
+.add{align-self:flex-start;background:none;border:1px dashed var(--line);color:var(--muted);border-radius:8px;padding:6px 11px;cursor:pointer;font-size:12.5px}
+.add:hover{border-color:var(--accent);color:var(--accent)}
+.body select{width:100%;background:var(--field);border:1px dashed var(--line);border-radius:8px;padding:7px 10px;font-size:12.5px;color:var(--accent);cursor:pointer}
+.body select:hover{border-color:var(--accent)}
+.tag{font:600 10px/1 var(--mono);padding:3px 5px;border-radius:4px;background:var(--accent-soft);color:var(--accent);text-transform:uppercase;letter-spacing:.4px}
+.tag.mfr{background:var(--mfr-soft);color:var(--mfr)}
+.tag.usr{background:var(--usr-soft);color:var(--usr)}
+.hint{font-size:11px;color:var(--muted)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{background:var(--field);border:none;padding:6px 10px;cursor:pointer;font-size:12px;color:var(--muted)}
+.seg button.on{background:var(--accent);color:var(--accent-ink);font-weight:600}
+
+/* ---- document preview ---- */
+.doc{background:var(--paper);color:#1a1a1a;max-width:820px;margin:0 auto;border-radius:6px;box-shadow:var(--shadow);padding:52px 60px;font-family:var(--doc);font-size:14.5px;line-height:1.6}
+.doc h1{font-size:30px;font-weight:700;letter-spacing:-.3px;margin-bottom:2px}
+.doc .ver{font-family:var(--ui);font-size:11.5px;color:#6a6a6a;letter-spacing:.3px;margin-bottom:22px}
+.doc h2{font-size:19px;color:#0b6b80;font-weight:700;margin:30px 0 10px;padding-bottom:5px;border-bottom:1px solid #e6e2d6}
+.doc h3{font-size:14.5px;font-weight:700;margin:18px 0 7px;font-family:var(--ui)}
+.doc p{margin:0 0 10px}
+.doc .intro{color:#3a3a3a}
+.doc table{width:100%;border-collapse:collapse;margin:8px 0 14px;font-family:var(--ui);font-size:12.5px}
+.doc th,.doc td{border:1px solid #d9d5c8;padding:6px 9px;text-align:left;vertical-align:top}
+.doc th{background:#f0ede2;font-weight:600}
+.doc td.id{font-family:var(--mono);font-weight:600;white-space:nowrap;width:1%}
+.doc tr.pxx td.id{color:#2f7d5b}
+.doc tr.cuxx td.id{color:#a9660f}
+.doc .kv{width:100%;border-collapse:collapse;font-family:var(--ui);font-size:13px;margin-bottom:14px}
+.doc .kv td{border:1px solid #d9d5c8;padding:7px 10px}
+.doc .kv td:first-child{background:#f5f3ea;font-weight:600;width:38%}
+.doc .empty{color:#b3ae9d;font-style:italic}
+.doc .refnote{font-family:var(--ui);font-size:11px;color:#7a7768;background:#f5f3ea;border-left:3px solid #0b6b80;padding:7px 10px;margin:6px 0 14px}
+.doc .annexref{font:600 10px/1 var(--mono);color:#0b6b80}
+.chip{font:600 10px/1 var(--mono);padding:2px 5px;border-radius:4px;background:#eaf4f6;color:#0b6b80;margin-left:5px}
+.doc small.watermark{display:block;text-align:center;color:#b3ae9d;font-family:var(--ui);font-size:10.5px;margin-top:34px;border-top:1px solid #e6e2d6;padding-top:12px}
+
+footer{padding:14px 16px;color:var(--muted);font-size:11.5px;border-top:1px solid var(--line);background:var(--panel);text-align:center}
+
+@media (max-width:880px){
+  main{grid-template-columns:1fr;height:auto}
+  .tabbar{display:flex;position:sticky;top:53px;z-index:15;background:var(--panel);border-bottom:1px solid var(--line)}
+  .tabbar button{flex:1;background:none;border:none;padding:11px;cursor:pointer;color:var(--muted);font-weight:600;border-bottom:2px solid transparent}
+  .tabbar button.on{color:var(--accent);border-bottom-color:var(--accent)}
+  .pane{height:auto;overflow:visible}
+  .edit{border-right:none}
+  body.show-preview .edit{display:none}
+  body:not(.show-preview) .preview{display:none}
+  .doc{padding:32px 26px}
+}
+@media print{
+  header,.tabbar,.edit,footer,.note{display:none!important}
+  main{display:block;height:auto}
+  .preview{background:#fff;padding:0}
+  .doc{box-shadow:none;max-width:none;padding:0;border-radius:0}
+  .doc h2{break-after:avoid}
+  table{break-inside:auto}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 4v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V7z"/><path d="M9 12l2 2 4-4"/></svg></span>
+    <div><b>CRA Manual Builder</b><span>Value Chain Risk Institute · free</span></div>
+  </div>
+  <div class="tools">
+    <button class="btn" id="example"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>Load example</button>
+    <button class="btn" id="impSbom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Import SBOM</button>
+    <button class="btn" id="impJson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 9l-2 3 2 3M16 9l2 3-2 3"/></svg>Import JSON</button>
+    <button class="btn" id="expJson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5-5 5 5M12 5v10"/></svg>Export JSON</button>
+    <div class="seg2" id="mode" title="Output: full B2B manual or light end-user version"><button data-m="full" class="on">Full</button><button data-m="light">Light</button></div>
+    <button class="btn pri" id="print"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>Print / PDF</button>
+    <button class="btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z"/></svg></button>
+  </div>
+</header>
+
+<div class="tabbar">
+  <button id="tabEdit" class="on">Edit</button>
+  <button id="tabPrev">Preview</button>
+</div>
+
+<main>
+  <section class="pane edit" id="editPane"></section>
+  <section class="pane preview"><article class="doc" id="doc"></article></section>
+</main>
+
+<footer id="foot"></footer>
+
+<input type="file" id="fileJson" accept=".json,application/json" hidden>
+<input type="file" id="fileSbom" accept=".json,application/json" hidden>
+
+<script>
+"use strict";
+const $=(s,r=document)=>r.querySelector(s);
+const el=(t,a={},...k)=>{const n=document.createElement(t);for(const p in a){if(p==="class")n.className=a[p];else if(p==="html")n.innerHTML=a[p];else n.setAttribute(p,a[p]);}k.flat().forEach(c=>n.append(c));return n;};
+const esc=s=>(s??"").toString().replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- data model ---------- */
+const blank=()=>({
+  meta:{version:"0.1",date:""},
+  mfr:{name:"",address:"",email:"",website:""},
+  vuln:{contact:"",policy:""},
+  product:{name:"",tmv:"",additional:"",sub:[]},
+  functions:[],
+  interfaces:{physical:"",ethernet:[],internet:[]},
+  pxx:[], contexts:[], cuxx:[],
+  circ:[],
+  doc:{link:""},
+  support:{type:"",end:""},
+  sbom:{access:""},
+  life:{commissioning:"",secureUse:"",dataImpact:"",updateInstall:"",disableAuto:"",decommission:"",dataRemoval:"",integrator:""}
+});
+let M=blank();
+
+/* CRA Annex I Part I requirements (2b–2m) */
+const REQ1=[["2b","Secure by default configuration"],["2c","Secure update mechanism"],["2d","Protection from unauthorized access"],["2e","Confidentiality protection"],["2f","Integrity protection"],["2g","Data minimisation"],["2h","Availability protection"],["2i","Minimisation of negative impact on other services"],["2j","Attack surface limitation"],["2k","Impact reduction"],["2l","Recording and monitoring"],["2m","Secure data removal / transfer"]];
+const REQ2=[["1","Vulnerability identification & SBOM"],["2","Vulnerability remediation"],["3","Regular tests"],["4","Public vulnerability disclosure"],["5","Coordinated vulnerability disclosure"],["6","Vulnerability contact"],["7","Secure update distribution"],["8","Security update dissemination"]];
+
+let MODE="full"; /* full = B2B detailed manual · light = end-user version */
+
+/* Authoritative CRA guidance per chapter — verbatim citations from the Cyber Manual Movement GUIDANCE doc (v0.20) */
+const GUIDE={
+ "1":["Annex II (1)","The name, registered trade name or trademark of the manufacturer, plus postal address, an email or other digital contact, and where available the website."],
+ "2":["Annex II (2)","The single point of contact where vulnerabilities can be reported, and where the manufacturer's coordinated-vulnerability-disclosure policy can be found."],
+ "3":["Annex II (3)","Name, type, and any additional information that uniquely identifies the product. Components are optional but let you reference them throughout the document (e.g. a Digital Product Passport)."],
+ "4":["Annex II (4)","The intended purpose = context + functions + conditions of use. Functions are abstract outcomes (\"use cases\"), not features. Note: the \"install security updates\" function is CRA-mandatory (Annex I 2c) — include it for every product, always ancillary. One product has one core functionality (it sets the Annex III/IV conformity regime); everything else is ancillary. Security Properties (Pxx) live inside the product boundary (manufacturer's responsibility); Conditions of Use (CUxx) live in the context (user's responsibility). Both should stem from your risk assessment."],
+ "5":["Annex II (5)","Any known or foreseeable circumstance — including reasonably foreseeable misuse — that may lead to significant cybersecurity risk. These are outputs of the risk assessment: typically what the user can trigger by changing the product/context or by being attacked."],
+ "6":["Annex II (6)","Where applicable, the internet address for the EU Declaration of Conformity. Link to the most current version for this exact product."],
+ "7":["Annex II (7)","The type of technical security support offered, and the end date of the support period during which users can expect vulnerabilities handled and updates provided. The end date may live here or elsewhere (e.g. a product website)."],
+ "8":["Annex II (8a–8e, f)","Detailed instructions (or a link to them) for: secure commissioning & lifetime use (8a); how changes affect data security (8b); installing security updates (8c); secure decommissioning & data removal (8d); disabling the automatic-update default (8e); and, where the product is integrated into others, integrator guidance to meet Annex I & document per Annex V (f)."],
+ "9":["Annex II (9)","Optional. If you make the SBOM available, information on where it can be accessed. (Note: Annex I Part II still requires you to draw up an SBOM covering at least top-level dependencies in a machine-readable format.)"]
+};
+
+/* Vetted example text from the Cyber Manual Movement BOILERPLATE doc (v0.20). Pxx/CUxx carry the CRA refs the boilerplate pre-mapped, so inserting one auto-fills the crosswalk. */
+const BOILER={
+ functions:[
+  {label:"Communicate with other users",title:"Communicate with other users",desc:"",kind:"core"},
+  {label:"Access information and services",title:"Access information and services",desc:"",kind:"core"},
+  {label:"Run third-party applications",title:"Run third-party applications",desc:"",kind:"ancillary"},
+  {label:"Browse the internet",title:"Browse the internet",desc:"",kind:"ancillary"},
+  {label:"Program a PLC",title:"Program a PLC",desc:"",kind:"core"},
+  {label:"Inform users of unusual events",title:"Inform users of unusual events",desc:"",kind:"ancillary"},
+  {label:"Troubleshoot from remote",title:"Troubleshoot from remote",desc:"",kind:"ancillary"},
+  {label:"Install security updates (CRA-mandatory)",title:"Install security updates",desc:"New security updates are automatically downloaded from <LINK> and installed after user confirmation.",kind:"ancillary"},
+  {label:"Install security updates manually",title:"Install security updates manually",desc:"Security updates can be downloaded from <LINK> and installed manually by the user.",kind:"ancillary"}],
+ pxx:[
+  {label:"Password protection",title:"Password protection",comp:"",desc:"<Function / component XXX> is password protected. Strong passwords are enforced (password complexity requirements can be set by role “admin”).",refs:"2d,2e"},
+  {label:"User notification on file change",title:"User notification in case file changes",comp:"",desc:"Stored <XXX> files are checked regularly and users are notified as soon as a file change occurs that hasn’t been initiated by the user.",refs:"2f"},
+  {label:"Malware protection",title:"Malware protection",comp:"",desc:"Component <XXX> uses malware protection.",refs:"2f"},
+  {label:"Disable unused USB ports",title:"Disabling of unused USB ports",comp:"",desc:"Any unused USB ports are disabled by default. They can temporarily be enabled e.g. for security updates via USB (see <function XXX>).",refs:"2j"},
+  {label:"Tamper-evident shipping seal",title:"Tamper-evident shipping seal",comp:"",desc:"To guarantee supply chain security and product integrity, this device is delivered with a tamper-evident shipping seal, ensuring the product has not been subjected to unauthorized access or modification during transit.",refs:""}],
+ cuxx:[
+  {label:"Restrict physical access",title:"Restrict physical access",desc:"Only authorized persons should have physical access to the product. Depending on the environment: protect cables from physical access, install in a protected enclosure, and restrict access to the rooms where the product is operated.",refs:"2d,2j"},
+  {label:"Trusted environment",title:"Trusted environment",desc:"To ensure safe and reliable operation, the device must exclusively be installed and operated within a fully trusted, secured industrial environment.",refs:"2d"},
+  {label:"Protection of the operating environment",title:"Protection of the operating environment",desc:"The operator must ensure unauthorized third parties are prevented from accessing the product’s area of operation by technical or organizational measures, such as access controls on the premises.",refs:"2d,2j"},
+  {label:"Network security (risk assessment first)",title:"Network security",desc:"Before connecting the product to a network, the network must undergo a cybersecurity risk assessment and be protected by appropriate measures: segmentation, monitoring, restriction of (remote) access, secure authentication, packet filtering, and malware detection.",refs:"2d"},
+  {label:"No local admin accounts",title:"No local admin accounts",desc:"Administrative rights are assigned exclusively through the central identity management system. Only centrally managed and authenticated user accounts are permitted to access <component XXX>.",refs:"2b,2d,2j,2k"},
+  {label:"Use of secure passwords",title:"Use of secure passwords",desc:"The operator must ensure appropriately secure passwords are used at all times, and that passwords for access to the product are made available only to authorized persons.",refs:"2d"},
+  {label:"Regular integrity checks",title:"Regular integrity checks",desc:"Regular code integrity checks must be performed to ensure only verified, unchanged code is executed. This lies outside the product boundary and must be fulfilled by the operator.",refs:"2f"},
+  {label:"Protection of transmission media",title:"Protection of transmission media",desc:"The transmission media used (e.g., ethernet cables) must be protected against access by unauthorized third parties via technical or organizational measures, e.g., access controls or secure cable ducts.",refs:"2d,2e,2f"},
+  {label:"Network security for data in transit (legacy protocols)",title:"Network security measures to protect data in transit",desc:"Because this device uses legacy communication protocols (e.g., FOUNDATION Fieldbus, PROFIBUS, HART) which lack native encryption, the facility operator is fully responsible for implementing independent network security measures.",refs:"2e,2f"},
+  {label:"No identification of persons",title:"No identification of persons",desc:"The product does not have sufficient capabilities to secure data that could identify persons. Its input field or camera field of view must not be positioned so that identifiable persons are captured.",refs:"2g"},
+  {label:"Temporary internet use",title:"Temporary internet use",desc:"The webserver built into the product must be switched off when not in use.",refs:"2j"}],
+ circ:[
+  {label:"Updates from untrusted source",title:"Download of security updates from untrusted source",ref:"Install security updates manually",misuse:"Software updates must only be downloaded from the manufacturer website <LINK>. The user must verify the URL is correct and use the provided hash to assure the integrity of the update file.",risk:"Security updates from an untrusted source can contain hidden malware. In the worst case such malware may manipulate programs stored on the engineering host, which are then unknowingly pushed to production."}],
+ updateInstall:[
+  {label:"Firmware updates by manufacturer only",text:"To maintain device security and operational integrity, all firmware updates must be performed exclusively by authorized <MANUFACTURER> personnel. Customers are prohibited from installing firmware themselves."},
+  {label:"Hardware exchange instead of updates",text:"In case of a critical exploitable vulnerability, the product will be exchanged free of charge. For the hardware exchange, please contact <CONTACT DETAILS>."}],
+ disableAuto:[
+  {label:"No automatic updates (industrial)",text:"Due to the intended use in industrial settings, the product does not include an automatic update mechanism. The operator should regularly check for available updates and install them based on a risk assessment."}],
+ decommission:[
+  {label:"PUK reset before decommissioning",text:"Before decommissioning, use the PUK to reset all passwords to their factory default values and restore all settings to the factory configuration, to prevent unauthorized access to retained device data or security-related parameters."}]
+};
+
+function boilerSelect(container,items,apply,has){
+  const avail=has?items.filter(s=>!has(s)):items;      /* hide already-inserted snippets — prevents duplicates */
+  if(!avail.length)return;
+  const sel=el("select",{"aria-label":"Insert example text"});
+  sel.append(el("option",{value:""},"＋ Insert example text (movement boilerplate)…"));
+  avail.forEach((it,i)=>sel.append(el("option",{value:String(i)},it.label)));
+  sel.addEventListener("change",()=>{if(sel.value==="")return;apply(avail[+sel.value]);sel.value="";buildForm();render();});
+  container.append(sel);
+}
+
+/* ---------- example product ---------- */
+function example(){
+  const m=blank();
+  m.meta={version:"1.0",date:"2026-07-07"};
+  m.mfr={name:"Helios Industrial GmbH",address:"Industriestraße 14, 40476 Düsseldorf, Germany",email:"security@helios-industrial.example",website:"https://helios-industrial.example"};
+  m.vuln={contact:"psirt@helios-industrial.example",policy:"https://helios-industrial.example/security/coordinated-disclosure"};
+  m.product={name:"AeroSense AS-200",tmv:"Environmental sensor gateway / AS-200 / HW rev C, FW 4.2",additional:"Class I important product (Annex III). Sold B2B to building-automation integrators.",
+    sub:[{id:"SC-01",title:"AS-200 sensor head (temperature, humidity, VOC)"},{id:"SC-02",title:"Gateway module with Ethernet + TLS stack"}]};
+  m.functions=[
+    {id:"F-01",title:"Telemetry publishing",desc:"Publishes environmental readings over MQTT/TLS to the customer's broker.",kind:"core"},
+    {id:"F-02",title:"Local web configuration",desc:"HTTPS admin UI for commissioning; disabled by default after setup.",kind:"ancillary"},
+    {id:"F-03",title:"Install security updates",desc:"New security updates are automatically downloaded from updates.helios-industrial.example and installed after operator confirmation.",kind:"ancillary"}];
+  m.interfaces={physical:"1× RJ45 Ethernet, 1× USB-C (service only), 1× reset button.",
+    ethernet:[{service:"MQTTS",eth:"eth0",port:"8883",proto:"TCP",dir:"outgoing",func:"F-01 telemetry"},{service:"HTTPS admin",eth:"eth0",port:"443",proto:"TCP",dir:"incoming",func:"F-02 config"}],
+    internet:[{url:"updates.helios-industrial.example",eth:"eth0",port:"443",proto:"TCP",dir:"outgoing",func:"F-03 security updates"}]};
+  m.pxx=[
+    {id:"P01",comp:"Gateway module",title:"TLS 1.3 mutual authentication",desc:"All external connections use TLS 1.3 with client-certificate authentication; no plaintext fallback.",refs:"2e,2f"},
+    {id:"P02",comp:"Gateway module",title:"Signed firmware & secure boot",desc:"Firmware images are signed; the bootloader refuses unsigned images. Rollback protection enforced.",refs:"2c,2f"},
+    {id:"P03",comp:"AS-200",title:"No default credentials",desc:"First boot forces the operator to set a unique admin credential; there is no shared default password.",refs:"2b,2d"},
+    {id:"P04",comp:"Gateway module",title:"Minimal open ports",desc:"Only the ports listed in Interfaces are open; the admin UI closes automatically after commissioning.",refs:"2j"},
+    {id:"P05",comp:"AS-200",title:"Security event logging",desc:"Authentication, configuration change, and update events are logged locally and exportable via syslog.",refs:"2l"}];
+  m.contexts=[{id:"C01",title:"Segmented building-automation network",desc:"Deployed on a dedicated OT VLAN behind the customer's firewall, no direct internet exposure except the update endpoint."}];
+  m.cuxx=[
+    {id:"CU01",ctx:"C01",comp:"Network",title:"Firewall egress allow-list",desc:"The operator must restrict outbound traffic to the MQTT broker and the update endpoint only.",refs:"2d,2j"},
+    {id:"CU02",ctx:"C01",comp:"Network",title:"Apply security updates promptly",desc:"The operator confirms and applies security updates within the vendor-defined window to remain CRA-conformant.",refs:"2c"}];
+  m.circ=[{title:"Update endpoint unreachable",ref:"F-03",misuse:"If the operator blocks the update endpoint on the firewall, security updates cannot be delivered.",risk:"The device runs on outdated firmware with known vulnerabilities; confidentiality and integrity of telemetry may be compromised."}];
+  m.doc={link:"https://helios-industrial.example/compliance/as-200-eu-doc.pdf"};
+  m.support={type:"Firmware security updates delivered via the update endpoint (Function F-03).",end:"2033-12-31"};
+  m.sbom={access:"A CycloneDX SBOM for each firmware release is available at https://helios-industrial.example/sbom/as-200 (access on request for B2B customers)."};
+  m.life={commissioning:"Connect on the OT VLAN, set the unique admin credential on first boot, then disable the local web UI.",
+    secureUse:"Operate only within the intended context (C01). Keep the firewall egress allow-list current (CU01).",
+    dataImpact:"See circumstance: blocking the update endpoint prevents security updates.",
+    updateInstall:"Function F-03 downloads updates automatically; the operator confirms installation. Manual images are available at the update endpoint.",
+    disableAuto:"Automatic download can be disabled in the admin UI; manual installation is then the operator's responsibility.",
+    decommission:"Trigger factory reset (hold reset 10s) to wipe credentials and stored configuration before disposal.",
+    dataRemoval:"Factory reset performs a cryptographic erase of stored keys and settings.",
+    integrator:"Integrators must expose only the ports in the Interfaces section and pass through the update endpoint."};
+  return m;
+}
+
+/* ---------- form builder ---------- */
+function field(label,val,on,{ta=false,type="text",ph=""}={}){
+  const f=el("div",{class:"f"});
+  f.append(el("label",{},label));
+  const i=ta?el("textarea",{}):el("input",{type});
+  if(ph)i.setAttribute("placeholder",ph);
+  i.value=val||""; i.addEventListener("input",()=>{on(i.value);render();});
+  f.append(i);return f;
+}
+function repeat(container,list,factory,addLabel,mk){
+  const rows=el("div",{class:"rows"});
+  list.forEach((item,i)=>rows.append(factory(item,i)));
+  const add=el("button",{class:"add"},"+ "+addLabel);
+  add.addEventListener("click",()=>{list.push(mk());buildForm();render();});
+  container.append(rows,add);
+}
+function rmBtn(list,i){const b=el("button",{class:"rm",title:"Remove","aria-label":"Remove"});b.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>';b.addEventListener("click",()=>{list.splice(i,1);buildForm();render();});return b;}
+
+function sec(ix,title,openState,build){
+  const d=el("details",{class:"sec"}); if(openState)d.setAttribute("open","");
+  const s=el("summary",{});
+  s.append(el("span",{class:"ix"},ix),el("span",{},title),el("span",{class:"chev",html:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>'}));
+  const b=el("div",{class:"body"});
+  if(GUIDE[ix])b.append(el("div",{class:"guide",html:`<b>CRA ${esc(GUIDE[ix][0])}</b> · ${esc(GUIDE[ix][1])}`}));
+  build(b); d.append(s,b); return d;
+}
+
+function buildForm(){
+  const P=$("#editPane"); P.innerHTML="";
+  P.append(el("div",{class:"credit",html:'This tool populates the <strong>Cyber Manual Movement’s</strong> CRA “Information &amp; instructions to the user” template (v0.20). The template, guidance and boilerplate are the work of the <strong>Cyber Manual Movement</strong> working group. This free populator is built on that template by the <strong>Value Chain Risk Institute</strong> and released CC BY 4.0 — it does not replace or claim the group’s template.'}));
+  P.append(el("div",{class:"note",html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 4v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V7z"/></svg><div>Everything stays in your browser — nothing is uploaded. Fill the form and the CRA <b>Information &amp; instructions to the user</b> document builds itself on the right. <span class="tag mfr">Pxx</span> = manufacturer-controlled, <span class="tag usr">CUxx</span> = user-controlled.</div>'}));
+
+  P.append(sec("1","Manufacturer information",true,b=>{
+    b.append(field("Manufacturer",M.mfr.name,v=>M.mfr.name=v));
+    b.append(field("Postal address",M.mfr.address,v=>M.mfr.address=v));
+    const g=el("div",{class:"grid2"});g.append(field("E-mail address",M.mfr.email,v=>M.mfr.email=v),field("Website",M.mfr.website,v=>M.mfr.website=v));b.append(g);
+  }));
+
+  P.append(sec("2","Reporting vulnerabilities",false,b=>{
+    b.append(field("Point of contact for vulnerabilities",M.vuln.contact,v=>M.vuln.contact=v,{ph:"psirt@…"}));
+    b.append(field("Link to coordinated disclosure policy",M.vuln.policy,v=>M.vuln.policy=v));
+    b.append(el("div",{class:"hint"},"CRA Annex I Part II (5)(6) — coordinated disclosure & contact."));
+  }));
+
+  P.append(sec("3","Product identification",false,b=>{
+    b.append(field("Product name",M.product.name,v=>M.product.name=v));
+    b.append(field("Product type / model / version",M.product.tmv,v=>M.product.tmv=v));
+    b.append(field("Additional information",M.product.additional,v=>M.product.additional=v,{ta:true}));
+    b.append(el("label",{},"Sub-components [optional]"));
+    repeat(b,M.product.sub,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(M.product.sub,i),el("span",{class:"rid"},"SC-"+String(i+1).padStart(2,"0")));
+      r.append(field("Title & description",it.title,v=>it.title=v));return r;},"Add sub-component",()=>({id:"",title:""}));
+  }));
+
+  P.append(sec("4","Intended purpose & security properties",false,b=>{
+    b.append(el("h3",{},"Product functions"));
+    repeat(b,M.functions,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(M.functions,i),el("span",{class:"rid"},"F-"+String(i+1).padStart(2,"0")));
+      r.append(field("Title",it.title,v=>it.title=v));
+      r.append(field("Description",it.desc,v=>it.desc=v,{ta:true}));
+      const seg=el("div",{class:"seg"});["core","ancillary"].forEach(k=>{const btn=el("button",{class:it.kind===k?"on":""},k);btn.addEventListener("click",()=>{it.kind=k;buildForm();render();});seg.append(btn);});
+      r.append(el("label",{},"Core / ancillary functionality"),seg);return r;},"Add function",()=>({title:"",desc:"",kind:"core"}));
+    boilerSelect(b,BOILER.functions,s=>M.functions.push({title:s.title,desc:s.desc||"",kind:s.kind||"core"}),s=>M.functions.some(f=>f.title===s.title));
+
+    b.append(el("h3",{},"Interfaces"));
+    b.append(field("Physical interfaces",M.interfaces.physical,v=>M.interfaces.physical=v,{ta:true,ph:"e.g. 1× RJ45 Ethernet, 1× USB-C…"}));
+    b.append(el("label",{},"Ethernet / network interfaces"));
+    repeat(b,M.interfaces.ethernet,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(M.interfaces.ethernet,i));
+      const g=el("div",{class:"grid3"});g.append(field("Service/protocol",it.service,v=>it.service=v),field("Port",it.port,v=>it.port=v),field("TCP/UDP",it.proto,v=>it.proto=v));r.append(g);
+      const g2=el("div",{class:"grid3"});g2.append(field("Interface",it.eth,v=>it.eth=v),field("In/out",it.dir,v=>it.dir=v),field("Function",it.func,v=>it.func=v));r.append(g2);return r;},"Add Ethernet interface",()=>({service:"",eth:"",port:"",proto:"",dir:"",func:""}));
+    b.append(el("label",{},"Internet connection (cloud endpoints)"));
+    repeat(b,M.interfaces.internet,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(M.interfaces.internet,i));
+      const g=el("div",{class:"grid2"});g.append(field("URL",it.url,v=>it.url=v),field("Port",it.port,v=>it.port=v));r.append(g);
+      const g2=el("div",{class:"grid3"});g2.append(field("Interface",it.eth,v=>it.eth=v),field("In/out",it.dir,v=>it.dir=v),field("Function",it.func,v=>it.func=v));r.append(g2);return r;},"Add internet endpoint",()=>({url:"",eth:"",port:"",proto:"TCP",dir:"outgoing",func:""}));
+
+    b.append(el("h3",{},"Security Properties (Pxx) — manufacturer responsibility"));
+    repeat(b,M.pxx,(it,i)=>{const r=el("div",{class:"row pxx"});r.append(rmBtn(M.pxx,i),el("span",{class:"rid"},"P"+String(i+1).padStart(2,"0")));
+      const g=el("div",{class:"grid2"});g.append(field("Title",it.title,v=>it.title=v),field("Affected component(s)",it.comp,v=>it.comp=v));r.append(g);
+      r.append(field("Description",it.desc,v=>it.desc=v,{ta:true}));
+      r.append(field("Satisfies CRA Annex I Part I (e.g. 2c,2f)",it.refs,v=>it.refs=v,{ph:"2b, 2c…"}));return r;},"Add security property",()=>({id:"",comp:"",title:"",desc:"",refs:""}));
+    boilerSelect(b,BOILER.pxx,s=>M.pxx.push({comp:s.comp||"",title:s.title,desc:s.desc,refs:s.refs||""}),s=>M.pxx.some(p=>p.title===s.title));
+
+    b.append(el("h3",{},"Context of use"));
+    repeat(b,M.contexts,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(M.contexts,i),el("span",{class:"rid"},"C"+String(i+1).padStart(2,"0")));
+      r.append(field("Title",it.title,v=>it.title=v));r.append(field("Description",it.desc,v=>it.desc=v,{ta:true}));return r;},"Add context",()=>({id:"",title:"",desc:""}));
+
+    b.append(el("h3",{},"Conditions of Use (CUxx) — user responsibility"));
+    repeat(b,M.cuxx,(it,i)=>{const r=el("div",{class:"row cuxx"});r.append(rmBtn(M.cuxx,i),el("span",{class:"rid"},"CU"+String(i+1).padStart(2,"0")));
+      const g=el("div",{class:"grid2"});g.append(field("Title",it.title,v=>it.title=v),field("Context / component",it.ctx,v=>it.ctx=v));r.append(g);
+      r.append(field("Description",it.desc,v=>it.desc=v,{ta:true}));
+      r.append(field("Relates to CRA Annex I Part I",it.refs,v=>it.refs=v,{ph:"2c, 2d…"}));return r;},"Add condition of use",()=>({id:"",ctx:"",comp:"",title:"",desc:"",refs:""}));
+    boilerSelect(b,BOILER.cuxx,s=>M.cuxx.push({ctx:s.ctx||"",comp:"",title:s.title,desc:s.desc,refs:s.refs||""}),s=>M.cuxx.some(c=>c.title===s.title));
+  }));
+
+  P.append(sec("5","Circumstances leading to significant cyber risk",false,b=>{
+    repeat(b,M.circ,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(M.circ,i));
+      const g=el("div",{class:"grid2"});g.append(field("Title",it.title,v=>it.title=v),field("Reference function",it.ref,v=>it.ref=v));r.append(g);
+      r.append(field("Reasonably foreseeable misuse / circumstance",it.misuse,v=>it.misuse=v,{ta:true}));
+      r.append(field("Resulting cybersecurity risk",it.risk,v=>it.risk=v,{ta:true}));return r;},"Add circumstance",()=>({title:"",ref:"",misuse:"",risk:""}));
+    boilerSelect(b,BOILER.circ,s=>M.circ.push({title:s.title,ref:s.ref||"",misuse:s.misuse||"",risk:s.risk||""}),s=>M.circ.some(c=>c.title===s.title));
+  }));
+
+  P.append(sec("6","EU Declaration of Conformity",false,b=>b.append(field("Link to EU Declaration of Conformity",M.doc.link,v=>M.doc.link=v))));
+
+  P.append(sec("7","Security support & end of support",false,b=>{
+    b.append(field("Type of technical security support",M.support.type,v=>M.support.type=v,{ta:true}));
+    b.append(field("End of support period (date, link, or how to find it)",M.support.end,v=>M.support.end=v,{ph:"MM/YYYY or a link"}));
+  }));
+
+  P.append(sec("8","Secure lifecycle instructions",false,b=>{
+    b.append(field("a) Secure commissioning / setup",M.life.commissioning,v=>M.life.commissioning=v,{ta:true}));
+    b.append(field("a) Secure use",M.life.secureUse,v=>M.life.secureUse=v,{ta:true}));
+    b.append(field("b) Impact of changes on security of data",M.life.dataImpact,v=>M.life.dataImpact=v,{ta:true}));
+    b.append(field("c) Installation of security updates",M.life.updateInstall,v=>M.life.updateInstall=v,{ta:true}));
+    boilerSelect(b,BOILER.updateInstall,s=>M.life.updateInstall=(M.life.updateInstall?M.life.updateInstall+"\n":"")+s.text,s=>(M.life.updateInstall||"").includes(s.text));
+    b.append(field("e) Disabling automatic update installation",M.life.disableAuto,v=>M.life.disableAuto=v,{ta:true}));
+    boilerSelect(b,BOILER.disableAuto,s=>M.life.disableAuto=(M.life.disableAuto?M.life.disableAuto+"\n":"")+s.text,s=>(M.life.disableAuto||"").includes(s.text));
+    b.append(field("d) Secure decommissioning",M.life.decommission,v=>M.life.decommission=v,{ta:true}));
+    boilerSelect(b,BOILER.decommission,s=>M.life.decommission=(M.life.decommission?M.life.decommission+"\n":"")+s.text,s=>(M.life.decommission||"").includes(s.text));
+    b.append(field("d) Secure data removal",M.life.dataRemoval,v=>M.life.dataRemoval=v,{ta:true}));
+    b.append(field("f) Integration guidance for system integrators",M.life.integrator,v=>M.life.integrator=v,{ta:true}));
+  }));
+
+  P.append(sec("9","Software Bill of Materials",false,b=>b.append(field("Access to SBOM (description or link)",M.sbom.access,v=>M.sbom.access=v,{ta:true}))));
+
+  const g=el("div",{class:"grid2",style:"margin-top:4px"});g.append(field("Document version",M.meta.version,v=>M.meta.version=v),field("Date",M.meta.date,v=>M.meta.date=v,{type:"date"}));
+  P.append(el("details",{class:"sec"},el("summary",{},el("span",{class:"ix"},"·"),"Document metadata"),el("div",{class:"body"},g)));
+}
+
+/* ---------- document renderer ---------- */
+const or=(v,ph)=>v&&v.trim()?esc(v):`<span class="empty">${ph}</span>`;
+function refChips(refs){if(!refs)return"";return refs.split(",").map(r=>r.trim()).filter(Boolean).map(r=>`<span class="chip">${esc(r)}</span>`).join("");}
+function crosswalk(reqs,part){
+  return reqs.map(([ref,name])=>{
+    const ps=M.pxx.filter(p=>(p.refs||"").split(",").map(x=>x.trim()).includes(ref)).map((p,i)=>"P"+String(M.pxx.indexOf(p)+1).padStart(2,"0"));
+    const cs=part===1?M.cuxx.filter(c=>(c.refs||"").split(",").map(x=>x.trim()).includes(ref)).map(c=>"CU"+String(M.cuxx.indexOf(c)+1).padStart(2,"0")):[];
+    const cells=[...ps.map(x=>`<span style="color:#2f7d5b;font-family:var(--mono);font-weight:600">${x}</span>`),...cs.map(x=>`<span style="color:#a9660f;font-family:var(--mono);font-weight:600">${x}</span>`)];
+    return `<tr><td>${esc(name)}</td><td class="id"><span class="annexref">${ref}</span></td><td>${cells.length?cells.join(", "):'<span class="empty">—</span>'}</td></tr>`;
+  }).join("");
+}
+function renderLight(d){
+  const orL=(v,ph)=>v&&v.trim()?esc(v):`<span class="empty">${ph}</span>`;
+  const coreFns=M.functions.filter(f=>f.kind==="core");
+  const fnList=(coreFns.length?coreFns:M.functions).map(f=>`<li><b>${orL(f.title,"function")}</b>${f.desc?" — "+esc(f.desc):""}</li>`).join("")||`<li class="empty">Add product functions</li>`;
+  const cuList=M.cuxx.map(c=>`<li><b>${orL(c.title,"—")}</b>${c.desc?" — "+esc(c.desc):""}</li>`).join("")||`<li class="empty">Add the conditions the user must meet</li>`;
+  d.innerHTML=`
+  <h1>Security information</h1>
+  <div class="ver">${orL(M.product.name,"Product name")} · Version ${orL(M.meta.version,"X.Y")} · ${orL(M.meta.date,"date")}</div>
+  <p class="intro">This is the light version of the information &amp; instructions to the user required by the EU Cyber Resilience Act (Regulation (EU) 2024/2847), written to be read quickly. It tells you what the product is for, how to keep it secure, and how long it is supported.</p>
+
+  <h2>About the product</h2>
+  <table class="kv"><tr><td>Product</td><td>${orL(M.product.name,"—")}</td></tr><tr><td>Type / model / version</td><td>${orL(M.product.tmv,"—")}</td></tr><tr><td>Made by</td><td>${orL(M.mfr.name,"—")}${M.mfr.website?` · <a href="${esc(M.mfr.website)}">${esc(M.mfr.website)}</a>`:""}</td></tr></table>
+
+  <h2>What it does</h2>
+  <ul>${fnList}</ul>
+
+  <h2>Keeping it secure — what you need to do</h2>
+  <p>The manufacturer has built security into the product. For it to stay secure in your environment, <b>you</b> are responsible for the following:</p>
+  <ul>${cuList}</ul>
+
+  <h2>Security updates &amp; support</h2>
+  <p><b>How updates work:</b> ${orL(M.support.type||M.life.updateInstall,"—")}</p>
+  <p><b>Supported until:</b> ${orL(M.support.end,"—")} — after this date, security updates may stop.</p>
+
+  <h2>Reporting a security problem</h2>
+  <p>If you find a vulnerability, contact: ${orL(M.vuln.contact,"—")}${M.vuln.policy?` · <a href="${esc(M.vuln.policy)}">disclosure policy</a>`:""}</p>
+
+  <h2>Disposing of the product securely</h2>
+  <p>${orL(M.life.decommission||M.life.dataRemoval,"—")}</p>
+
+  ${M.sbom.access?`<h2>Software Bill of Materials</h2><p>${esc(M.sbom.access)}</p>`:""}
+  ${M.doc.link?`<p style="margin-top:14px"><b>EU Declaration of Conformity:</b> <a href="${esc(M.doc.link)}">${esc(M.doc.link)}</a></p>`:""}
+
+  <small class="watermark">Light version · Based on the Cyber Manual Movement’s CRA template (v0.20). Generated with the VCRI CRA Manual Builder, a free populator by the Value Chain Risk Institute. Data stays in your browser. CC BY 4.0 · valuechainrisk.org</small>`;
+}
+
+function render(){
+  const d=$("#doc");
+  if(MODE==="light"){renderLight(d);return;}
+  const subRows=M.product.sub.map((s,i)=>`<tr><td class="id">SC-${String(i+1).padStart(2,"0")}</td><td>${or(s.title,"—")}</td></tr>`).join("")||`<tr><td class="id">SC-01</td><td class="empty">Add sub-components if applicable</td></tr>`;
+  const funcRows=M.functions.map((f,i)=>`<tr><td class="id">F-${String(i+1).padStart(2,"0")}</td><td><b>${or(f.title,"function title")}</b><br>${or(f.desc,"description")}</td><td>${f.kind==="core"?"Core":"Ancillary"} functionality</td></tr>`).join("")||`<tr><td colspan="3" class="empty">Add product functions</td></tr>`;
+  const ethRows=M.interfaces.ethernet.map(x=>`<tr><td>${or(x.service,"—")}</td><td>${or(x.eth,"—")}</td><td>${or(x.port,"—")}</td><td>${or(x.proto,"—")}</td><td>${or(x.dir,"—")}</td><td>${or(x.func,"—")}</td></tr>`).join("");
+  const netRows=M.interfaces.internet.map(x=>`<tr><td>${or(x.url,"—")}</td><td>${or(x.eth,"—")}</td><td>${or(x.port,"—")}</td><td>${or(x.proto,"—")}</td><td>${or(x.dir,"—")}</td><td>${or(x.func,"—")}</td></tr>`).join("");
+  const pxxRows=M.pxx.map((p,i)=>`<tr class="pxx"><td class="id">P${String(i+1).padStart(2,"0")}</td><td>${or(p.comp,"—")}</td><td><b>${or(p.title,"property")}</b> ${refChips(p.refs)}<br>${or(p.desc,"description")}</td></tr>`).join("")||`<tr><td colspan="3" class="empty">Add security properties (manufacturer-implemented)</td></tr>`;
+  const ctxRows=M.contexts.map((c,i)=>`<tr><td class="id">C${String(i+1).padStart(2,"0")}</td><td>${or(c.title,"—")}${c.desc?": "+esc(c.desc):""}</td></tr>`).join("")||`<tr><td colspan="2" class="empty">Add contexts of use</td></tr>`;
+  const cuxxRows=M.cuxx.map((c,i)=>`<tr class="cuxx"><td class="id">CU${String(i+1).padStart(2,"0")}</td><td>${or(c.ctx,"—")}</td><td><b>${or(c.title,"condition")}</b> ${refChips(c.refs)}<br>${or(c.desc,"description")}</td></tr>`).join("")||`<tr><td colspan="3" class="empty">Add conditions of use (user responsibility)</td></tr>`;
+  const circHtml=M.circ.map((c,i)=>`<h3>Circumstance ${i+1}: ${or(c.title,"title")}</h3><p><b>Reference function:</b> ${or(c.ref,"—")}</p><p><b>Reasonably foreseeable misuse / circumstance:</b> ${or(c.misuse,"—")}</p><p><b>Resulting cybersecurity risk:</b> ${or(c.risk,"—")}</p>`).join("")||`<p class="empty">Add circumstances leading to significant cybersecurity risk.</p>`;
+
+  d.innerHTML=`
+  <h1>Information &amp; instructions to the user</h1>
+  <div class="ver">${or(M.product.name,"Product name")} · Version ${or(M.meta.version,"X.Y")} · ${or(M.meta.date,"date")}</div>
+  <p class="intro">This document provides information &amp; instructions to the user as required by the EU Cyber Resilience Act (CRA, Regulation (EU) 2024/2847). Its contents are in line with the CRA Annex II requirements. Reading and understanding this document is required to ensure the secure setup, use, and decommissioning of the product.</p>
+
+  <h2>1. Manufacturer information</h2>
+  <table class="kv"><tr><td>Manufacturer</td><td>${or(M.mfr.name,"—")}</td></tr><tr><td>Postal address</td><td>${or(M.mfr.address,"—")}</td></tr><tr><td>E-mail address</td><td>${or(M.mfr.email,"—")}</td></tr><tr><td>Website</td><td>${or(M.mfr.website,"—")}</td></tr></table>
+
+  <h2>2. Reporting vulnerabilities to the manufacturer</h2>
+  <table class="kv"><tr><td>Point of contact for vulnerabilities and coordinated disclosure</td><td>${or(M.vuln.contact,"—")}</td></tr><tr><td>Link to coordinated disclosure policy</td><td>${or(M.vuln.policy,"—")}</td></tr></table>
+
+  <h2>3. Product identification</h2>
+  <table class="kv"><tr><td>Product name</td><td>${or(M.product.name,"—")}</td></tr><tr><td>Product type / model / version</td><td>${or(M.product.tmv,"—")}</td></tr><tr><td>Additional information</td><td>${or(M.product.additional,"—")}</td></tr></table>
+  <h3>Product sub-components</h3>
+  <table><tr><th>ID</th><th>Title &amp; description</th></tr>${subRows}</table>
+
+  <h2>4. Intended purpose and security properties</h2>
+  <h3>Product functions</h3>
+  <table><tr><th>ID</th><th>Title &amp; description</th><th>Core / ancillary</th></tr>${funcRows}</table>
+  <h3>Product interfaces</h3>
+  <p><b>Physical interfaces:</b> ${or(M.interfaces.physical,"—")}</p>
+  ${ethRows?`<p><b>Ethernet interfaces:</b></p><table><tr><th>Service / protocol</th><th>Interface</th><th>Port</th><th>TCP/UDP</th><th>In/out</th><th>Function</th></tr>${ethRows}</table>`:""}
+  ${netRows?`<p><b>Internet connection</b> — access to the following URLs must be enabled:</p><table><tr><th>URL</th><th>Interface</th><th>Port</th><th>TCP/UDP</th><th>In/out</th><th>Function</th></tr>${netRows}</table>`:""}
+  <h3>Security Properties (Pxx)</h3>
+  <p>Security Properties are security requirements implemented <b>in the product</b> (within the product boundary). The manufacturer is responsible for implementing them.</p>
+  <table><tr><th>ID</th><th>Affected component(s)</th><th>Title &amp; description</th></tr>${pxxRows}</table>
+  <h3>Context</h3>
+  <table><tr><th>ID</th><th>Title &amp; description</th></tr>${ctxRows}</table>
+  <h3>Conditions of Use (CUxx)</h3>
+  <p>Conditions of Use are security requirements implemented in the product <b>context</b> (outside the product boundary). The <b>user</b> is responsible for meeting them to ensure secure use.</p>
+  <table><tr><th>ID</th><th>Context</th><th>Title &amp; description</th></tr>${cuxxRows}</table>
+
+  <h2>5. Circumstances leading to significant cybersecurity risk</h2>
+  ${circHtml}
+
+  <h2>6. EU Declaration of Conformity</h2>
+  <p>${M.doc.link?`Link to EU Declaration of Conformity: <a href="${esc(M.doc.link)}">${esc(M.doc.link)}</a>`:'<span class="empty">Provide a link to the EU Declaration of Conformity.</span>'}</p>
+
+  <h2>7. Security support and end of support period</h2>
+  <p><b>Type of technical security support:</b> ${or(M.support.type,"—")}</p>
+  <p><b>End of support period:</b> ${or(M.support.end,"—")}</p>
+
+  <h2>8. Secure lifecycle instructions</h2>
+  <h3>a) Secure commissioning / setup</h3><p>${or(M.life.commissioning,"—")}</p>
+  <h3>a) Secure use</h3><p>${or(M.life.secureUse,"—")}</p>
+  <h3>b) Impact of changes on security of data</h3><p>${or(M.life.dataImpact,"—")}</p>
+  <h3>c) Installation of security updates</h3><p>${or(M.life.updateInstall,"—")}</p>
+  <h3>e) Disabling automatic security update installation</h3><p>${or(M.life.disableAuto,"—")}</p>
+  <h3>d) Secure decommissioning</h3><p>${or(M.life.decommission,"—")}</p>
+  <h3>d) Secure data removal</h3><p>${or(M.life.dataRemoval,"—")}</p>
+  <h3>f) Integration guidance for system integrators</h3><p>${or(M.life.integrator,"—")}</p>
+
+  <h2>9. Software Bill of Materials (SBOM)</h2>
+  <p>${or(M.sbom.access,"Describe how the user can access the SBOM (per CRA Annex I Part II).")}</p>
+
+  <h2>Essential requirements reference — Annex I, Part I</h2>
+  <div class="refnote">Auto-generated crosswalk: each essential requirement is linked to the Security Properties (<span style="color:#2f7d5b">Pxx</span>, manufacturer) and Conditions of Use (<span style="color:#a9660f">CUxx</span>, user) that satisfy it — populated from the references you entered.</div>
+  <table><tr><th>Requirement</th><th>CRA ref</th><th>Pxx / CUxx</th></tr>${crosswalk(REQ1,1)}</table>
+
+  <h2>Essential requirements reference — Annex I, Part II</h2>
+  <table><tr><th>Requirement</th><th>CRA ref</th><th>Where addressed</th></tr>
+  <tr><td>Vulnerability identification &amp; SBOM</td><td class="id"><span class="annexref">1</span></td><td>See §9 (SBOM), §2 (contact)</td></tr>
+  <tr><td>Coordinated vulnerability disclosure</td><td class="id"><span class="annexref">5,6</span></td><td>See §2 (Reporting vulnerabilities)</td></tr>
+  <tr><td>Secure update distribution &amp; dissemination</td><td class="id"><span class="annexref">7,8</span></td><td>See §7 (Support) &amp; §8c (Update installation)</td></tr></table>
+
+  <small class="watermark">Based on the Cyber Manual Movement’s CRA “Information &amp; instructions to the user” template (v0.20). Generated with the VCRI CRA Manual Builder, a free populator by the Value Chain Risk Institute. Data stays in your browser. CC BY 4.0 · valuechainrisk.org</small>`;
+}
+
+/* ---------- SBOM import (CycloneDX / SPDX) ---------- */
+function importSbom(json){
+  let comps=[];
+  try{
+    if(Array.isArray(json.components))comps=json.components.map(c=>({name:c.name,version:c.version}));
+    else if(Array.isArray(json.packages))comps=json.packages.map(c=>({name:c.name,version:c.versionInfo}));
+  }catch(e){}
+  if(!comps.length){alert("No components found. Expected CycloneDX (.components[]) or SPDX (.packages[]).");return;}
+  M.product.sub=comps.slice(0,40).map((c,i)=>({id:"",title:`${c.name}${c.version?" "+c.version:""}`}));
+  const fmt=json.bomFormat||(json.spdxVersion?"SPDX":"SBOM");
+  M.sbom.access=`SBOM available in ${esc(fmt)} format (${comps.length} components). ${M.sbom.access||"Access on request; see product portal."}`;
+  buildForm();render();
+  alert(`Imported ${comps.length} components from the SBOM into product sub-components and §9.`);
+}
+
+/* ---------- wiring ---------- */
+$("#example").addEventListener("click",()=>{M=example();buildForm();render();});
+$("#print").addEventListener("click",()=>window.print());
+$("#expJson").addEventListener("click",()=>{
+  const blob=new Blob([JSON.stringify(M,null,2)],{type:"application/json"});
+  const a=el("a",{href:URL.createObjectURL(blob),download:(M.product.name||"cra-manual").replace(/\W+/g,"-").toLowerCase()+".cra.json"});a.click();URL.revokeObjectURL(a.href);
+});
+$("#impJson").addEventListener("click",()=>$("#fileJson").click());
+$("#fileJson").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{M=Object.assign(blank(),JSON.parse(r.result));buildForm();render();}catch(err){alert("Could not read that JSON file.");}};r.readAsText(f);e.target.value="";});
+$("#impSbom").addEventListener("click",()=>$("#fileSbom").click());
+$("#fileSbom").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{importSbom(JSON.parse(r.result));}catch(err){alert("Could not parse that SBOM JSON.");}};r.readAsText(f);e.target.value="";});
+
+/* theme */
+const root=document.documentElement;
+$("#theme").addEventListener("click",()=>{
+  const cur=root.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
+  root.setAttribute("data-theme",cur==="dark"?"light":"dark");
+});
+/* mobile tabs */
+$("#tabEdit").addEventListener("click",()=>{document.body.classList.remove("show-preview");$("#tabEdit").classList.add("on");$("#tabPrev").classList.remove("on");});
+$("#tabPrev").addEventListener("click",()=>{document.body.classList.add("show-preview");$("#tabPrev").classList.add("on");$("#tabEdit").classList.remove("on");});
+
+/* output mode: full B2B manual vs light end-user version */
+$("#mode").addEventListener("click",e=>{const b=e.target.closest("button[data-m]");if(!b)return;MODE=b.dataset.m;[...$("#mode").children].forEach(x=>x.classList.toggle("on",x===b));render();});
+
+$("#foot").innerHTML='Template, guidance &amp; boilerplate © the <strong>Cyber Manual Movement</strong> working group (v0.20). This free populator built on that template by the <strong>Value Chain Risk Institute</strong> · CC BY 4.0 · runs entirely in your browser.';
+
+buildForm();render();
+</script>
+</body>
+</html>
