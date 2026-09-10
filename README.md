@@ -7,6 +7,7 @@ Cyber Resilience Act (CRA) requires of every product with digital elements:
 |---|---|---|---|
 | **CRA Manual Builder** | Annex II — Information & instructions to the user | [valuechainrisk.org/cra-manual-builder](https://valuechainrisk.org/cra-manual-builder/) | [`/cra-manual-builder`](./cra-manual-builder) |
 | **TARA Builder** | Annex VII — product cybersecurity risk assessment | [valuechainrisk.org/tara](https://valuechainrisk.org/tara/) | [`/tara`](./tara) |
+| **Context & Conditions of Use Builder** | Cyber Manual ch. 2.2–2.5 (functions, context components, conditions of use, risks) + the diagrams | [valuechainrisk.org/cyber-manual/context](https://valuechainrisk.org/cyber-manual/context/) | [`/cyber-manual/context`](./cyber-manual/context) |
 
 Together they cover the pair: the user-facing manual, and the risk assessment
 behind it. Built for the small and mid-size manufacturers who cannot reach for
@@ -23,6 +24,15 @@ owns the template, the scenario libraries, and the worked examples.**
   "Information & instructions to the user" template (v0.20). The template and
   boilerplate are the working group's work; this repository does not republish
   them — it links to them and generates against them.
+- The **Context & Conditions of Use Builder** (added 2026-09-10) answers the
+  working group's hardest question, how much context and how many conditions
+  to write, by treating it as a chain rather than a judgment: a context
+  component exists only because a function needs it, a condition of use only
+  because a context component must satisfy it, a risk only as a condition not
+  met. Built to template v0.23; emits chapters 1.2.1, 2.2.1, 2.3.1, 2.4.1 and
+  2.5.1 in the template's column order, computes 2.7.2, and draws the optional
+  diagrams (2.2.2, 2.3.2, 2.4.2) from the same lists. Ships with the fictitious
+  Engineering PC example fully populated.
 - The **TARA Builder** is the Annex VII companion VCRI authored to complete the
   pair. Its methodology is informed by ISO/SAE 21434-style TARA practice; all
   rubric anchors are authored originally, with no text reproduced from paywalled
