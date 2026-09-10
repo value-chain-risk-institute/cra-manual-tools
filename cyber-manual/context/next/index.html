@@ -1,0 +1,685 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: CC-BY-4.0 · Value Chain Risk Institute · built on the Cyber Manual Movement template (structure per the working group's Engineering PC example v0.22, 2026-09-09) · https://github.com/value-chain-risk-institute/cra-manual-tools -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Context &amp; Conditions of Use Builder — Cyber Manual — VCRI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Free, in-browser tool for the Cyber Manual Movement template: derive context components, persons and zones from functions, attach conditions of use, and get every diagram from one picture. Nothing is uploaded.">
+<style>
+:root{
+  --ui:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --doc:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Code",Consolas,monospace;
+  --bg:#eaeef1; --panel:#ffffff; --paper:#fcfcf9;
+  --ink:#16212b; --muted:#5b6b78; --line:#d7dee3; --line2:#e8edf0;
+  --accent:#0b6b80; --accent-ink:#ffffff; --accent-soft:#e2f0f3;
+  --mfr:#2f7d5b; --mfr-soft:#e7f3ec; --usr:#a9660f; --usr-soft:#f6ecdc;
+  --fn:#3b5bb5; --fn-soft:#e6ebf8; --risk:#b3382c; --risk-soft:#f8e4e1;
+  --field:#f6f8f9; --shadow:0 1px 2px rgba(20,33,43,.06),0 8px 24px rgba(20,33,43,.06);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0d141a; --panel:#141d25; --paper:#f5f3ed;
+  --ink:#e7eef3; --muted:#93a3af; --line:#26333f; --line2:#1c2731;
+  --accent:#34b3cb; --accent-ink:#06222a; --accent-soft:#123039;
+  --mfr:#54c191; --mfr-soft:#12291f; --usr:#d69a4a; --usr-soft:#2c2211;
+  --fn:#8aa3e8; --fn-soft:#151f3a; --risk:#e8846f; --risk-soft:#3a1712;
+  --field:#0f1820; --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--accent)}
+header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.brand b{font-size:15px;letter-spacing:.2px}
+.brand span{color:var(--muted);font-size:12px}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:12.5px;line-height:1.2}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.small{padding:3px 8px;font-size:11.5px}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px;padding:14px 16px 40px;max-width:1700px;margin:0 auto}
+@media (max-width:1060px){.layout{grid-template-columns:1fr}}
+.col{min-width:0}
+.sticky{position:sticky;top:58px}
+.method{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:12px;box-shadow:var(--shadow)}
+.method h2{margin:0 0 6px;font-size:14px}
+.method p{margin:0 0 6px;color:var(--muted);font-size:12.5px}
+.method .rule{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;font-size:12.5px;margin-top:8px}
+.method .rule b{font-family:var(--mono);font-size:10.5px;letter-spacing:.3px;padding-top:2px;white-space:nowrap}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-bottom:12px;box-shadow:var(--shadow);overflow:hidden}
+.card > .hd{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line2);cursor:pointer;user-select:none}
+.card > .hd h3{margin:0;font-size:13.5px;display:flex;align-items:center;gap:8px}
+.card > .hd .n{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.card > .hd .step{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:11px;font-weight:700}
+.card > .bd{padding:10px 14px 12px}
+.card.collapsed > .bd{display:none}
+.tag{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.3px;padding:2px 6px;border-radius:4px;border:1px solid transparent}
+.tag.PC,.tag.SP,.tag.PI,.tag.PRODUCT{background:var(--mfr-soft);color:var(--mfr);border-color:color-mix(in srgb,var(--mfr) 35%,transparent)}
+.tag.CC,.tag.CU,.tag.CP,.tag.CZ{background:var(--usr-soft);color:var(--usr);border-color:color-mix(in srgb,var(--usr) 35%,transparent)}
+.tag.FC,.tag.LI{background:var(--fn-soft);color:var(--fn);border-color:color-mix(in srgb,var(--fn) 35%,transparent)}
+.tag.RI{background:var(--risk-soft);color:var(--risk);border-color:color-mix(in srgb,var(--risk) 35%,transparent)}
+.hint{font-size:12px;color:var(--muted);margin:0 0 8px}
+.item{border:1px solid var(--line2);border-radius:6px;padding:8px 10px;margin-bottom:8px;background:var(--field)}
+.item .row{display:grid;grid-template-columns:76px 1fr auto;gap:8px;align-items:start}
+.item .row + .row{margin-top:6px}
+.item input[type=text],.item textarea,.item select{width:100%;border:1px solid var(--line);border-radius:5px;padding:5px 7px;background:var(--panel);font-size:13px}
+.item textarea{min-height:44px;resize:vertical}
+.item .k{font-family:var(--mono);font-size:10px;color:var(--muted);text-align:right;padding:8px 0;letter-spacing:.3px;text-transform:uppercase}
+.item .sub{grid-column:2/3;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;font-size:12px;color:var(--muted)}
+.item .sub label{display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+.item .sub input[type=checkbox],.item .sub input[type=radio]{accent-color:var(--accent)}
+.item .sub .lbl{font-size:11px;letter-spacing:.3px;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.item .sub .addmini{border:1px dashed var(--line);border-radius:4px;padding:1px 6px;font-size:11px;cursor:pointer;background:transparent;color:var(--accent)}
+.item .sub .brk{flex-basis:100%;height:0}
+.item .x{border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:4px}
+.item .x:hover{color:var(--risk)}
+.item .pathrow{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12px}
+.item .pathrow .step{display:inline-flex;align-items:center;gap:3px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1px 6px 1px 4px}
+.item .pathrow .step i{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:var(--risk);color:#fff;font-style:normal;font-size:10px;font-weight:700}
+.item .pathrow .step button{border:none;background:none;color:var(--muted);cursor:pointer;padding:0 2px}
+.item .pathrow select{width:auto;font-size:11.5px;padding:2px 4px}
+.li{display:grid;grid-template-columns:1.2fr .9fr .6fr .6fr .7fr 1.2fr auto;gap:5px;align-items:center;margin-bottom:5px}
+.li input,.li select{width:100%;border:1px solid var(--line);border-radius:5px;padding:4px 6px;background:var(--panel);font-size:12px}
+.li .fcs{display:flex;flex-wrap:wrap;gap:3px 6px;font-size:11px}
+.lihd{display:grid;grid-template-columns:1.2fr .9fr .6fr .6fr .7fr 1.2fr auto;gap:5px;font-family:var(--mono);font-size:10px;letter-spacing:.3px;text-transform:uppercase;color:var(--muted);margin:6px 0 3px}
+.addrow{display:flex;gap:6px;align-items:center;margin-top:4px}
+.empty{color:var(--muted);font-size:12.5px;font-style:italic;padding:6px 2px}
+.figure{background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px}
+.figure .fhd{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line2);flex-wrap:wrap}
+.figure .fhd h3{margin:0;font-size:13px}
+.figure .fhd .ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px}
+.figure .fhd select{border:1px solid var(--line);border-radius:5px;padding:3px 6px;background:var(--panel);font-size:12px;max-width:260px}
+.figure .svgwrap{overflow:auto;background:var(--paper);padding:6px}
+.figure svg{display:block;max-width:100%;height:auto;font-family:var(--ui)}
+.figure .legend{display:flex;gap:12px;flex-wrap:wrap;padding:8px 12px;border-top:1px solid var(--line2);font-size:11.5px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.checks{background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);margin-bottom:12px}
+.checks .fhd{padding:8px 12px;border-bottom:1px solid var(--line2);display:flex;justify-content:space-between;align-items:center}
+.checks .fhd h3{margin:0;font-size:13px}
+.checks ul{list-style:none;margin:0;padding:6px 12px 10px;max-height:38vh;overflow:auto}
+.checks li{padding:5px 0;border-bottom:1px dashed var(--line2);font-size:12.5px;display:grid;grid-template-columns:auto 1fr;gap:8px}
+.checks li:last-child{border-bottom:none}
+.checks .lv{font-family:var(--mono);font-size:10px;letter-spacing:.3px;padding:2px 5px;border-radius:3px;align-self:start;margin-top:2px}
+.lv.stop{background:var(--risk-soft);color:var(--risk)}
+.lv.warn{background:var(--usr-soft);color:var(--usr)}
+.lv.ok{background:var(--mfr-soft);color:var(--mfr)}
+.checks .why{color:var(--muted);display:block;font-size:11.5px}
+.doc{background:var(--paper);color:#1a1a1a;border-radius:8px;box-shadow:var(--shadow);padding:34px 40px;font-family:var(--doc);font-size:14px;line-height:1.55;margin-bottom:12px}
+.doc h2{font-family:var(--ui);font-size:15px;margin:0 0 4px}
+.doc .ver{font-family:var(--ui);font-size:11px;color:#6a6a6a;margin-bottom:16px}
+.doc h3{font-family:var(--ui);font-size:13.5px;font-weight:700;margin:16px 0 6px}
+.doc h4{font-family:var(--ui);font-size:12.5px;font-weight:700;margin:10px 0 4px;color:#444}
+.doc table{width:100%;border-collapse:collapse;margin:6px 0 12px;font-family:var(--ui);font-size:12px}
+.doc th,.doc td{border:1px solid #cfcabb;padding:5px 7px;vertical-align:top;text-align:left}
+.doc th{background:#eeebe0;font-weight:600}
+.doc td.id{font-family:var(--mono);font-weight:600;white-space:nowrap;width:1%}
+.doc .note{font-family:var(--ui);font-size:11px;color:#7a7768;background:#f5f3ea;border-left:3px solid #0b6b80;padding:6px 9px;margin:6px 0 12px}
+.doc small.wm{display:block;text-align:center;color:#b3ae9d;font-family:var(--ui);font-size:10.5px;margin-top:26px;border-top:1px solid #e6e2d6;padding-top:10px}
+footer{padding:14px 16px;color:var(--muted);font-size:11.5px;border-top:1px solid var(--line);background:var(--panel);text-align:center;line-height:1.6}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:6px;font-size:12.5px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:20}
+.toast.on{opacity:1}
+@media print{header,.method,.checks,.figure .fhd,.figure .legend,.col.left,footer,.actions{display:none!important}.layout{display:block;padding:0}.doc{box-shadow:none;border-radius:0;padding:0}.figure{box-shadow:none;border:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><b>Context &amp; Conditions of Use Builder</b><span class="tag RI" style="font-size:10px">PREVIEW: user view</span><span>Cyber Manual · example v0.22 structure · free · nothing is uploaded · <a href="../">current version without the user view</a></span></div>
+  <div class="actions">
+    <button class="btn" id="btnExample" title="Load the working group’s fictitious Engineering PC example">Load Engineering PC example</button>
+    <button class="btn" id="btnExample2" title="Load a fictitious consumer product with an ordinary-skill user (VCRI illustration, not the group’s example)">Load Heat Pump Controller example (consumer)</button>
+    <button class="btn" id="btnNew">New</button>
+    <button class="btn" id="btnImport">Import JSON</button>
+    <button class="btn" id="btnExport">Export JSON</button>
+    <button class="btn" id="btnSvg">Download diagram (SVG)</button>
+    <button class="btn primary" id="btnPrint">Print / PDF</button>
+    <input type="file" id="fileIn" accept="application/json" hidden>
+  </div>
+</header>
+
+<div class="layout">
+  <div class="col left">
+    <section class="method">
+      <h2>Components are what you know. Functions are where the chain starts.</h2>
+      <p>List what is inside the product first: components, interfaces, security properties. Those are yours and nobody derives them. Then the hard part of the template, how much context and how many conditions to write, stops being a judgment call. It is a chain, and each link tells you exactly what belongs in the next.</p>
+      <div class="rule">
+        <b>PC, PI → FC</b><span>Each function is performed by product components and reaches the outside through interfaces. Tick which.</span>
+        <b>FC → CC, CP, CZ</b><span>Context, in the current template, is three lists: components, persons, zones. Each exists only because a function needs it. Walk each function and ask what outside the product it depends on, and who, and where.</span>
+        <b>CC, CP, CZ → CU</b><span>A condition of use exists only because something in the context must satisfy it for a function to be safe. It is born attached to the thing it constrains, which is the “affected” column the template asks for.</span>
+        <b>CU → RI</b><span>A risk is a condition not met, or a function misused. Name the damage, and draw the path it takes as numbered steps.</span>
+        <b>diagram</b><span>One picture, six layers: product, properties, context, function, conditions, risk. Never drawn separately. Fix the lists and every layer fixes itself.</span>
+      </div>
+      <p style="margin-top:8px;font-size:11.5px">You work in derivation order. The generated document below follows the template’s chapter order, where context precedes functions. Both are correct: one is how you find the content, the other is how the reader meets it.</p>
+      <p style="margin-top:6px;font-size:11.5px">Method: <a href="https://github.com/value-chain-risk-institute/cra-manual-tools/blob/main/cyber-manual/context/METHOD.md" target="_blank" rel="noopener">The Derivation Rule for Context and Conditions of Use</a>, Marpet &amp; Viktor, The Value Chain Risk Institute, 2026, CC BY 4.0. The definitions and the example are the working group’s; the derivation chain and the diagram corollary are what we ask to be attributed.</p>
+    </section>
+    <div id="editor"></div>
+  </div>
+  <div class="col right">
+    <div class="sticky">
+      <div class="figure">
+        <div class="fhd">
+          <h3 id="figTitle">Context diagram</h3>
+          <div class="ctl">
+            <label>Layer <select id="figScope"></select></label>
+            <label><input type="checkbox" id="figSP" checked> SP</label>
+            <label><input type="checkbox" id="figCU" checked> CU</label>
+            <label><input type="checkbox" id="figProto" checked> protocols</label>
+            <span id="uvCtl" style="display:none;gap:8px;align-items:center;flex-wrap:wrap;border-left:1px solid var(--line);padding-left:8px"><span class="lbl" style="font-size:10.5px;letter-spacing:.3px;text-transform:uppercase;color:var(--muted)">rendering</span><label><input type="radio" name="uvMode" value="A" checked> A picture</label><label><input type="radio" name="uvMode" value="B"> B cards</label></span>
+          </div>
+          <div class="ctl" style="width:100%;font-size:11.5px;color:var(--muted)"><label><input type="checkbox" id="uvInstructed" checked> user view includes <em>instructed</em> persons, not only <em>ordinary</em> ones</label></div>
+        </div>
+        <div class="svgwrap" id="svgwrap"></div>
+        <div class="legend">
+          <span><i style="background:var(--mfr)"></i>inside the product: components (PC), interfaces (PI), security properties (SP)</span>
+          <span><i style="background:var(--usr)"></i>context: components (CC), persons (CP), zones (CZ), conditions of use (CU)</span>
+          <span><i style="background:var(--fn)"></i>function path (FC)</span>
+          <span><i style="background:var(--risk)"></i>risk path (RI)</span>
+          <span id="uvAsk" style="display:none;flex-basis:100%;color:var(--ink)">Preview for the working group: two renderings of the same data, A picture and B cards. Which one, if either, would a non-technical reader act on? And should <em>instructed</em> persons get this view, or only <em>ordinary</em> ones?</span>
+        </div>
+      </div>
+      <div class="checks">
+        <div class="fhd"><h3>Level-of-detail checks</h3><span class="tag" id="chkSummary"></span></div>
+        <ul id="checks"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="layout" style="padding-top:0"><div class="col" style="grid-column:1/-1"><div class="doc" id="doc"></div></div></div>
+<footer id="foot">
+  This tool populates the <strong>Cyber Manual Movement</strong> template’s product, context, function, conditions-of-use and risk chapters and draws the optional diagrams from the same data. Structure follows the working group’s Engineering PC example v0.22 (9 September 2026). The template, guidance and example are the work of the Cyber Manual Movement working group. This free tool is built on that template by the <strong>Value Chain Risk Institute</strong> and released CC BY 4.0. It does not replace or claim the group’s template.<br>
+  Runs entirely in your browser. Nothing is transmitted. Your work is kept in this browser’s local storage until you clear it. · <a href="https://github.com/value-chain-risk-institute/cra-manual-tools" target="_blank" rel="noopener">Source on GitHub</a> · Companions: <a href="/cra-manual-builder/">/cra-manual-builder/</a> (full manual, Annex II) · <a href="/tara/">/tara/</a> (Annex VII)
+</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+const $=(s,r=document)=>r.querySelector(s);
+const el=(t,a={},...kids)=>{const e=document.createElement(t);for(const[k,v]of Object.entries(a)){if(k==='class')e.className=v;else if(k==='html')e.innerHTML=v;else if(k.startsWith('on'))e.addEventListener(k.slice(2),v);else if(v!==false&&v!=null)e.setAttribute(k,v);}for(const k of kids){if(k==null)continue;e.append(k.nodeType?k:document.createTextNode(k));}return e;};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const KEY='vcri.cm.context.v3next';
+const PRODUCT='PRODUCT';
+
+/* ---------- model ---------- */
+const KINDS={
+  PC:{label:'Product components',plural:'components',hint:'What the product consists of. Inside the boundary, and the one list that is not derived from anything: start here.'},
+  PI:{label:'Product interfaces',plural:'interfaces',hint:'Physical interfaces first (Ethernet ports, USB, keyboard, serial). Then the logical interfaces table: which protocol or URL runs over which physical interface, on which port, in which direction, for which function. This table is what draws the connectors.'},
+  SP:{label:'Security properties',plural:'security properties',hint:'Security characteristics implemented in the product. Manufacturer’s responsibility. Each one is placed on a component, an interface, or the product as a whole.'},
+  FC:{label:'Functions',plural:'functions',hint:'What the product does. This is where derivation starts: tick the components and interfaces each function uses, then tick or create what it needs from outside. Optionally lay out the path it takes, in order, for the function diagram. Per prEN 40000-1-2 mark intended purpose versus reasonably foreseeable use.'},
+  CC:{label:'Context components',plural:'context components',hint:'Things outside the product that a function needs: a PLC, a network, another PC, a server. The manufacturer’s assumptions about the environment. Say which interface each one touches; that draws the connector.'},
+  CP:{label:'Context persons',plural:'persons',hint:'People a function needs: the engineer, maintenance staff, remote support. With the skill level the template asks for. Say which interface they touch, if any.'},
+  CZ:{label:'Context zones',plural:'zones',hint:'Physical or communication zones the context sits in, with the access level. Optional. Put context components and persons inside a zone and the diagram draws the boundary.'},
+  CU:{label:'Conditions of use',plural:'conditions of use',hint:'Security characteristics the context must have. User’s responsibility. Each one is attached to the context component, person, zone, or the product it constrains.'},
+  RI:{label:'Circumstances leading to risk',plural:'risks',hint:'What happens when a condition of use is not met, or a function is misused. Name the potential damage. Point at the condition it breaks and the function it affects, and lay out the path as numbered steps for the risk diagram.'}
+};
+let M=blank();
+function blank(){return {product:{name:'',model:'',version:''},PC:[],PI:[],LI:[],SP:[],FC:[],CC:[],CP:[],CZ:[],CU:[],RI:[]};}
+function nextId(kind){const n=M[kind].length+1;return kind+String(n).padStart(2,'0');}
+function add(kind,init={}){
+  const b={id:nextId(kind),title:'',desc:''};
+  if(kind==='SP')Object.assign(b,{on:[]});
+  if(kind==='FC')Object.assign(b,{core:'core',use:'intended',phase:'use',pc:[],pi:[],cc:[],cp:[],cz:[],path:[]});
+  if(kind==='PC'||kind==='PI'||kind==='CC'||kind==='CP')b.plain='';
+  if(kind==='CC')Object.assign(b,{via:[]});
+  if(kind==='CP')Object.assign(b,{skill:'instructed',via:[]});
+  if(kind==='CZ')Object.assign(b,{type:'physical',access:'controlled',members:[]});
+  if(kind==='CU')Object.assign(b,{on:[],owner:'',plain:''});
+  if(kind==='RI')Object.assign(b,{damage:'',plainDamage:'',fc:[],cu:[],path:[]});
+  M[kind].push(Object.assign(b,init));save();render();return b;
+}
+function addLI(init={}){M.LI.push(Object.assign({proto:'',url:'',pi:'',port:'',dir:'both',fc:[]},init));save();render();}
+const LINKF=['on','pc','pi','cc','cp','cz','via','members','fc','cu','path'];
+const PHASES=[['setup','during setup'],['use','during use'],['updates','when installing updates'],['decommission','when decommissioning']];
+function remove(kind,id){
+  M[kind]=M[kind].filter(x=>x.id!==id);
+  for(const k of ['SP','FC','CC','CP','CZ','CU','RI'])for(const it of M[k])for(const f of LINKF)if(Array.isArray(it[f]))it[f]=it[f].filter(x=>x!==id);
+  for(const u of M.CU)if(u.owner===id)u.owner='';
+  for(const li of M.LI){if(li.pi===id)li.pi='';li.fc=li.fc.filter(x=>x!==id);}
+  save();render();
+}
+function relink(o,n){if(!o||o===n)return;for(const u of M.CU)if(u.owner===o)u.owner=n;for(const k of ['SP','FC','CC','CP','CZ','CU','RI'])for(const it of M[k])for(const f of LINKF)if(Array.isArray(it[f]))it[f]=it[f].map(x=>x===o?n:x);for(const li of M.LI){if(li.pi===o)li.pi=n;li.fc=li.fc.map(x=>x===o?n:x);}}
+function findAny(id){if(id===PRODUCT)return {id:PRODUCT,title:M.product.name||'the product',kind:'PRODUCT'};for(const k of ['PC','PI','SP','FC','CC','CP','CZ','CU','RI']){const x=M[k].find(y=>y.id===id);if(x)return Object.assign({kind:k},x);}return null;}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(M));}catch(e){}}
+function load(){try{const s=localStorage.getItem(KEY);if(s){const o=JSON.parse(s);if(o&&o.FC)M=Object.assign(blank(),o);}}catch(e){}}
+
+/* ---------- the working group's Engineering PC example, v0.22 ---------- */
+function example(){
+  M=blank();
+  M.product={name:'Engineering PC „easy engineer“',model:'ee-2026-XT',version:'example v0.22, 9 Sep 2026 (working group)'};
+  M.PC=[{id:'PC01',title:'CPU',desc:'Processing unit running the engineering software.',plain:''},{id:'PC02',title:'Storage',desc:'Local storage holding PLC program files.',plain:'the saved programs on this PC'}];
+  M.PI=[{id:'PI01',title:'ETH1 (Ethernet)',desc:'Ethernet port used for HTTPS: remote support and updates.',plain:'network cable, port 1'},{id:'PI02',title:'ETH2 (Ethernet)',desc:'Ethernet port used for Modbus/IP to the PLC.',plain:'network cable, port 2 (to the controller)'},{id:'PI03',title:'USB',desc:'USB ports (CDC and MSC classes). Unused ports disabled by default.',plain:'the USB port on the side'},{id:'PI04',title:'Keyboard',desc:'Local keyboard input.',plain:'the keyboard'}];
+  M.LI=[{proto:'HTTPS / TCP',url:'',pi:'PI01',port:'443',dir:'both',fc:['FC03']},{proto:'HTTPS / TCP',url:'www.manufacturer.com/updates',pi:'PI01',port:'443',dir:'both',fc:['FC04']},{proto:'Modbus via IP / TCP',url:'',pi:'PI02',port:'502',dir:'both',fc:['FC01']}];
+  M.SP=[
+    {id:'SP01',title:'Password protection for PLC programs',desc:'The engineering software can password-protect PLC program files. Strong passwords are enforced; complexity requirements are set by the admin role.',on:[PRODUCT]},
+    {id:'SP02',title:'User notification in case of PLC program file change',desc:'The engineering software regularly checks stored PLC program files and notifies users as soon as a file change occurs that has not been made through the software.',on:['PC02']},
+    {id:'SP03',title:'Malware protection',desc:'The Engineering PC has Windows Defender enabled by default.',on:[PRODUCT]},
+    {id:'SP04',title:'Disabling of unused USB ports',desc:'Unused USB ports are disabled by default. They can be enabled temporarily, for example for security updates via USB (see FC05).',on:['PI03']}
+  ];
+  M.CC=[
+    {id:'CC01',title:'PLC',desc:'The Programmable Logic Controller that can be programmed using the Engineering PC.',via:['PI02'],plain:'the controller in the cabinet'},
+    {id:'CC02',title:'Network',desc:'A network connecting the Engineering PC to the PLC(s) to be programmed.',via:['PI02']},
+    {id:'CC03',title:'Maintenance PC',desc:'A laptop or PC used by maintenance staff.',via:['PI03'],plain:'the maintenance laptop'},
+    {id:'CC04',title:'VPN termination',desc:'A device to terminate a VPN connection.',via:['PI01']},
+    {id:'CC05',title:'Manufacturer PC',desc:'A laptop or PC used by manufacturer staff.',via:['PI01']}
+  ];
+  M.CP=[
+    {id:'CP01',title:'Engineer',desc:'The person who uses the Engineering PC to program PLCs.',skill:'skilled',via:['PI04']},
+    {id:'CP02',title:'Manufacturer staff',desc:'The person(s) responsible for troubleshooting the Engineering PC (manufacturer support).',skill:'skilled',via:[]},
+    {id:'CP03',title:'Maintenance staff',desc:'The person(s) responsible for installing security updates on the Engineering PC.',skill:'instructed',via:['PI03'],plain:'you, when you install updates'}
+  ];
+  M.CZ=[];
+  M.FC=[
+    {id:'FC01',title:'Program a PLC',desc:'Creation and modification of PLC programs on the Engineering PC and transfer of these programs to the PLC.',core:'core',use:'intended',pc:['PC01','PC02'],pi:['PI04','PI02'],cc:['CC02','CC01'],cp:['CP01'],cz:[],path:['CP01','PI04','PC01','PC02','PI02','CC02','CC01']},
+    {id:'FC02',title:'Simulate PLC code',desc:'PLC programs can be simulated on the Engineering PC for testing purposes before transferring them to the PLC.',core:'core',use:'intended',pc:['PC01','PC02'],pi:['PI04'],cc:[],cp:['CP01'],cz:[],path:['CP01','PI04','PC01']},
+    {id:'FC03',title:'Troubleshoot from remote',desc:'Access and administrate the Engineering PC remotely for troubleshooting. Diagnostic capabilities support identification of faults and irregularities in system behaviour.',core:'ancillary',use:'intended',pc:['PC01'],pi:['PI01'],cc:['CC04','CC05'],cp:['CP02'],cz:[],path:['CP02','CC05','CC04','PI01','PC01']},
+    {id:'FC04',title:'Install security updates',desc:'Automatic download of new security updates from www.manufacturer.com/updates (see product interfaces for the required internet connection). Installation after user confirmation.',core:'ancillary',use:'intended',phase:'updates',pc:['PC01','PC02'],pi:['PI01'],cc:[],cp:['CP03'],cz:[],path:['PI01','PC01','PC02']},
+    {id:'FC05',title:'Install security updates manually',desc:'Manual installation of security updates by downloading them from www.manufacturer.com/updates to a PC (CC03 Maintenance PC). After the download the Maintenance PC is disconnected from the network and the update is transferred by USB.',core:'ancillary',use:'intended',phase:'updates',pc:['PC01','PC02'],pi:['PI03'],cc:['CC03'],cp:['CP03'],cz:[],path:['CP03','CC03','PI03','PC01','PC02']}
+  ];
+  M.CU=[
+    {id:'CU01',title:'No local admin accounts',desc:'Administrative rights are assigned exclusively through the central identity management system. Only centrally managed and authenticated user accounts are permitted to access the system.',on:['CC03'],owner:'CP03',plain:'Do not create a local administrator account on the maintenance laptop. Log in with your normal company account only.'},
+    {id:'CU02',title:'Regular PLC code integrity checks',desc:'Regular integrity checks of the PLC code must be performed to ensure that only verified and unchanged code is executed on the PLC. This lies outside the product boundary and must be organised by the operator.',on:['CC01'],owner:'CP01',plain:''},
+    {id:'CU03',title:'Physical access control',desc:'There must be physical access control in place for the Engineering PC and the PLC.',on:['CC01',PRODUCT]},
+    {id:'CU04',title:'No internet connection',desc:'The Engineering PC operates exclusively within a closed network segment with dedicated communication channels.',on:['CC02']}
+  ];
+  M.RI=[
+    {id:'RI01',title:'Download of security updates from untrusted source and / or failure to check security update integrity',desc:'Software updates are downloaded from other sources than the URL provided and / or the user does not check the provided hash to assure the integrity of the update file. Files containing malware might be installed on the Engineering PC. In the worst case such malware manipulates PLC programs stored on the Engineering PC, which are then unknowingly transferred to the PLC.',damage:'Damage of controlled equipment or diminished product quality.',plainDamage:'The machine on the floor may be damaged, or the products it makes may be faulty, without anyone noticing.',fc:['FC05'],cu:[],path:['CC03','PI03','PC02','PI02','CC01']}
+  ];
+  save();render();toast('Engineering PC example v0.22 loaded, plus plain names and owners added for the user-view preview.');
+}
+
+/* ---------- second example: a consumer product, so the user view has someone to talk to (VCRI illustration, not the group's) ---------- */
+function example2(){
+  M=blank();
+  M.product={name:'Home heat pump controller „warmwise“',model:'ww-200',version:'VCRI illustrative example, not the working group’s · 10 Sep 2026'};
+  M.PC=[{id:'PC01',title:'Controller unit',desc:'Indoor control unit running the heating logic.',plain:'the white box in the utility room'},{id:'PC02',title:'Thermostat display',desc:'Wall-mounted touchscreen.',plain:'the screen on the wall'},{id:'PC03',title:'Wi-Fi module',desc:'Radio for home network and app connection.',plain:''}];
+  M.PI=[{id:'PI01',title:'Wi-Fi',desc:'2.4 GHz client to the home router; setup access point for the first 10 minutes after power-on.',plain:'the Wi-Fi'},{id:'PI02',title:'Touchscreen',desc:'Local user interface.',plain:'the screen on the wall'},{id:'PI03',title:'Service port (USB-C)',desc:'Behind a screwed cover on the controller unit. Disabled unless installer mode is active.',plain:'the small port under the cover'},{id:'PI04',title:'Outdoor unit bus',desc:'Wired bus to the outdoor heat pump unit.',plain:'the cable to the outdoor unit'}];
+  M.LI=[{proto:'HTTPS / TCP',url:'cloud.warmwise.example',pi:'PI01',port:'443',dir:'out',fc:['FC02','FC03']},{proto:'Setup access point (WPA2)',url:'',pi:'PI01',port:'',dir:'in',fc:['FC04']},{proto:'Proprietary bus',url:'',pi:'PI04',port:'',dir:'both',fc:['FC01']}];
+  M.SP=[{id:'SP01',title:'Signed automatic updates',desc:'Updates are signed by the manufacturer and verified before installation; unsigned updates are refused.',on:['PC01']},{id:'SP02',title:'Installer menu protected by PIN',desc:'Installer mode requires a PIN set at commissioning; three failures lock the menu for one hour.',on:['PC02']},{id:'SP03',title:'Service port disabled by default',desc:'The service port is electrically disabled unless installer mode is active.',on:['PI03']},{id:'SP04',title:'App pairing needs a physical press',desc:'A phone can only be paired while a button on the controller is held.',on:['PC01']},{id:'SP05',title:'Setup network closes after 10 minutes',desc:'The setup access point switches off ten minutes after power-on and cannot be re-enabled remotely.',on:['PI01']}];
+  M.CC=[{id:'CC01',title:'Home Wi-Fi router',desc:'The household’s router and its password.',via:['PI01'],plain:'your home Wi-Fi'},{id:'CC02',title:'Manufacturer cloud service',desc:'Relays app commands and distributes updates.',via:['PI01'],plain:'the warmwise service'},{id:'CC03',title:'Smartphone app',desc:'The warmwise app on a paired phone.',via:['PI01'],plain:'the app on your phone'},{id:'CC04',title:'Outdoor heat pump unit',desc:'The outdoor unit that heats the house.',via:['PI04'],plain:'the outdoor unit'},{id:'CC05',title:'Installer laptop',desc:'Used with the service port during commissioning and service.',via:['PI03'],plain:'the installer’s laptop'}];
+  M.CP=[{id:'CP01',title:'Homeowner',desc:'Lives in the house, uses the app and the wall screen.',skill:'ordinary',via:['PI02'],plain:'you'},{id:'CP02',title:'Installer',desc:'Commissions and services the system.',skill:'skilled',via:['PI03','PI02'],plain:''},{id:'CP03',title:'Landlord or building manager',desc:'Manages several homes; has read the manual; is not an engineer.',skill:'instructed',via:[],plain:'you, as the person responsible for the building'}];
+  M.CZ=[{id:'CZ01',title:'The home',desc:'The dwelling and its network.',type:'physical',access:'limited',members:['CC01','CC03','CC04','CP01']},{id:'CZ02',title:'Internet',desc:'Outside the home.',type:'communication',access:'public',members:['CC02']}];
+  M.FC=[
+    {id:'FC01',title:'Heat the home',desc:'Controls the outdoor unit to hold the set temperature.',core:'core',use:'intended',phase:'use',pc:['PC01'],pi:['PI04'],cc:['CC04'],cp:['CP01'],cz:['CZ01'],path:['CP01','PI02','PC01','PI04','CC04']},
+    {id:'FC02',title:'Set schedule from the app',desc:'Homeowner changes temperature and schedule from the phone, via the cloud service.',core:'core',use:'intended',phase:'use',pc:['PC01','PC03'],pi:['PI01'],cc:['CC03','CC02','CC01'],cp:['CP01'],cz:['CZ01','CZ02'],path:['CP01','CC03','CC02','CC01','PI01','PC01']},
+    {id:'FC03',title:'Receive updates',desc:'Signed updates downloaded automatically from the cloud service and installed overnight.',core:'ancillary',use:'intended',phase:'updates',pc:['PC01','PC03'],pi:['PI01'],cc:['CC02','CC01'],cp:[],cz:['CZ02'],path:['CC02','CC01','PI01','PC01']},
+    {id:'FC04',title:'Commission and service',desc:'Installer joins the setup network or opens the service port to configure the system.',core:'ancillary',use:'intended',phase:'setup',pc:['PC01','PC02'],pi:['PI01','PI03','PI02'],cc:['CC05'],cp:['CP02'],cz:[],path:['CP02','CC05','PI03','PC01']},
+    {id:'FC05',title:'Hand over or dispose',desc:'Factory reset removes paired phones, Wi-Fi credentials and schedules.',core:'ancillary',use:'intended',phase:'decommission',pc:['PC01','PC02'],pi:['PI02'],cc:[],cp:['CP01','CP03'],cz:['CZ01'],path:['CP01','PI02','PC01']}
+  ];
+  M.CU=[
+    {id:'CU01',title:'Home Wi-Fi uses a non-default password',desc:'The home router must not use the password printed on it or a default; WPA2 or better.',on:['CC01'],owner:'CP01',plain:'Change your Wi-Fi password from the one printed on the router, and do not share it with people who do not live with you.'},
+    {id:'CU02',title:'Only household phones are paired',desc:'Paired phones must belong to people entitled to control the heating; remove phones that leave the household.',on:['CC03'],owner:'CP01',plain:'Only pair phones of people who live here. When someone moves out, remove their phone in the app.'},
+    {id:'CU03',title:'Installer PIN is not written on the unit or shared',desc:'The installer PIN set at commissioning must not be left on a label or given to the homeowner.',on:['CC05','PRODUCT'],owner:'CP02',plain:''},
+    {id:'CU04',title:'Service port cover is refitted after service',desc:'The screwed cover over the service port must be replaced before leaving site.',on:[PRODUCT],owner:'CP02',plain:''},
+    {id:'CU05',title:'Factory reset before the home changes hands',desc:'Reset the controller before selling or re-letting so the next occupant cannot be controlled by, or see, the previous one.',on:[PRODUCT],owner:'CP01',plain:'Before you sell or move out, do a factory reset from the wall screen: Settings, Hand over, Reset.'},
+    {id:'CU06',title:'Paired phones reviewed at each tenancy change',desc:'For managed buildings, the list of paired phones is reviewed and cleared when tenants change.',on:['CC03'],owner:'CP03',plain:'When a tenant leaves, check the app’s list of paired phones and remove any you do not recognise.'}
+  ];
+  M.RI=[
+    {id:'RI01',title:'Stranger joins the home Wi-Fi and controls the heating',desc:'With the default router password, a neighbour or passer-by joins the network, pairs a phone during a service visit, and changes the heating.',damage:'Unwanted heating changes; in winter, a cold home or frozen pipes; unexpected energy cost.',plainDamage:'Someone outside your home could turn your heating off in winter or run it up all summer. Frozen pipes, a cold house, or a big bill.',fc:['FC02'],cu:['CU01','CU02'],path:['CC01','PI01','PC01','PI04','CC04']},
+    {id:'RI02',title:'Installer PIN leaked; unsafe setpoints',desc:'A written-down installer PIN lets an untrained person enter installer mode and change safety limits.',damage:'Outdoor unit driven outside its safe envelope; possible equipment damage.',plainDamage:'The outdoor unit could be damaged by settings only an installer should touch.',fc:['FC04'],cu:['CU03','CU04'],path:['CP01','PI02','PC01','PI04','CC04']},
+    {id:'RI03',title:'Previous occupant retains control after sale',desc:'The controller is handed over without a factory reset; the previous occupant’s phone remains paired.',damage:'Loss of control and privacy for the new occupant.',plainDamage:'The people who lived here before could still see and change your heating from their phone.',fc:['FC05'],cu:['CU05','CU06'],path:['CC03','CC02','CC01','PI01','PC01']}
+  ];
+  save();render();toast('Heat pump controller example loaded: a VCRI illustration with an ordinary-skill user, so the user view has someone to talk to.');
+}
+
+/* ---------- editor ---------- */
+const collapsed={};
+function render(){renderEditor();renderScope();renderFigure();renderChecks();renderDoc();}
+function renderEditor(){
+  const root=$('#editor');root.innerHTML='';
+  root.append(productCard());
+  ['PC','PI','SP','FC','CC','CP','CZ','CU','RI'].forEach((k,i)=>root.append(kindCard(k,i+1)));
+}
+function productCard(){
+  const c=el('div',{class:'card'});
+  c.append(el('div',{class:'hd',onclick:()=>c.classList.toggle('collapsed')},el('h3',{},'Product'),el('span',{class:'n'},M.product.name||'unnamed')));
+  const bd=el('div',{class:'bd'}),it=el('div',{class:'item'});
+  for(const[f,ph]of[['name','Product name'],['model','Type / model / version'],['version','Document version / date']])it.append(el('div',{class:'row'},el('div',{class:'k'},f),el('input',{type:'text',value:M.product[f]||'',placeholder:ph,oninput:e=>{M.product[f]=e.target.value;save();renderDoc();renderFigure();}}),el('span')));
+  bd.append(it);c.append(bd);return c;
+}
+function kindCard(kind,step){
+  const K=KINDS[kind];
+  const c=el('div',{class:'card'+(collapsed[kind]?' collapsed':'')});
+  c.append(el('div',{class:'hd',onclick:()=>{collapsed[kind]=!collapsed[kind];c.classList.toggle('collapsed');}},el('h3',{},el('span',{class:'step'},String(step)),el('span',{class:'tag '+kind},kind),K.label),el('span',{class:'n'},M[kind].length+' '+K.plural)));
+  const bd=el('div',{class:'bd'});bd.append(el('p',{class:'hint'},K.hint));
+  if(!M[kind].length)bd.append(el('div',{class:'empty'},'None yet.'));
+  for(const it of M[kind])bd.append(itemRow(kind,it));
+  bd.append(el('div',{class:'addrow'},el('button',{class:'btn small',onclick:()=>add(kind)},'+ Add '+kind)));
+  if(kind==='PI')bd.append(logicalTable());
+  c.append(bd);return c;
+}
+function logicalTable(){
+  const w=el('div',{style:'margin-top:12px;border-top:1px dashed var(--line);padding-top:8px'});
+  w.append(el('p',{class:'hint'},el('span',{class:'tag LI'},'LI'),' Logical interfaces: protocol or URL, over which physical interface, port, direction, for which function. Drawn as connector labels.'));
+  if(M.LI.length){w.append(el('div',{class:'lihd'},el('span',{},'protocol / service'),el('span',{},'URL'),el('span',{},'over PI'),el('span',{},'port'),el('span',{},'direction'),el('span',{},'function(s)'),el('span')));
+  M.LI.forEach((li,i)=>{
+    const r=el('div',{class:'li'});
+    r.append(el('input',{type:'text',value:li.proto,placeholder:'HTTPS / TCP',oninput:e=>{li.proto=e.target.value;save();renderFigure();renderDoc();}}));
+    r.append(el('input',{type:'text',value:li.url,placeholder:'optional URL',oninput:e=>{li.url=e.target.value;save();renderDoc();}}));
+    const sel=el('select',{onchange:e=>{li.pi=e.target.value;save();renderFigure();renderDoc();renderChecks();}});sel.append(el('option',{value:''},'—'));for(const p of M.PI)sel.append(el('option',{value:p.id,selected:li.pi===p.id},p.id+' '+p.title));r.append(sel);
+    r.append(el('input',{type:'text',value:li.port,placeholder:'443',oninput:e=>{li.port=e.target.value;save();renderDoc();}}));
+    const d=el('select',{onchange:e=>{li.dir=e.target.value;save();renderDoc();}});for(const[v,l]of[['in','incoming'],['out','outgoing'],['both','both']])d.append(el('option',{value:v,selected:li.dir===v},l));r.append(d);
+    const fcs=el('div',{class:'fcs'});for(const f of M.FC)fcs.append(el('label',{},el('input',{type:'checkbox',checked:li.fc.includes(f.id),onchange:e=>{if(e.target.checked){if(!li.fc.includes(f.id))li.fc.push(f.id);}else li.fc=li.fc.filter(x=>x!==f.id);save();renderDoc();renderChecks();}}),f.id));r.append(fcs);
+    r.append(el('button',{class:'x',title:'Remove',onclick:()=>{M.LI.splice(i,1);save();render();}},'×'));
+    w.append(r);
+  });}
+  w.append(el('div',{class:'addrow'},el('button',{class:'btn small',onclick:()=>addLI()},'+ Add logical interface')));
+  return w;
+}
+function itemRow(kind,it){
+  const d=el('div',{class:'item'});
+  const idIn=el('input',{type:'text',value:it.id,style:'font-family:var(--mono);font-weight:600;text-align:center',oninput:e=>{const o=it.id;it.id=e.target.value.trim();relink(o,it.id);save();renderFigure();renderChecks();renderDoc();}});
+  const title=el('input',{type:'text',value:it.title,placeholder:'Title',oninput:e=>{it.title=e.target.value;save();renderFigure();renderChecks();renderDoc();}});
+  d.append(el('div',{class:'row'},idIn,title,el('button',{class:'x',title:'Remove',onclick:()=>remove(kind,it.id)},'×')));
+  d.append(el('div',{class:'row'},el('div'),el('textarea',{placeholder:kind==='RI'?'Reasonably foreseeable misuse or circumstance':'Description',oninput:e=>{it.desc=e.target.value;save();renderDoc();}},it.desc),el('span')));
+  if(kind==='RI'){d.append(el('div',{class:'row'},el('div',{class:'k'},'damage'),el('textarea',{placeholder:'Potential damage',oninput:e=>{it.damage=e.target.value;save();renderDoc();renderChecks();}},it.damage||''),el('span')));d.append(el('div',{class:'row'},el('div',{class:'k'},'in plain words'),el('textarea',{placeholder:'Consequence as an ordinary person would recognise it: the machine stops, the batch is ruined, someone is hurt',oninput:e=>{it.plainDamage=e.target.value;save();renderFigure();renderDoc();}},it.plainDamage||''),el('span')));}
+  if(kind==='CU')d.append(el('div',{class:'row'},el('div',{class:'k'},'in plain words'),el('textarea',{placeholder:'The condition as an instruction in the responsible person’s words: Do not… / Always…',oninput:e=>{it.plain=e.target.value;save();renderFigure();renderDoc();}},it.plain||''),el('span')));
+  if(['PC','PI','CC','CP'].includes(kind))d.append(el('div',{class:'row'},el('div',{class:'k'},'plain name'),el('input',{type:'text',value:it.plain||'',placeholder:'What an ordinary person would call this: “the USB port on the side”',oninput:e=>{it.plain=e.target.value;save();renderFigure();renderDoc();}}),el('span')));
+  const sub=el('div',{class:'sub'});
+  const brk=()=>el('span',{class:'brk'});
+  if(kind==='SP'){sub.append(picker(it,'on',['PRODUCT','PC','PI'],'placed on'));}
+  if(kind==='FC'){
+    sub.append(radio(it,'core',[['core','core'],['ancillary','ancillary']]));sub.append(el('span',{class:'lbl',style:'margin-left:8px'},'use'));sub.append(radio(it,'use',[['intended','intended purpose'],['foreseeable','reasonably foreseeable use']]));sub.append(brk());sub.append(el('span',{class:'lbl'},'when'));sub.append(radio(it,'phase',PHASES));
+    sub.append(brk());sub.append(picker(it,'pc',['PC'],'uses components'));sub.append(brk());sub.append(picker(it,'pi',['PI'],'through interfaces'));
+    sub.append(brk());sub.append(picker(it,'cc',['CC'],'needs context'));sub.append(brk());sub.append(picker(it,'cp',['CP'],'needs persons'));sub.append(brk());sub.append(picker(it,'cz',['CZ'],'in zones'));
+    sub.append(brk());sub.append(pathEditor(it));
+  }
+  if(kind==='CC'){sub.append(picker(it,'via',['PI'],'touches interface'));}
+  if(kind==='CP'){sub.append(el('span',{class:'lbl'},'skill'));sub.append(radio(it,'skill',[['ordinary','ordinary'],['instructed','instructed'],['skilled','skilled']]));sub.append(brk());sub.append(picker(it,'via',['PI'],'touches interface'));}
+  if(kind==='CZ'){sub.append(el('span',{class:'lbl'},'type'));sub.append(radio(it,'type',[['physical','physical'],['communication','communication']]));sub.append(el('span',{class:'lbl',style:'margin-left:8px'},'access'));sub.append(radio(it,'access',[['public','public'],['limited','limited'],['controlled','controlled']]));sub.append(brk());sub.append(picker(it,'members',['CC','CP'],'contains'));}
+  if(kind==='CU'){sub.append(picker(it,'on',['CC','CP','CZ','PRODUCT'],'affects'));sub.append(brk());sub.append(el('span',{class:'lbl'},'responsible person'));const os=el('select',{style:'width:auto',onchange:e=>{it.owner=e.target.value;save();render();}});os.append(el('option',{value:''},'nobody assigned'));for(const p of M.CP)os.append(el('option',{value:p.id,selected:it.owner===p.id},p.id+' '+p.title+' ('+p.skill+')'));sub.append(os);}
+  if(kind==='RI'){sub.append(picker(it,'cu',['CU'],'breaks condition'));sub.append(brk());sub.append(picker(it,'fc',['FC'],'affects function'));sub.append(brk());sub.append(pathEditor(it));}
+  if(sub.childNodes.length)d.append(el('div',{class:'row'},el('div'),sub,el('span')));
+  return d;
+}
+function radio(it,field,opts){const w=el('span');for(const[v,l]of opts){w.append(el('label',{},el('input',{type:'radio',name:'r_'+it.id+'_'+field,checked:it[field]===v,onchange:()=>{it[field]=v;save();renderDoc();renderChecks();renderFigure();}}),l));}return w;}
+function picker(it,field,kinds,label){
+  const w=el('span',{style:'display:contents'});w.append(el('span',{class:'lbl'},label));
+  if(!Array.isArray(it[field]))it[field]=[];
+  for(const kind of kinds){
+    const pool=kind==='PRODUCT'?[{id:PRODUCT,title:'the product as a whole'}]:M[kind];
+    for(const t of pool){
+      const cb=el('input',{type:'checkbox',checked:it[field].includes(t.id),onchange:e=>{if(e.target.checked){if(!it[field].includes(t.id))it[field].push(t.id);}else it[field]=it[field].filter(x=>x!==t.id);save();renderFigure();renderChecks();renderDoc();}});
+      w.append(el('label',{title:t.desc||''},cb,el('span',{class:'tag '+kind},kind==='PRODUCT'?'Product':t.id),t.title||'(untitled)'));
+    }
+    if(kind!=='PRODUCT')w.append(el('button',{class:'addmini',title:'Create a new '+kind+' and link it here',onclick:()=>{const n=add(kind);it[field].push(n.id);save();render();}},'+ new '+kind));
+  }
+  return w;
+}
+function pathEditor(it){
+  const w=el('span',{class:'pathrow'});w.append(el('span',{class:'lbl'},'path'));
+  if(!Array.isArray(it.path))it.path=[];
+  it.path.forEach((id,i)=>{const n=findAny(id);w.append(el('span',{class:'step'},el('i',{},String(i+1)),el('span',{class:'tag '+(n?n.kind:'CC')},id),el('button',{title:'remove step',onclick:()=>{it.path.splice(i,1);save();render();}},'×')));});
+  const sel=el('select',{onchange:e=>{if(e.target.value){it.path.push(e.target.value);save();render();}}});sel.append(el('option',{value:''},'+ add step…'));
+  const opts=[[PRODUCT,'the product']].concat(['CP','CC','CZ','PI','PC'].flatMap(k=>M[k].map(x=>[x.id,x.id+' '+x.title])));
+  for(const[v,l]of opts)sel.append(el('option',{value:v},l));w.append(sel);
+  return w;
+}
+
+/* ---------- checks ---------- */
+function checks(){
+  const out=[];
+  const needCC=new Set(),needCP=new Set(),usePC=new Set(),usePI=new Set();
+  for(const f of M.FC){f.cc.forEach(x=>needCC.add(x));f.cp.forEach(x=>needCP.add(x));f.pc.forEach(x=>usePC.add(x));f.pi.forEach(x=>usePI.add(x));}
+  for(const s of M.SP)s.on.forEach(x=>{usePC.add(x);usePI.add(x);});
+  for(const li of M.LI)if(li.pi)usePI.add(li.pi);
+  for(const p of M.PC)if(!usePC.has(p.id))out.push(['warn',`${p.id} ${p.title} is used by no function and holds no security property`,'Either a function is missing, or this component is not worth a row in the manual.']);
+  for(const p of M.PI)if(!usePI.has(p.id))out.push(['warn',`${p.id} ${p.title} carries no logical interface, no function and no security property`,'An interface nothing goes through is either unused, in which case say so, or a missing function.']);
+  for(const c of M.CC)if(!needCC.has(c.id))out.push(['warn',`${c.id} ${c.title} is not needed by any function`,'If no function depends on it, it is not context. Link it from a function or drop it.']);
+  for(const c of M.CP)if(!needCP.has(c.id))out.push(['warn',`${c.id} ${c.title} is not needed by any function`,'A person no function involves is not part of the context.']);
+  for(const z of M.CZ){if(!z.members.length)out.push(['warn',`${z.id} ${z.title} contains nothing`,'A zone with no members draws an empty box.']);}
+  for(const f of M.FC){if(!f.cc.length&&!f.cp.length)out.push(['warn',`${f.id} ${f.title} needs nothing from the context`,'Unusual. Most functions depend on something or someone outside the product. If it truly is self-contained, fine.']);if(!f.pc.length)out.push(['warn',`${f.id} ${f.title} uses no product component`,'A function should be traceable to the component(s) that perform it.']);}
+  for(const u of M.CU)if(!u.on.length)out.push(['stop',`${u.id} ${u.title} affects nothing`,'The template requires the affected context component, person, zone or product. A condition that constrains nothing is a wish.']);
+  const constrained=new Set();for(const u of M.CU)u.on.forEach(x=>constrained.add(x));
+  for(const c of M.CC)if(needCC.has(c.id)&&!constrained.has(c.id))out.push(['warn',`${c.id} ${c.title} has no condition of use`,'A function depends on it, but nothing must be true about it? Usually something must. If genuinely nothing, say so in its description.']);
+  for(const u of M.CU)if(!u.owner)out.push(['warn',`${u.id} ${u.title} is assigned to nobody`,'A condition nobody is responsible for is a condition nobody meets. Pick the context person whose job it is; if that person is not in the list, that is a missing person.']);
+  for(const u of M.CU){const o=M.CP.find(p=>p.id===u.owner);if(o&&o.skill==='ordinary'&&!(u.plain||'').trim())out.push(['warn',`${u.id} ${u.title} is an ordinary person’s job but has no plain-words instruction`,'The user view will fall back to the technical title, which that reader will not act on.']);}
+  const broken=new Set();for(const r of M.RI)r.cu.forEach(x=>broken.add(x));
+  for(const u of M.CU)if(!broken.has(u.id))out.push(['warn',`${u.id} ${u.title} has no risk stating what happens if it is not met`,'Chapter 2.5 is the consequence of chapter 2.4. A condition with no named consequence will not be taken seriously.']);
+  for(const s of M.SP)if(!s.on.length)out.push(['warn',`${s.id} ${s.title} is not placed on anything`,'The template’s “affected component” column: a component, an interface, or the product.']);
+  for(const r of M.RI){if(!r.cu.length&&!r.fc.length)out.push(['warn',`${r.id} ${r.title} points at no condition and no function`,'A risk needs an anchor.']);if(!(r.damage||'').trim())out.push(['warn',`${r.id} ${r.title} names no potential damage`,'The template asks for it.']);}
+  for(const li of M.LI){if(!li.pi)out.push(['warn',`Logical interface “${li.proto||'?'}” is not assigned to a physical interface`,'The connector cannot be drawn without one.']);if(!li.fc.length)out.push(['warn',`Logical interface “${li.proto||'?'}” serves no function`,'The template’s function column. An open port with no function is a finding, not a feature.']);}
+  const ids={};for(const k of ['PC','PI','SP','FC','CC','CP','CZ','CU','RI'])for(const it of M[k]){if(ids[it.id])out.push(['stop',`Duplicate ID ${it.id}`,'IDs must be unique.']);ids[it.id]=1;}
+  return out;
+}
+function renderChecks(){
+  const ul=$('#checks');ul.innerHTML='';const out=checks();
+  const stops=out.filter(x=>x[0]==='stop').length,warns=out.length-stops;
+  const sm=$('#chkSummary');sm.className='tag '+(stops?'RI':warns?'CU':'PC');sm.textContent=stops?stops+' to fix':warns?warns+' to look at':'clean';
+  if(!out.length){ul.append(el('li',{},el('span',{class:'lv ok'},'OK'),el('span',{},'Every context item is needed by a function, every condition constrains something, every condition has a named consequence.')));return;}
+  for(const[lv,msg,why]of out)ul.append(el('li',{},el('span',{class:'lv '+lv},lv==='stop'?'FIX':'CHECK'),el('span',{},msg,el('span',{class:'why'},why))));
+}
+
+/* ---------- figure: one picture, layers ---------- */
+function renderScope(){
+  const s=$('#figScope');const cur=s.value;s.innerHTML='';
+  s.append(el('option',{value:'product'},'1.1.4 Product diagram'));
+  s.append(el('option',{value:'sp'},'1.2.3 Security property diagram'));
+  s.append(el('option',{value:'context'},'2.2.4 Context diagram'));
+  for(const f of M.FC)s.append(el('option',{value:'fc:'+f.id},'2.3.2 Function diagram: '+f.id+' '+f.title));
+  s.append(el('option',{value:'cu'},'2.4.2 Conditions of use diagram'));
+  for(const r of M.RI)s.append(el('option',{value:'ri:'+r.id},'2.5.2 Risk diagram: '+r.id+' '+r.title.slice(0,40)));
+  const inc=$('#uvInstructed').checked;const audience=M.CP.filter(p=>p.skill==='ordinary'||(inc&&p.skill==='instructed'));
+  s.append(el('option',{value:'user:all'},'USER VIEW (preview): everyone non-technical'));
+  for(const p of audience)s.append(el('option',{value:'user:'+p.id},'USER VIEW (preview): '+p.id+' '+p.title+' ('+p.skill+')'));
+  s.value=[...s.options].some(o=>o.value===cur)?cur:'context';
+}
+function figureSVG(scope,opts){
+  const layer=scope.split(':')[0],focusId=scope.split(':')[1];
+  if(layer==='user')return userSVG(focusId,opts);
+  const showCtx=!(layer==='product'||layer==='sp');
+  const showSP=layer==='sp'||(opts.sp&&(layer==='fc'||layer==='ri'||layer==='cu'));
+  const showCU=layer==='cu'||(opts.cu&&(layer==='fc'||layer==='ri'));
+  const focus=layer==='fc'?M.FC.find(f=>f.id===focusId):layer==='ri'?M.RI.find(r=>r.id===focusId):null;
+  const path=focus?(focus.path||[]).filter(id=>findAny(id)):[];
+  const hi=new Set(path);if(focus&&layer==='fc'){[...focus.pc,...focus.pi,...focus.cc,...focus.cp,...focus.cz].forEach(x=>hi.add(x));}
+  if(focus&&layer==='ri'){focus.cu.forEach(u=>{const cu=M.CU.find(x=>x.id===u);if(cu)cu.on.forEach(x=>hi.add(x));});}
+  const dim=id=>focus&&hi.size&&!hi.has(id)?' opacity=".28"':'';
+
+  const W=1000,pad=16;const boxX=pad+8,boxW=330,nodeH=34,gapY=12;
+  const spOn={};if(showSP)for(const s of M.SP)for(const o of s.on)(spOn[o]=spOn[o]||[]).push(s);
+  const cuOn={};if(showCU)for(const u of M.CU)for(const o of u.on)(cuOn[o]=cuOn[o]||[]).push(u);
+  const hOf=(id,base)=>base+((spOn[id]||[]).length+(cuOn[id]||[]).length)*15;
+  const pos={};let y=70;const pcX=boxX+14,pcW=150;
+  for(const p of M.PC){const h=hOf(p.id,nodeH);pos[p.id]={x:pcX,y,w:pcW,h,kind:'PC'};y+=h+gapY;}
+  const pcBottom=y;y=70;const piX=boxX+boxW-98,piW=110;
+  for(const p of M.PI){const h=hOf(p.id,nodeH);pos[p.id]={x:piX,y,w:piW,h,kind:'PI'};y+=h+gapY;}
+  const piBottom=y;
+  const prodSP=(spOn[PRODUCT]||[]),prodCU=(cuOn[PRODUCT]||[]);
+  const boxTop=42,boxBottom=Math.max(pcBottom,piBottom,140)+10+(prodSP.length+prodCU.length)*15;
+  const ctxX=boxX+boxW+150,ctxW=200;const zoneOf={};for(const z of M.CZ)for(const m of z.members)zoneOf[m]=z.id;
+  const groups=[];for(const z of M.CZ)groups.push({z,members:[...M.CC,...M.CP].filter(n=>zoneOf[n.id]===z.id)});
+  const unz=[...M.CC,...M.CP].filter(n=>!zoneOf[n.id]);if(unz.length)groups.push({z:null,members:unz});
+  y=showCtx?58:0;const zoneRects=[];
+  if(showCtx)for(const g of groups){
+    const gy=y;if(g.z){y+=22;}
+    for(const n of g.members){const kind=M.CP.includes(n)?'CP':'CC';const h=hOf(n.id,nodeH);pos[n.id]={x:ctxX,y,w:ctxW,h,kind};y+=h+gapY;}
+    if(g.z){const extra=((cuOn[g.z.id]||[]).length*15);zoneRects.push({z:g.z,x:ctxX-14,y:gy-8,w:ctxW+28,h:(y-gy)+6+extra});y+=extra+10;}
+    y+=6;
+  }
+  const H=Math.max(boxBottom,y,200)+40;
+  const s=[];
+  s.push(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${esc(layerTitle(scope))}: product components and interfaces inside the product boundary; context components and persons outside, attached to the interfaces they touch; security properties and conditions of use as badges; function and risk paths as numbered steps." font-family="system-ui,Helvetica,Arial,sans-serif" font-size="11">`);
+  s.push(`<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6b7a86"/></marker></defs>`);
+  s.push(`<rect x="0" y="0" width="${W}" height="${H}" fill="#fcfcf9"/>`);
+  s.push(`<text x="${pad}" y="22" font-size="12" font-weight="600" fill="#16212b">${esc(layerTitle(scope))}</text>`);
+  s.push(`<rect x="${boxX}" y="${boxTop}" width="${boxW}" height="${boxBottom-boxTop}" rx="8" fill="none" stroke="#2f7d5b" stroke-width="1.6" stroke-dasharray="6 4"${dim(PRODUCT)}/>`);
+  s.push(`<text x="${boxX+10}" y="${boxTop-6}" fill="#2f7d5b" font-size="10.5" letter-spacing="1">${esc((M.product.name||'PRODUCT').toUpperCase())}${M.product.model?' '+esc(M.product.model):''} (PRODUCT BOUNDARY)</text>`);
+  let py=boxBottom-8-(prodSP.length+prodCU.length)*15;
+  for(const sp of prodSP){s.push(badge(boxX+12,py,sp,'#2f7d5b'));py+=15;}
+  for(const cu of prodCU){s.push(badge(boxX+12,py,cu,'#a9660f'));py+=15;}
+  if(showCtx)s.push(`<text x="${ctxX-14}" y="${boxTop-6}" fill="#a9660f" font-size="10.5" letter-spacing="1">CONTEXT · manufacturer’s assumptions · user’s responsibility</text>`);
+  for(const zr of zoneRects){s.push(`<rect x="${zr.x}" y="${zr.y}" width="${zr.w}" height="${zr.h}" rx="10" fill="none" stroke="#a9660f" stroke-width="1" stroke-dasharray="3 3"${dim(zr.z.id)}/>`);s.push(`<text x="${zr.x+8}" y="${zr.y+13}" font-size="10" fill="#a9660f"><tspan font-family="ui-monospace,Menlo,monospace" font-weight="700">${esc(zr.z.id)}</tspan> ${esc(zr.z.title)} · ${esc(zr.z.type)} · ${esc(zr.z.access)}</text>`);let cy=zr.y+zr.h-6-((cuOn[zr.z.id]||[]).length*15);for(const cu of (cuOn[zr.z.id]||[])){s.push(badge(zr.x+8,cy,cu,'#a9660f'));cy+=15;}}
+  for(const p of M.PC)for(const i of M.PI){const A=pos[p.id],B=pos[i.id];if(A&&B&&M.FC.some(f=>f.pc.includes(p.id)&&f.pi.includes(i.id)))s.push(`<line x1="${A.x+A.w}" y1="${A.y+17}" x2="${B.x}" y2="${B.y+17}" stroke="#2f7d5b" stroke-width="1" opacity=".35"/>`);}
+  if(showCtx)for(const n of [...M.CC,...M.CP]){const B=pos[n.id];if(!B)continue;for(const piId of (n.via||[])){const A=pos[piId];if(!A)continue;
+    const lis=M.LI.filter(l=>l.pi===piId);const lab=opts.proto?[...new Set(lis.map(l=>l.proto).filter(Boolean))].join(', '):'';
+    const onPath=path.includes(piId)&&path.includes(n.id)&&Math.abs(path.indexOf(piId)-path.indexOf(n.id))===1;
+    const col=onPath?(layer==='ri'?'#b3382c':'#3b5bb5'):'#6b7a86';
+    s.push(`<line x1="${A.x+A.w}" y1="${A.y+17}" x2="${B.x}" y2="${B.y+17}" stroke="${col}" stroke-width="${onPath?2.2:1.1}"${onPath?'':' opacity=".7"'}${dim(n.id)}/>`);
+    if(lab){const mx=(A.x+A.w+B.x)/2,my=(A.y+B.y)/2+17;s.push(`<text x="${mx}" y="${my-4}" text-anchor="middle" font-size="9.5" fill="#5b6b78"${dim(n.id)}>${esc(lab)}</text>`);}
+  }}
+  const node=(id,fill,stroke,title,sub,kind)=>{const P=pos[id];if(!P)return'';let o=`<g${dim(id)}><rect x="${P.x}" y="${P.y}" width="${P.w}" height="${P.h}" rx="${kind==='CP'?17:5}" fill="${fill}" stroke="${stroke}" stroke-width="${hi.has(id)&&focus?2.2:1.2}"/>`;
+    o+=`<text x="${P.x+9}" y="${P.y+14}" font-size="9.5" font-weight="700" fill="${stroke}" font-family="ui-monospace,Menlo,monospace">${esc(id)}</text>`;
+    o+=`<text x="${P.x+9}" y="${P.y+27}" font-size="11.5" fill="#16212b">${esc(trunc(title,kind==='PI'?15:26))}</text>`;
+    if(sub)o+=`<text x="${P.x+P.w-6}" y="${P.y+14}" text-anchor="end" font-size="9" fill="#5b6b78">${esc(sub)}</text>`;
+    let by=P.y+nodeH+4;for(const sp of (spOn[id]||[])){o+=badge(P.x+9,by,sp,'#2f7d5b');by+=15;}for(const cu of (cuOn[id]||[])){o+=badge(P.x+9,by,cu,'#a9660f');by+=15;}
+    return o+'</g>';};
+  for(const p of M.PC)s.push(node(p.id,'#e7f3ec','#2f7d5b',p.title,'','PC'));
+  for(const p of M.PI)s.push(node(p.id,'#eef7f2','#2f7d5b',p.title,'PI','PI'));
+  if(showCtx){for(const c of M.CC)s.push(node(c.id,'#f6ecdc','#a9660f',c.title,'','CC'));for(const c of M.CP)s.push(node(c.id,'#fbf3e6','#a9660f',c.title,c.skill,'CP'));}
+  if(focus&&path.length){const col=layer==='ri'?'#b3382c':'#3b5bb5';const boxP={x:boxX,y:boxTop,w:boxW,h:boxBottom-boxTop};
+    for(let i=0;i<path.length-1;i++){const A=pos[path[i]]||(path[i]===PRODUCT?boxP:null),B=pos[path[i+1]]||(path[i+1]===PRODUCT?boxP:null);if(!A||!B)continue;
+      s.push(`<line x1="${A.x+A.w/2}" y1="${A.y+A.h/2}" x2="${B.x+B.w/2}" y2="${B.y+B.h/2}" stroke="${col}" stroke-width="2" stroke-dasharray="7 4" opacity=".85" marker-end="url(#ah)"/>`);}
+    path.forEach((id,i)=>{const P=pos[id]||(id===PRODUCT?{x:boxX,y:boxTop,w:boxW,h:0}:null);if(!P)return;const cx=P.x+P.w-12,cy=P.y+8;s.push(`<circle cx="${cx}" cy="${cy}" r="9" fill="${col}"/><text x="${cx}" y="${cy+3.5}" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">${i+1}</text>`);});
+    s.push(`<text x="${pad}" y="${H-28}" font-size="11" fill="${col}"><tspan font-weight="700">${esc(focus.id)}</tspan> ${esc(trunc(focus.title,90))}</text>`);
+  }
+  if(!M.PC.length&&!M.PI.length)s.push(`<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="#5b6b78" font-size="13">Add product components and interfaces, then a function, then tick what it needs from outside.</text>`);
+  s.push(`<text x="${W-pad}" y="${H-10}" text-anchor="end" font-size="9" fill="#b3ae9d">Drawn from the same lists as the tables · Cyber Manual template, example v0.22 structure · Value Chain Risk Institute · Method: the Derivation Rule, Marpet &amp; Viktor 2026 · CC BY 4.0</text>`);
+  s.push('</svg>');return s.join('');
+}
+function badge(x,y,it,col){return `<text x="${x}" y="${y+10}" font-size="9.5" fill="${col}">${col==='#2f7d5b'?'◆':'▸'} <tspan font-family="ui-monospace,Menlo,monospace" font-weight="700">${esc(it.id)}</tspan> ${esc(trunc(it.title,30))}</text>`;}
+function trunc(t,n){t=String(t||'');return t.length>n?t.slice(0,n-1)+'…':t;}
+function layerTitle(scope){const[l,id]=scope.split(':');if(l==='user'){const p=M.CP.find(x=>x.id===id);return 'User view (preview): '+(p?p.title:'everyone non-technical');}if(l==='product')return '1.1.4 Product diagram';if(l==='sp')return '1.2.3 Security property diagram';if(l==='context')return '2.2.4 Context diagram';if(l==='cu')return '2.4.2 Conditions of use diagram';if(l==='fc')return '2.3.2 Function diagram: '+id;if(l==='ri')return '2.5.2 Risk diagram: '+id;return 'Diagram';}
+function renderFigure(){const scope=$('#figScope').value||'context';const isUser=scope.startsWith('user:');$('#uvCtl').style.display=isUser?'inline-flex':'none';$('#uvAsk').style.display=isUser?'block':'none';const mode=(document.querySelector('input[name=uvMode]:checked')||{}).value||'A';$('#svgwrap').innerHTML=figureSVG(scope,{sp:$('#figSP').checked,cu:$('#figCU').checked,proto:$('#figProto').checked,mode,inc:$('#uvInstructed').checked});$('#figTitle').textContent=layerTitle(scope);}
+
+/* ---------- user view: same data, filtered and relabeled ---------- */
+function plainOf(id){const n=findAny(id);if(!n)return id;if(n.kind==='PRODUCT')return M.product.name||'this product';return (n.plain||'').trim()||n.title||id;}
+function audienceFor(focusId,inc){return M.CP.filter(p=>(focusId==='all'||p.id===focusId)&&(p.skill==='ordinary'||(inc&&p.skill==='instructed')));}
+function worldOf(person){
+  const conds=M.CU.filter(u=>u.owner===person.id);
+  const fns=M.FC.filter(f=>f.cp.includes(person.id));
+  const risks=M.RI.filter(r=>r.cu.some(c=>conds.some(u=>u.id===c))||r.fc.some(f=>fns.some(x=>x.id===f)));
+  const refs=new Set(person.via||[]);for(const u of conds)u.on.forEach(o=>refs.add(o));for(const r of risks)(r.path||[]).forEach(o=>{const n=findAny(o);if(n&&(n.kind==='PI'||n.kind==='CC'||n.kind==='PRODUCT'))refs.add(o);});
+  return {conds,fns,risks,refs:[...refs].filter(x=>x!==person.id)};
+}
+function wrap(text,max){const w=String(text||'').split(/\s+/);const lines=[];let cur='';for(const x of w){if((cur+' '+x).trim().length>max){lines.push(cur.trim());cur=x;}else cur+=' '+x;}if(cur.trim())lines.push(cur.trim());return lines;}
+function userSVG(focusId,opts){
+  const people=audienceFor(focusId,opts.inc);const W=1000;const s=[];let y=0;
+  const head=(H)=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="User view: for each non-technical person, what they must do, what happens if they do not, and what to look for." font-family="system-ui,Helvetica,Arial,sans-serif" font-size="12"><rect x="0" y="0" width="${W}" height="${H}" fill="#fcfcf9"/>`;
+  if(!people.length){return head(160)+`<text x="20" y="40" font-size="13" font-weight="600" fill="#16212b">No non-technical audience for this product.</text><text x="20" y="64" fill="#5b6b78">By the rule, a user view exists only for persons of ordinary skill${opts.inc?' or instructed skill':''} who are responsible for a condition of use or perform a function.</text><text x="20" y="84" fill="#5b6b78">The Engineering PC lists engineers and manufacturer staff (skilled) and maintenance staff (instructed). That is a finding, not an error.</text><text x="20" y="116" fill="#5b6b78">To see a populated view: tick “user view includes instructed persons” above, or set a person’s skill to ordinary.</text></svg>`;}
+  const mode=opts.mode||'A';
+  const blocks=[];
+  for(const p of people){const w=worldOf(p);blocks.push({p,w});}
+  if(mode==='B'){
+    y=24;const cards=[];
+    for(const {p,w} of blocks){
+      cards.push({t:'person',y});y+=34;
+      const items=[];
+      for(const u of w.conds){const rs=w.risks.filter(r=>r.cu.includes(u.id));items.push({u,rs});}
+      for(const r of w.risks.filter(r=>!w.conds.some(u=>r.cu.includes(u.id))))items.push({u:null,rs:[r]});
+      if(!items.length){cards.push({t:'none',y,p});y+=40;}
+      for(const it of items){
+        const doL=wrap(it.u?((it.u.plain||'').trim()||it.u.title):'(no condition stated; the risk below applies to a function you perform)',78);
+        const ifL=it.rs.length?wrap(it.rs.map(r=>(r.plainDamage||'').trim()||r.damage||r.title).join(' '),78):['(consequence not stated in the manual)'];
+        const refIds=new Set();if(it.u)it.u.on.forEach(o=>refIds.add(o));for(const r of it.rs)(r.path||[]).forEach(o=>{const n=findAny(o);if(n&&(n.kind==='PI'||n.kind==='CC'||n.kind==='PRODUCT'))refIds.add(o);});
+        const refs=[...refIds].filter(x=>x!==p.id).map(plainOf);
+        const whenSet=new Set();for(const r of it.rs)r.fc.forEach(f=>{const F=M.FC.find(x=>x.id===f);if(F)whenSet.add(F.phase||'use');});if(!whenSet.size)for(const F of w.fns)whenSet.add(F.phase||'use');
+        const when=[...whenSet].map(k=>(PHASES.find(x=>x[0]===k)||[k,k])[1]).join(', ')||'during use';
+        const h=66+doL.length*16+ifL.length*16+(refs.length?22:0);
+        cards.push({t:'card',y,h,doL,ifL,refs,when,id:it.u?it.u.id:it.rs[0].id});y+=h+12;
+      }
+      y+=10;
+    }
+    const H=y+40;s.push(head(H));
+    s.push(`<text x="20" y="16" font-size="11" fill="#5b6b78">USER VIEW · rendering B, cards · one card per condition, in the responsible person’s words</text>`);
+    for(const c of cards){
+      if(c.t==='person'){const b=blocks.find(b=>b.p.id===(c.p||{}).id);}
+    }
+    let bi=0;
+    for(const c of cards){
+      if(c.t==='person'){const {p}=blocks[bi++];s.push(`<text x="20" y="${c.y+18}" font-size="14" font-weight="700" fill="#a9660f">For: ${esc(plainOf(p.id)!==p.title?p.title+' ('+plainOf(p.id)+')':p.title)}</text><text x="${W-20}" y="${c.y+18}" text-anchor="end" font-size="10" fill="#5b6b78">${esc(p.skill)} · ${esc(p.id)}</text>`);continue;}
+      if(c.t==='none'){s.push(`<text x="20" y="${c.y+16}" fill="#5b6b78">Nothing is asked of this person, and no risk touches a function they perform.</text>`);continue;}
+      s.push(`<rect x="20" y="${c.y}" width="${W-40}" height="${c.h}" rx="8" fill="#ffffff" stroke="#d7dee3"/>`);
+      s.push(`<text x="36" y="${c.y+20}" font-size="10" letter-spacing="1" fill="#5b6b78">WHEN · ${esc(when_upper(c.when))}</text><text x="${W-36}" y="${c.y+20}" text-anchor="end" font-size="9.5" fill="#b3ae9d">${esc(c.id)}</text>`);
+      let yy=c.y+42;s.push(`<text x="36" y="${yy}" font-size="10" letter-spacing="1" fill="#2f7d5b">DO</text>`);c.doL.forEach((l,i)=>s.push(`<text x="80" y="${yy+i*16}" font-size="13" font-weight="600" fill="#16212b">${esc(l)}</text>`));yy+=c.doL.length*16+8;
+      s.push(`<text x="36" y="${yy}" font-size="10" letter-spacing="1" fill="#b3382c">IF NOT</text>`);c.ifL.forEach((l,i)=>s.push(`<text x="80" y="${yy+i*16}" font-size="12.5" fill="#16212b">${esc(l)}</text>`));yy+=c.ifL.length*16+6;
+      if(c.refs.length)s.push(`<text x="36" y="${yy}" font-size="10" letter-spacing="1" fill="#a9660f">LOOK FOR</text><text x="80" y="${yy}" font-size="12" fill="#16212b">${esc(c.refs.join(' · '))}</text>`);
+    }
+    s.push(`<text x="${W-20}" y="${H-10}" text-anchor="end" font-size="9" fill="#b3ae9d">User view, rendering B · same data as the technical diagrams · Value Chain Risk Institute · Method: the Derivation Rule, Marpet &amp; Viktor 2026 · CC BY 4.0</text></svg>`);
+    return s.join('');
+  }
+  /* mode A: filtered picture. Nodes the audience can see or touch; plain names; no IDs, no protocols; conditions as imperatives; risks as consequences. */
+  const refs=new Set();const conds=[];const risks=[];
+  for(const {p,w} of blocks){p.via.forEach(v=>refs.add(v));w.refs.forEach(r=>refs.add(r));w.conds.forEach(u=>conds.push({p,u}));w.risks.forEach(r=>{if(!risks.some(x=>x.r.id===r.id))risks.push({p,r});});}
+  const visPI=M.PI.filter(i=>refs.has(i.id)),visCC=M.CC.filter(c=>refs.has(c.id));
+  const prodConds=conds.filter(x=>x.u.on.includes(PRODUCT));
+  const nodeH=40;const boxX=24,boxW=300;let yl=80;const pos={};
+  for(const i of visPI){pos[i.id]={x:boxX+boxW-150,y:yl,w:136,h:nodeH};yl+=nodeH+14;}
+  const boxBottom=Math.max(yl,150)+24+prodConds.length*30;
+  let yr=80;const cx=boxX+boxW+170;for(const c of visCC){const cs=conds.filter(x=>x.u.on.includes(c.id));const h=nodeH+cs.length*30;pos[c.id]={x:cx,y:yr,w:300,h,cs};yr+=h+16;}
+  let yp=Math.max(boxBottom,yr)+30;const peopleY=yp;yp+=blocks.length*56;
+  const riskY=yp+10;const riskLines=risks.map(({r})=>wrap((r.plainDamage||'').trim()||r.damage||r.title,110));const H=riskY+40+riskLines.reduce((a,l)=>a+l.length*16+22,0)+30;
+  s.push(head(H));
+  s.push(`<text x="20" y="16" font-size="11" fill="#5b6b78">USER VIEW · rendering A, picture · only what these people can see, touch or decide about; names in their words</text>`);
+  s.push(`<rect x="${boxX}" y="52" width="${boxW}" height="${boxBottom-52}" rx="10" fill="#eef7f2" stroke="#2f7d5b" stroke-width="1.5"/><text x="${boxX+14}" y="74" font-size="14" font-weight="700" fill="#16212b">${esc(M.product.name||'This product')}</text>`);
+  let pcy=boxBottom-10-prodConds.length*30;for(const {u} of prodConds){wrap((u.plain||'').trim()||u.title,40).slice(0,2).forEach((l,i)=>s.push(`<text x="${boxX+14}" y="${pcy+i*14}" font-size="11.5" font-weight="600" fill="#a9660f">${i===0?'▸ ':'  '}${esc(l)}</text>`));pcy+=30;}
+  for(const i of visPI){const P=pos[i.id];s.push(`<rect x="${P.x}" y="${P.y}" width="${P.w}" height="${P.h}" rx="6" fill="#ffffff" stroke="#2f7d5b"/><text x="${P.x+10}" y="${P.y+24}" font-size="12" fill="#16212b">${esc(trunc(plainOf(i.id),20))}</text>`);}
+  for(const c of visCC){const P=pos[c.id];for(const pi of (c.via||[]))if(pos[pi])s.push(`<line x1="${pos[pi].x+pos[pi].w}" y1="${pos[pi].y+20}" x2="${P.x}" y2="${P.y+20}" stroke="#6b7a86" stroke-width="1.4"/>`);
+    s.push(`<rect x="${P.x}" y="${P.y}" width="${P.w}" height="${P.h}" rx="8" fill="#fbf3e6" stroke="#a9660f" stroke-width="1.3"/><text x="${P.x+12}" y="${P.y+24}" font-size="13" font-weight="600" fill="#16212b">${esc(trunc(plainOf(c.id),34))}</text>`);
+    let cy=P.y+nodeH+4;for(const {u} of P.cs){wrap((u.plain||'').trim()||u.title,44).slice(0,2).forEach((l,i)=>s.push(`<text x="${P.x+12}" y="${cy+i*14}" font-size="11.5" font-weight="600" fill="#a9660f">${i===0?'▸ ':'  '}${esc(l)}</text>`));cy+=30;}}
+  let py=peopleY;for(const {p,w} of blocks){s.push(`<circle cx="38" cy="${py+16}" r="14" fill="#f6ecdc" stroke="#a9660f"/><text x="38" y="${py+20}" text-anchor="middle" font-size="12" fill="#a9660f">☺</text><text x="62" y="${py+13}" font-size="13" font-weight="700" fill="#16212b">${esc(p.title)}</text><text x="62" y="${py+30}" font-size="11" fill="#5b6b78">${esc(w.conds.length)} thing${w.conds.length===1?'':'s'} to do or not do · ${esc(w.fns.length)} task${w.fns.length===1?'':'s'} · ${esc(p.skill)}</text>`);py+=56;}
+  let ry=riskY;s.push(`<text x="20" y="${ry}" font-size="10" letter-spacing="1" fill="#b3382c">IF THE ABOVE IS NOT FOLLOWED</text>`);ry+=22;
+  riskLines.forEach((lines,i)=>{s.push(`<text x="20" y="${ry}" font-size="10" fill="#b3382c">⚠</text>`);lines.forEach((l,j)=>s.push(`<text x="40" y="${ry+j*16}" font-size="12.5" fill="#16212b">${esc(l)}</text>`));ry+=lines.length*16+22;});
+  s.push(`<text x="${W-20}" y="${H-10}" text-anchor="end" font-size="9" fill="#b3ae9d">User view, rendering A · same data as the technical diagrams · Value Chain Risk Institute · Method: the Derivation Rule, Marpet &amp; Viktor 2026 · CC BY 4.0</text></svg>`);
+  return s.join('');
+}
+function when_upper(w){return String(w||'').toUpperCase();}
+
+/* ---------- document, in the template's chapter order ---------- */
+function renderDoc(){
+  const d=$('#doc');
+  const ref=id=>{const x=findAny(id);if(!x)return esc(id);return x.kind==='PRODUCT'?'<span class="id">Product</span> '+esc(x.title):`<span class="id">${esc(x.id)}</span> ${esc(x.title||'')}`;};
+  const list=ids=>(ids||[]).map(ref).join('<br>');
+  let h=`<h2>${esc(M.product.name||'Product')}${M.product.model?' · '+esc(M.product.model):''}</h2><div class="ver">${esc(M.product.version||'')} · generated ${new Date().toISOString().slice(0,10)} · paste into the template</div>`;
+  h+=`<div class="note">Chapter numbers and column order follow the working group’s Engineering PC example v0.22 (9 September 2026). The diagrams for 1.1.4, 1.2.3, 2.2.4, 2.3.2, 2.4.2 and 2.5.2 are the figure above; pick the layer, then use Download diagram.</div>`;
+  h+=`<h3>1.1.2 Product component (PC) list</h3><table><tr><th>ID</th><th>Title / Description</th></tr>`;for(const p of M.PC)h+=`<tr><td class="id">${esc(p.id)}</td><td><b>${esc(p.title)}</b><br>${esc(p.desc)}</td></tr>`;h+=`</table>`;
+  h+=`<h3>1.1.3 Product interfaces (PI) list</h3><h4>Physical interfaces</h4><table><tr><th>ID</th><th>Title / Description</th></tr>`;for(const p of M.PI)h+=`<tr><td class="id">${esc(p.id)}</td><td><b>${esc(p.title)}</b><br>${esc(p.desc)}</td></tr>`;h+=`</table>`;
+  h+=`<h4>Logical interfaces</h4><table><tr><th>Protocol / Service / URL</th><th>Physical interface</th><th>Port</th><th>Incoming, outgoing</th><th>Function</th></tr>`;for(const li of M.LI)h+=`<tr><td>${esc(li.proto)}${li.url?'<br>'+esc(li.url):''}</td><td>${li.pi?ref(li.pi):''}</td><td>${esc(li.port)}</td><td>${{in:'Incoming',out:'Outgoing',both:'Both'}[li.dir]||''}</td><td>${list(li.fc)}</td></tr>`;h+=`</table>`;
+  h+=`<h3>1.2.1 Security property (SP) list</h3><table><tr><th>ID</th><th>Affected component(s)</th><th>Title &amp; Description</th></tr>`;for(const s of M.SP)h+=`<tr><td class="id">${esc(s.id)}</td><td>${list(s.on)}</td><td><b>${esc(s.title)}</b><br>${esc(s.desc)}</td></tr>`;h+=`</table>`;
+  h+=`<h3>2.2.1 Context component (CC) list</h3><table><tr><th>ID</th><th>Title &amp; Description</th><th>Touches interface</th><th>Needed by</th></tr>`;for(const c of M.CC){const by=M.FC.filter(f=>f.cc.includes(c.id)).map(f=>f.id);h+=`<tr><td class="id">${esc(c.id)}</td><td><b>${esc(c.title)}</b><br>${esc(c.desc)}</td><td>${list(c.via)}</td><td>${list(by)}</td></tr>`;}h+=`</table>`;
+  h+=`<h3>2.2.2 Context person (CP) list</h3><table><tr><th>ID</th><th>Title &amp; Description</th><th>Skill</th><th>Needed by</th></tr>`;for(const c of M.CP){const by=M.FC.filter(f=>f.cp.includes(c.id)).map(f=>f.id);h+=`<tr><td class="id">${esc(c.id)}</td><td><b>${esc(c.title)}</b><br>${esc(c.desc)}</td><td>${esc(c.skill)}</td><td>${list(by)}</td></tr>`;}h+=`</table>`;
+  h+=`<h3>2.2.3 Context zone (CZ) list</h3><table><tr><th>ID</th><th>Title &amp; Description</th><th>Type</th><th>Access</th><th>Contains</th></tr>`;for(const z of M.CZ)h+=`<tr><td class="id">${esc(z.id)}</td><td><b>${esc(z.title)}</b><br>${esc(z.desc)}</td><td>${esc(z.type)}</td><td>${esc(z.access)}</td><td>${list(z.members)}</td></tr>`;h+=`</table>`;
+  h+=`<h3>2.3.1 Function (FC) list</h3><table><tr><th>ID</th><th>Title &amp; Description</th><th>Core / ancillary</th><th>Intended purpose / foreseeable use</th><th>Uses</th><th>Needs</th></tr>`;for(const f of M.FC)h+=`<tr><td class="id">${esc(f.id)}</td><td><b>${esc(f.title)}</b><br>${esc(f.desc)}</td><td>${esc(f.core)}</td><td>${f.use==='foreseeable'?'reasonably foreseeable use':'intended purpose'}</td><td>${list([...f.pc,...f.pi])}</td><td>${list([...f.cc,...f.cp,...f.cz])}</td></tr>`;h+=`</table>`;
+  h+=`<h3>2.4.1 Conditions of use (CU) list</h3><table><tr><th>ID</th><th>Affected context component (CC) / person (CP) / zone (CZ)</th><th>Title &amp; Description</th><th>Responsible person <span style="font-weight:400;color:#7a7768">(preview field)</span></th></tr>`;for(const u of M.CU)h+=`<tr><td class="id">${esc(u.id)}</td><td>${list(u.on)}</td><td><b>${esc(u.title)}</b><br>${esc(u.desc)}</td><td>${u.owner?ref(u.owner):'<i>nobody assigned</i>'}</td></tr>`;h+=`</table>`;
+  h+=`<h3>2.5.1 Risk (RI) list</h3><table><tr><th>ID</th><th>Title and Description (reasonably foreseeable misuse or circumstance leading to risk)</th><th>Potential damage</th><th>Affects (FC) / breaks (CU)</th></tr>`;for(const r of M.RI)h+=`<tr><td class="id">${esc(r.id)}</td><td><b>${esc(r.title)}</b><br>${esc(r.desc)}</td><td>${esc(r.damage||'')}</td><td>${list([...r.fc,...r.cu])}</td></tr>`;h+=`</table>`;
+  h+=`<h3>2.7.2 Secure use, derived (function → conditions)</h3><table><tr><th>Function</th><th>Conditions of use that apply</th></tr>`;for(const f of M.FC){const scope=new Set([...f.cc,...f.cp,...f.cz,PRODUCT]);const cus=M.CU.filter(u=>u.on.some(o=>scope.has(o)));h+=`<tr><td>${ref(f.id)}</td><td>${cus.map(u=>ref(u.id)).join('<br>')||'<i>none derived</i>'}</td></tr>`;}h+=`</table><div class="note">This table is computed, not typed: a function inherits every condition attached to anything it needs, plus conditions on the product itself. That is what the template’s 2.7.2 “instructions for secure use” table is, and it is why deriving context from functions matters.</div>`;
+  const aud=audienceFor('all',$('#uvInstructed').checked);
+  h+=`<h3>User instructions, derived (preview)</h3><div class="note">Computed for each person of ordinary${$('#uvInstructed').checked?' or instructed':''} skill: the conditions they are responsible for, in their words, and the consequence of not meeting them. This is the text form of the user view above, and the candidate content for a non-technical section of the manual.</div>`;
+  if(!aud.length)h+=`<p><i>No non-technical audience by the rule: no person of the selected skill levels is present in the context.</i></p>`;
+  for(const p of aud){const w=worldOf(p);h+=`<h4>For ${esc(p.title)}${(p.plain||'').trim()?' ('+esc(p.plain)+')':''}</h4><table><tr><th>When</th><th>Do</th><th>If not</th><th>Look for</th></tr>`;
+    const items=[];for(const u of w.conds)items.push({u,rs:w.risks.filter(r=>r.cu.includes(u.id))});for(const r of w.risks.filter(r=>!w.conds.some(u=>r.cu.includes(u.id))))items.push({u:null,rs:[r]});
+    if(!items.length)h+=`<tr><td colspan="4"><i>Nothing is asked of this person.</i></td></tr>`;
+    for(const it of items){const ws=new Set();for(const r of it.rs)r.fc.forEach(f=>{const F=M.FC.find(x=>x.id===f);if(F)ws.add(F.phase||'use');});if(!ws.size)for(const F of w.fns)ws.add(F.phase||'use');const when=[...ws].map(k=>(PHASES.find(x=>x[0]===k)||[k,k])[1]).join(', ')||'during use';
+      const refIds=new Set();if(it.u)it.u.on.forEach(o=>refIds.add(o));for(const r of it.rs)(r.path||[]).forEach(o=>{const n=findAny(o);if(n&&(n.kind==='PI'||n.kind==='CC'||n.kind==='PRODUCT'))refIds.add(o);});
+      h+=`<tr><td>${esc(when)}</td><td>${it.u?esc((it.u.plain||'').trim()||it.u.title):'<i>no condition stated</i>'}</td><td>${it.rs.length?esc(it.rs.map(r=>(r.plainDamage||'').trim()||r.damage||r.title).join(' ')):'<i>consequence not stated</i>'}</td><td>${[...refIds].filter(x=>x!==p.id).map(plainOf).map(esc).join(' · ')}</td></tr>`;}
+    h+=`</table>`;}
+  h+=`<small class="wm">Generated with the VCRI Context &amp; Conditions of Use Builder · valuechainrisk.org/cyber-manual/context/ · Method: The Derivation Rule for Context and Conditions of Use, Marpet &amp; Viktor, VCRI 2026 · CC BY 4.0 · built on the Cyber Manual Movement template</small>`;
+  d.innerHTML=h;
+}
+
+/* ---------- io ---------- */
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1600);}
+function download(name,mime,data){const b=new Blob([data],{type:mime});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},300);}
+$('#btnExample').onclick=()=>{if(!M.FC.length||confirm('Replace current work with the Engineering PC example?'))example();};
+$('#btnExample2').onclick=()=>{if(!M.FC.length||confirm('Replace current work with the Heat Pump Controller example?'))example2();};
+$('#btnNew').onclick=()=>{if(confirm('Clear everything and start a new product?')){M=blank();save();render();}};
+$('#btnExport').onclick=()=>download((M.product.name||'cyber-manual-context').replace(/[^\w.-]+/g,'-')+'.context.json','application/json',JSON.stringify(M,null,2));
+$('#btnImport').onclick=()=>$('#fileIn').click();
+$('#fileIn').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||!o.FC)throw 0;M=Object.assign(blank(),o);save();render();toast('Imported');}catch(err){alert('That file is not a context JSON from this tool.');}};r.readAsText(f);e.target.value='';};
+$('#btnSvg').onclick=()=>{const scope=$('#figScope').value||'context';download((M.product.name||'context').replace(/[^\w.-]+/g,'-')+'-'+scope.replace(':','-')+'.svg','image/svg+xml',figureSVG(scope,{sp:$('#figSP').checked,cu:$('#figCU').checked,proto:$('#figProto').checked}));};
+$('#btnPrint').onclick=()=>window.print();
+for(const id of ['figScope','figSP','figCU','figProto'])$('#'+id).onchange=()=>{if(id==='figScope')location.hash='layer='+encodeURIComponent($('#figScope').value);renderFigure();};
+$('#uvInstructed').onchange=()=>{renderScope();renderFigure();};
+document.querySelectorAll('input[name=uvMode]').forEach(r=>r.onchange=renderFigure);
+function applyHash(){const mm=/mode=([AB])/.exec(location.hash);if(mm){const r=document.querySelector('input[name=uvMode][value='+mm[1]+']');if(r)r.checked=true;}const m=/layer=([^&]+)/.exec(location.hash);if(m){const v=decodeURIComponent(m[1]);const s=$('#figScope');if([...s.options].some(o=>o.value===v)){s.value=v;renderFigure();}}}
+window.addEventListener('hashchange',applyHash);
+
+load();
+if(!M.FC.length&&!M.PC.length)example2();else render();
+applyHash();
+})();
+</script>
+</body>
+</html>
