@@ -29,10 +29,16 @@ owns the template, the scenario libraries, and the worked examples.**
   to write, by treating it as a chain rather than a judgment: a context
   component exists only because a function needs it, a condition of use only
   because a context component must satisfy it, a risk only as a condition not
-  met. Built to template v0.23; emits chapters 1.2.1, 2.2.1, 2.3.1, 2.4.1 and
-  2.5.1 in the template's column order, computes 2.7.2, and draws the optional
-  diagrams (2.2.2, 2.3.2, 2.4.2) from the same lists. Ships with the fictitious
-  Engineering PC example fully populated. The concept behind it is written up
+  met. Structure follows the working group's Engineering PC example v0.22
+  (9 September 2026): product interfaces with a logical-interface table,
+  context as components, persons (with skill) and zones (with type and access),
+  conditions of use that can affect any of those or the product itself. Emits
+  chapters 1.1.2, 1.1.3, 1.2.1, 2.2.1 to 2.2.3, 2.3.1, 2.4.1 and 2.5.1 in the
+  template's chapter order, computes 2.7.2, and draws all six optional diagrams
+  (1.1.4, 1.2.3, 2.2.4, 2.3.2, 2.4.2, 2.5.2) as layers over one picture, with
+  function and risk paths as numbered steps. Ships with the working group's
+  Engineering PC example, seeded faithfully; the level-of-detail checks show
+  where that example is still incomplete, which is the point. The concept behind it is written up
   and citable as a method note: [The Derivation Rule for Context and Conditions
   of Use](./cyber-manual/context/METHOD.md) (Marpet & Viktor, VCRI, 2026).
 - The **TARA Builder** is the Annex VII companion VCRI authored to complete the

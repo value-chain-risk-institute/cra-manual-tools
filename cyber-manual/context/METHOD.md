@@ -43,6 +43,10 @@ Therefore:
    Ask what happens if this condition is violated. Each answer is a risk with
    its potential damage.
 
+In the current template, context is three lists, components, persons and
+zones, and the rule applies to each of them identically: a person or a zone
+exists in the manual only because a function needs it.
+
 Product components are the one list that is not derived from anything. They
 are what the manufacturer already knows, and every function and security
 property points back at them.
