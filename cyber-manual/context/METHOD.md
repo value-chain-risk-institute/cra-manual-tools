@@ -89,6 +89,51 @@ Each link in the chain yields a check that can be applied by hand:
 - A product component used by no function and holding no security property is
   either a missing function or a row not worth having.
 
+## Extension, 10 September 2026: the audience is derived too
+
+A recurring question is whether a product needs a second, non-technical
+diagram, and for whom. The answer follows from the same chain.
+
+Every condition of use is somebody's job. The template already gives each
+context person a skill level: ordinary, instructed, skilled. So the audience
+is not a property of the product. It is read off the persons responsible for
+the conditions of use.
+
+- If every condition is the responsibility of a skilled or instructed person,
+  the technical diagram is the diagram. There is no second audience.
+- If any condition is the responsibility of an ordinary person, that condition
+  must reach them in a form they can act on. The CRA does not require a
+  picture; it requires the information to be clear, understandable,
+  intelligible and legible to the user. A picture is often the cheapest way
+  to meet that requirement for an ordinary person, which is the honest case
+  for a non-technical diagram: not mandated, but frequently the easiest route
+  to compliance.
+
+This needs one field the template does not yet carry on a condition of use:
+who is responsible for satisfying it. A condition assigned to nobody is a
+condition nobody meets, so the field earns its place independently of the
+diagram question.
+
+**Translating the technical diagram for an ordinary person** is a filter and
+a relabel, from the same data. Keep only the nodes that person can see, touch,
+or decide about. Delete every internal component, protocol label and path
+step they never encounter. Relabel what remains in their vocabulary: not "PI03
+USB (CDC, MSC)" but "the USB port on the side." Show each of their conditions
+as an instruction and each risk as its consequence, in outcomes they
+recognise: the machine stops, the batch is ruined, someone is hurt. The risk
+diagram's numbered steps become a short story with the middle collapsed.
+
+**What matters to that reader, and nothing else:** what I must do or not do;
+what happens if I do not; how I recognise the thing you mean; and when, in the
+product's life, this applies.
+
+**Sub-assemblies.** A component manufacturer's context persons are integrators,
+all skilled, so by the rule its own manual needs no non-technical rendering.
+Its obligation is different: to mark which conditions of use survive
+integration and must be carried into the next manufacturer's manual, where
+they may meet an ordinary person. That gives the integration-guidance chapter
+a precise job.
+
 ## What is the working group's and what is ours
 
 The definitions of product, context, function, security property, condition of
