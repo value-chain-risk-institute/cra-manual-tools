@@ -32,7 +32,9 @@ owns the template, the scenario libraries, and the worked examples.**
   met. Built to template v0.23; emits chapters 1.2.1, 2.2.1, 2.3.1, 2.4.1 and
   2.5.1 in the template's column order, computes 2.7.2, and draws the optional
   diagrams (2.2.2, 2.3.2, 2.4.2) from the same lists. Ships with the fictitious
-  Engineering PC example fully populated.
+  Engineering PC example fully populated. The concept behind it is written up
+  and citable as a method note: [The Derivation Rule for Context and Conditions
+  of Use](./cyber-manual/context/METHOD.md) (Marpet & Viktor, VCRI, 2026).
 - The **TARA Builder** is the Annex VII companion VCRI authored to complete the
   pair. Its methodology is informed by ISO/SAE 21434-style TARA practice; all
   rubric anchors are authored originally, with no text reproduced from paywalled
