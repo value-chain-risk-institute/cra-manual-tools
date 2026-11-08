@@ -178,7 +178,7 @@ details{margin:6px 0} summary{cursor:pointer;font-size:12.5px;color:var(--accent
     <button class="mini" onclick="addCustomIf()">Add</button>
   </div>
 
-  <label style="margin-top:14px">Assets &amp; damage scenarios — what an attacker could harm, and the resulting damage.</label>
+  <label style="margin-top:14px">Assets &amp; damage scenarios: what an attacker could harm, and the resulting damage.</label>
   <div id="assets"></div>
   <button class="mini" onclick="addAsset()">+ Asset</button>
 </div>
@@ -193,7 +193,7 @@ details{margin:6px 0} summary{cursor:pointer;font-size:12.5px;color:var(--accent
 
 <div class="panel noprint">
   <h2>3 · How scoring works</h2>
-  <p class="hint">Per scenario: rate five feasibility factors (higher barrier → lower feasibility) and four impact domains (overall impact = worst domain). Feasibility × Impact → risk, by a fixed matrix. Deterministic and versioned — the same inputs always give the same risk.</p>
+  <p class="hint">Per scenario: rate five feasibility factors (higher barrier → lower feasibility) and four impact domains (overall impact = worst domain). Feasibility × Impact → risk, by a fixed matrix. Deterministic and versioned: the same inputs always give the same risk.</p>
   <details><summary>Feasibility factors &amp; anchors</summary><div id="rubricdocF" class="small"></div></details>
   <details><summary>Impact domains &amp; anchors</summary><div id="rubricdocI" class="small"></div></details>
   <details><summary>Risk matrix</summary><div id="rubricdocM" class="small"></div></details>
@@ -373,8 +373,8 @@ function renderRegister(){
       <span class="right pill ${riskClass(riskOf(s))}">${riskOf(s)}</span></div>
       <div class="small" style="margin:2px 0 8px">${esc(s.text)}</div>
       <div class="grid2">
-        <div><div class="small mfrtag">Feasibility — ${feasLevel(s)} (barrier ${feasTotal(s)}/20)</div>${ladders(idx,"feas",RUBRIC.feasibility)}</div>
-        <div><div class="small usrtag">Impact — ${impLevel(s)} (worst domain)</div>${ladders(idx,"imp",RUBRIC.impact)}</div>
+        <div><div class="small mfrtag">Feasibility: ${feasLevel(s)} (barrier ${feasTotal(s)}/20)</div>${ladders(idx,"feas",RUBRIC.feasibility)}</div>
+        <div><div class="small usrtag">Impact: ${impLevel(s)} (worst domain)</div>${ladders(idx,"imp",RUBRIC.impact)}</div>
       </div>
       <div class="grid2" style="margin-top:10px">
         <div><label>Treatment</label><select onchange="S.scenarios[${idx}].treatment=this.value;save();renderSummary()">
@@ -400,7 +400,7 @@ function ladders(idx,kind,defs){
   }).join("");
 }
 function opt(arr,cur){return arr.map(o=>`<option ${o===cur?"selected":""}>${o}</option>`).join("");}
-function annexOpt(cur){return ['<option value="">— none —</option>'].concat(RUBRIC.annexI.map(a=>`<option value="${a.id}" ${a.id===cur?"selected":""}>${a.id} · ${a.t}</option>`)).join("");}
+function annexOpt(cur){return ['<option value="">(none)</option>'].concat(RUBRIC.annexI.map(a=>`<option value="${a.id}" ${a.id===cur?"selected":""}>${a.id} · ${a.t}</option>`)).join("");}
 
 function renderSummary(){
   const d=document.getElementById("summary");
@@ -410,11 +410,11 @@ function renderSummary(){
   let html=`<div style="margin-bottom:10px">`+["Critical","High","Medium","Low"].map(k=>`<span class="pill ${k.toLowerCase()}" style="margin-right:6px">${counts[k]} ${k}</span>`).join("")+`</div>`;
   html+=`<table><thead><tr><th>Threat scenario</th><th>Interface</th><th>Feas.</th><th>Impact</th><th>Risk</th><th>Treatment</th><th>Bearer</th><th>Annex I</th></tr></thead><tbody>`;
   acc.forEach(s=>{
-    const bearer=s.bearer.startsWith("User")?`<span class="usrtag">User CoU</span>`:s.bearer.startsWith("Manuf")?`<span class="mfrtag">Mfr SP</span>`:'<span class="muted">—</span>';
+    const bearer=s.bearer.startsWith("User")?`<span class="usrtag">User CoU</span>`:s.bearer.startsWith("Manuf")?`<span class="mfrtag">Mfr SP</span>`:'<span class="muted">none</span>';
     const ax=RUBRIC.annexI.find(a=>a.id===s.annex);
     html+=`<tr><td>${esc(s.text)}</td><td>${esc(s.iface)}</td><td>${feasLevel(s)}</td><td>${impLevel(s)}</td>
-      <td><span class="pill ${riskClass(riskOf(s))}">${riskOf(s)}</span></td><td>${esc(s.treatment||"—")}</td><td>${bearer}</td>
-      <td>${ax?ax.id:"—"}</td></tr>`;
+      <td><span class="pill ${riskClass(riskOf(s))}">${riskOf(s)}</span></td><td>${esc(s.treatment||"not set")}</td><td>${bearer}</td>
+      <td>${ax?ax.id:"none"}</td></tr>`;
   });
   html+=`</tbody></table>`;
   html+=manualShaped(acc);
@@ -422,7 +422,7 @@ function renderSummary(){
   const cous=acc.filter(s=>s.bearer.startsWith("User")&&s.treatment);
   if(cous.length){
     html+=`<div style="margin-top:14px"><div class="small usrtag">Condition-of-Use candidates for the Annex II manual (${cous.length}):</div><ul class="small">`;
-    cous.forEach(s=>{html+=`<li>Because of “${esc(s.clsName)}” on ${esc(s.iface)}: <b>${esc(s.treatment)}</b> — the operator must act.</li>`;});
+    cous.forEach(s=>{html+=`<li>Because of “${esc(s.clsName)}” on ${esc(s.iface)}: <b>${esc(s.treatment)}</b>. The operator must act.</li>`;});
     html+=`</ul></div>`;
   }
   d.innerHTML=html;

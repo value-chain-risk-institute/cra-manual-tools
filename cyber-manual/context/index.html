@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Context &amp; Conditions of Use Builder — Cyber Manual — VCRI</title>
+<title>Context &amp; Conditions of Use Builder · Cyber Manual · VCRI</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Free, in-browser tool for the Cyber Manual Movement template: derive context components, persons and zones from functions, attach conditions of use, and get every diagram from one picture. Nothing is uploaded.">
 <style>
@@ -311,9 +311,13 @@ function remove(kind,id){
   for(const k of ['SP','FC','CC','CP','CZ','CU','RI'])for(const it of M[k])for(const f of LINKF)if(Array.isArray(it[f]))it[f]=it[f].filter(x=>x!==id);
   for(const li of M.LI){if(li.pi===id)li.pi='';li.fc=li.fc.filter(x=>x!==id);}
   if(M.layout)delete M.layout[id];
+  rekey(id,null);
   save();render();
 }
-function relink(o,n){if(!o||o===n)return;for(const k of ['SP','FC','CC','CP','CZ','CU','RI'])for(const it of M[k])for(const f of LINKF)if(Array.isArray(it[f]))it[f]=it[f].map(x=>x===o?n:x);for(const li of M.LI){if(li.pi===o)li.pi=n;li.fc=li.fc.map(x=>x===o?n:x);}if(M.layout&&M.layout[o]){M.layout[n]=M.layout[o];delete M.layout[o];}}
+function relink(o,n){if(!o||o===n)return;for(const k of ['SP','FC','CC','CP','CZ','CU','RI'])for(const it of M[k])for(const f of LINKF)if(Array.isArray(it[f]))it[f]=it[f].map(x=>x===o?n:x);for(const li of M.LI){if(li.pi===o)li.pi=n;li.fc=li.fc.map(x=>x===o?n:x);}if(M.layout&&M.layout[o]){M.layout[n]=M.layout[o];delete M.layout[o];}rekey(o,n);}
+/* derived marks (KIND|ID|field|target) and figure numbers (fc:ID, ri:ID) follow an ID when it is renamed (n) or removed (null) */
+function rekey(o,n){const D=M.derived;if(D&&D.rules)for(const k of Object.keys(D.rules)){const p=k.split('|');if(p[1]!==o&&p[3]!==o)continue;const r=D.rules[k];delete D.rules[k];if(n!==null){if(p[1]===o)p[1]=n;if(p[3]===o)p[3]=n;D.rules[p.join('|')]=r;}}
+  if(M.fig)for(const l of ['fc','ri'])if((l+':'+o) in M.fig){if(n!==null)M.fig[l+':'+n]=M.fig[l+':'+o];delete M.fig[l+':'+o];}}
 function findAny(id){if(id===PRODUCT)return {id:PRODUCT,title:M.product.name||'the product',kind:'PRODUCT'};for(const k of ['PC','PI','SP','FC','CC','CP','CZ','CU','RI']){const x=M[k].find(y=>y.id===id);if(x)return Object.assign({kind:k},x);}return null;}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(M));}catch(e){}}
 /* saved data and .context.json files from the v0.22 to v0.30 versions of this tool load unchanged: fields added for template v0.38
@@ -349,8 +353,9 @@ function derivedCU(f){const scope=new Set([...f.cc,...f.cp,...f.cz,PRODUCT]);ret
 function fnCU(f){return (f.cu&&f.cu.length)?f.cu.filter(id=>M.CU.some(u=>u.id===id)):derivedCU(f);}
 
 /* ---------- the working group's Engineering PC example, v0.40 (26 Oct 2026; same content as v0.39 here) ----------
-   Two corrections against the printed example, both reported back to the working group: CU07 "affects" is printed as
-   "CU07 Maintenance PC" (CC03 is meant), and CR06 names "CU01 No local admin accounts" (that condition is CU05). */
+   Three corrections against the printed example, all reported back to the working group: CU07 "affects" is printed as
+   "CU07 Maintenance PC" (CC03 is meant), CR06 names "CU01 No local admin accounts" (that condition is CU05), and
+   CR06's potential risk is printed "an authorized access" (unauthorized is meant; confirmed by Joshua 8 Nov 2026). */
 function example(){
   M=blank();
   M.product={name:'Engineering PC „easy engineer“',model:'ee-2026-XT',version:'example v0.40, 26 Oct 2026 (working group), template v0.39'};
@@ -402,7 +407,7 @@ function example(){
     {id:'CR03',title:'Physically unprotected product',desc:'The Engineering PC is physically accessible for all employees.',damage:'The product can be used by unauthorized and / or unskilled persons in a way that disrupts core functions.',fc:['FC01','FC02'],cu:['CU03'],path:[]},
     {id:'CR04',title:'Connection of the PLC to the public internet',desc:'The PLC or the PLC network are connected to the public internet.',damage:'Files can be downloaded to the PLC from the public internet. In the worst case, the PLC is accessible from the public internet.',fc:['FC01'],cu:['CU01'],path:[]},
     {id:'CR05',title:'Permanently open VPN connection',desc:'The VPN connection permanently remains enabled for use, even if there is no open maintenance case.',damage:'Remote access can be misused for malicious activities.',fc:['FC03'],cu:['CU04'],path:['CC05','CC04','PI01','PC01']},
-    {id:'CR06',title:'Local admin account enabled on the product',desc:'The user creates a local admin account.',damage:'In case of an authorized access or malware installation, the impact on the product can be more severe because privileged resources can be accessed.',fc:['FC04'],cu:['CU05'],path:[]},
+    {id:'CR06',title:'Local admin account enabled on the product',desc:'The user creates a local admin account.',damage:'In case of an unauthorized access or malware installation, the impact on the product can be more severe because privileged resources can be accessed.',fc:['FC04'],cu:['CU05'],path:[]},
     {id:'CR07',title:'Product is connected to the internet',desc:'The temporary internet connection to the Maintenance PC is not disabled when downloaded updates onto the Engineering PC or the PLC network is connected to the internet.',damage:'Files containing malware might be installed on the product or remote access to the product may be possible.',fc:['FC04'],cu:['CU06'],path:[]},
     {id:'CR08',title:'Download of security updates from untrusted source',desc:'Software updates are downloaded from other sources than the URL provided.',damage:'Files containing malware might be installed on the product.',fc:['FC04'],cu:['CU07'],path:['CC06','CC03','PI03','PC02']},
     {id:'CR09',title:'Failure to check security update integrity',desc:'Maintenance staff does not check the provided hash to assure the integrity of the provided security update file.',damage:'Files containing malware might be installed on the product.',fc:['FC04'],cu:['CU08'],path:[]}
@@ -444,7 +449,7 @@ function logicalTable(){
     const r=el('div',{class:'li'});
     r.append(el('input',{type:'text',value:li.proto,placeholder:'HTTPS / TCP',oninput:e=>{li.proto=e.target.value;save();renderFigure();renderDoc();}}));
     r.append(el('input',{type:'text',value:li.url,placeholder:'optional URL',oninput:e=>{li.url=e.target.value;save();renderDoc();}}));
-    const sel=el('select',{onchange:e=>{li.pi=e.target.value;save();renderFigure();renderDoc();renderChecks();}});sel.append(el('option',{value:''},'—'));for(const p of M.PI)sel.append(el('option',{value:p.id,selected:li.pi===p.id},p.id+' '+p.title));r.append(sel);
+    const sel=el('select',{onchange:e=>{li.pi=e.target.value;save();renderFigure();renderDoc();renderChecks();}});sel.append(el('option',{value:''},'(none)'));for(const p of M.PI)sel.append(el('option',{value:p.id,selected:li.pi===p.id},p.id+' '+p.title));r.append(sel);
     r.append(el('input',{type:'text',value:li.port,placeholder:'443',oninput:e=>{li.port=e.target.value;save();renderDoc();}}));
     const d=el('select',{onchange:e=>{li.dir=e.target.value;save();renderDoc();}});for(const[v,l]of[['in','incoming'],['out','outgoing'],['both','both']])d.append(el('option',{value:v,selected:li.dir===v},l));r.append(d);
     const en=el('select',{title:'Enabled by default',onchange:e=>{li.enabled=e.target.value;save();renderDoc();}});for(const[v,l]of[['',''],['yes','yes'],['no','no']])en.append(el('option',{value:v,selected:(li.enabled||'')===v},l||'?'));r.append(en);
@@ -463,7 +468,9 @@ function varPicker(it){const f=family();if(f.length<2)return null;if(!Array.isAr
   return w;}
 function itemRow(kind,it){
   const d=el('div',{class:'item'});
-  const idIn=el('input',{type:'text',value:it.id,style:'font-family:var(--mono);font-weight:600;text-align:center',oninput:e=>{const o=it.id;it.id=e.target.value.trim();relink(o,it.id);save();renderFigure();renderChecks();renderDoc();}});
+  const idIn=el('input',{type:'text',value:it.id,style:'font-family:var(--mono);font-weight:600;text-align:center',onchange:e=>{const o=it.id,n=e.target.value.trim();if(n===o)return;
+    if(!n||n===PRODUCT||findAny(n)){e.target.value=o;toast(n?`${n} is already in use. The ID stays ${o}.`:`An ID can't be blank. It stays ${o}.`);return;}
+    it.id=n;relink(o,n);save();render();}});
   const title=el('input',{type:'text',value:it.title,placeholder:'Title',oninput:e=>{it.title=e.target.value;save();renderFigure();renderChecks();renderDoc();}});
   d.append(el('div',{class:'row'},idIn,title,el('button',{class:'x',title:'Remove',onclick:()=>remove(kind,it.id)},'×')));
   d.append(el('div',{class:'row'},el('div'),el('textarea',{placeholder:kind==='RI'?'Reasonably foreseeable misuse or circumstance':'Description',oninput:e=>{it.desc=e.target.value;save();renderDoc();}},it.desc),el('span')));
