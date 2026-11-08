@@ -22,7 +22,9 @@ established mode: **VCRI provides the engine and drafting aids; the working grou
 owns the template, the scenario libraries, and the worked examples.**
 
 - The **Manual Builder** populates the Cyber Manual Movement's CRA
-  "Information & instructions to the user" template (v0.20). The template and
+  "Information & instructions to the user" template (v0.39, 26 October 2026).
+  It shows how full the manual is: a count of empty fields per section and
+  overall, which is a mechanical count and not a judgement of what is written. The template and
   boilerplate are the working group's work; this repository does not republish
   them — it links to them and generates against them.
 - The **Context & Conditions of Use Builder** (added 2026-09-10) answers the

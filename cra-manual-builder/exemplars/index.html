@@ -104,6 +104,59 @@
 </style>
 </head>
 <body>
+<!-- vcri-nav:start -->
+<style>
+.vn{position:sticky;top:0;z-index:9999;background:#0a0f1a;border-bottom:1px solid #232c3a;font:500 14px/1.4 Inter,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+.vn *{box-sizing:border-box}
+.vn-in{max-width:1200px;margin:0 auto;padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:56px}
+.vn a{color:#e7ebf2;text-decoration:none}
+.vn-brand{font-weight:800;letter-spacing:.06em;color:#fbbf24!important;font-size:16px}
+.vn-links{display:flex;gap:18px;align-items:center;list-style:none;margin:0;padding:0}
+.vn-links>li{position:relative}
+.vn-links a:hover,.vn-links summary:hover{color:#fbbf24}
+.vn-links .vn-cta{color:#fbbf24}
+.vn details>summary{list-style:none;cursor:pointer;color:#e7ebf2}
+.vn details>summary::-webkit-details-marker{display:none}
+.vn-drop{position:absolute;top:30px;left:-12px;min-width:240px;background:#121824;border:1px solid #232c3a;border-radius:8px;padding:6px 0;list-style:none;margin:0}
+.vn-drop a{display:block;padding:7px 14px}
+.vn-menu{display:none}
+@media(max-width:900px){
+ .vn-links{display:none}
+ .vn-menu{display:block;background:none;border:0;color:#e7ebf2;font-size:22px;line-height:1;cursor:pointer;padding:4px}
+ .vn-open .vn-links{display:flex;flex-direction:column;align-items:flex-start;gap:0;position:absolute;top:56px;left:0;right:0;background:#0a0f1a;border-bottom:1px solid #232c3a;padding:8px 16px 14px}
+ .vn-open .vn-links>li{width:100%;padding:8px 0;border-top:1px solid #1a2130}
+ .vn-drop{position:static;border:0;background:none;padding:4px 0 0 12px}
+}
+@media print{.vn{display:none}}
+</style>
+<div class="vn" role="navigation" aria-label="Site">
+ <div class="vn-in">
+  <a class="vn-brand" href="/">VCRI</a>
+  <button class="vn-menu" type="button" aria-label="Menu" aria-expanded="false" onclick="var n=this.closest('.vn');n.classList.toggle('vn-open');this.setAttribute('aria-expanded',n.classList.contains('vn-open'))">&#9776;</button>
+  <ul class="vn-links">
+   <li><a href="/#cam">Methodology</a></li>
+   <li><details><summary>Tools &#9662;</summary>
+    <ul class="vn-drop">
+     <li><a href="/tools/">All tools</a></li>
+     <li><a href="/scorer/">BeaconScore</a></li>
+     <li><a href="/cra-manual-builder/">CRA Manual Builder</a></li>
+     <li><a href="/cyber-manual/context/">Context &amp; Conditions of Use Builder</a></li>
+     <li><a href="/tara/">CRA TARA Builder</a></li>
+     <li><a href="https://github.com/value-chain-risk-institute/constellation-inventory" rel="noopener">AIBOM Constellation Inventory</a></li>
+     <li><a href="https://attackclock.com" rel="noopener">AttackClock</a></li>
+    </ul></details></li>
+   <li><a href="/community/">Community</a></li>
+   <li><a href="/learn/">Learn</a></li>
+   <li><a href="/research/">Research</a></li>
+   <li><a href="/state-of-supply-chain/">Supply Chain</a></li>
+   <li><a href="/blog/">Blog</a></li>
+   <li><a href="/media/">Media</a></li>
+   <li><a href="/press/">Press</a></li>
+   <li><a class="vn-cta" href="/#contact">Contact</a></li>
+  </ul>
+ </div>
+</div>
+<!-- vcri-nav:end -->
 <div class="sheet">
 
   <p class="eyebrow">A companion to the <a href="/cra-manual-builder/">CRA Manual Builder</a> · Value Chain Risk Institute · CC BY 4.0</p>
@@ -231,5 +284,9 @@
   </footer>
 
 </div>
+<!-- vcri-social:start -->
+<style>.vcri-follow{max-width:960px;margin:2rem auto 1.5rem;padding:0 1.5rem;text-align:center;font-size:.85rem;line-height:2;opacity:.9}.vcri-follow a{white-space:nowrap}@media print{.vcri-follow,.vcri-share{display:none!important}}</style>
+<div class="vcri-follow">Follow The Value Chain Risk Institute: <a href="https://www.linkedin.com/company/valuechainrisk" rel="me noopener" target="_blank">LinkedIn</a> &middot; <a href="https://bsky.app/profile/valuechainrisk.org" rel="me noopener" target="_blank">Bluesky</a> &middot; <a href="https://infosec.exchange/@valuechainrisk" rel="me noopener" target="_blank">Mastodon</a> &middot; <a href="https://x.com/ValueChainRisk" rel="me noopener" target="_blank">X (@ValueChainRisk)</a> &middot; <a href="https://buttondown.com/vcri" rel="me noopener" target="_blank">Newsletter</a> &middot; <a href="https://github.com/value-chain-risk-institute" rel="me noopener" target="_blank">GitHub</a><br><a href="/tools/">All tools</a> &middot; <a href="/media/">Talks and videos</a> &middot; <a href="/brand/">Press kit</a></div>
+<!-- vcri-social:end -->
 </body>
 </html>
