@@ -42,6 +42,14 @@ owns the template, the scenario libraries, and the worked examples.**
   where that example is still incomplete, which is the point. The concept behind it is written up
   and citable as a method note: [The Derivation Rule for Context and Conditions
   of Use](./cyber-manual/context/METHOD.md) (Marpet & Viktor, VCRI, 2026).
+  Since 8 November 2026 the structure follows template v0.39 and the Engineering
+  PC example v0.40, and the builder can derive a first draft from a manual:
+  "Derive from a manual" (or Import JSON) takes a file saved from the Manual
+  Builder, fills the lists, and derives the links by twelve stated rules. Every
+  derived link is marked as suggested until a person confirms or removes it, and
+  what no rule reaches (zones, which interface a person touches) is listed as a
+  gap. On the working group's Engineering PC example, held out, 76% of derived
+  links are right and 67% of the hand-drawn links are found.
 - The **TARA Builder** is the Annex VII companion VCRI authored to complete the
   pair. Its methodology is informed by ISO/SAE 21434-style TARA practice; all
   rubric anchors are authored originally, with no text reproduced from paywalled

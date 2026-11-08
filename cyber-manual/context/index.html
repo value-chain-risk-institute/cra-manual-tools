@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- SPDX-License-Identifier: CC-BY-4.0 · Value Chain Risk Institute · built on the Cyber Manual Movement template (structure per the working group's Engineering PC example v0.22, 2026-09-09) · https://github.com/value-chain-risk-institute/cra-manual-tools -->
+<!-- SPDX-License-Identifier: CC-BY-4.0 · Value Chain Risk Institute · built on the Cyber Manual Movement template (structure per TEMPLATE v0.39 and the working group's Engineering PC EXAMPLE v0.40, 2026-10-26) · https://github.com/value-chain-risk-institute/cra-manual-tools -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -15,7 +15,7 @@
   --ink:#16212b; --muted:#5b6b78; --line:#d7dee3; --line2:#e8edf0;
   --accent:#0b6b80; --accent-ink:#ffffff; --accent-soft:#e2f0f3;
   --mfr:#2f7d5b; --mfr-soft:#e7f3ec; --usr:#a9660f; --usr-soft:#f6ecdc;
-  --fn:#3b5bb5; --fn-soft:#e6ebf8; --risk:#b3382c; --risk-soft:#f8e4e1;
+  --fn:#3b5bb5; --fn-soft:#e6ebf8; --risk:#b3382c; --risk-soft:#f8e4e1; --var:#6b4fa0;
   --field:#f6f8f9; --shadow:0 1px 2px rgba(20,33,43,.06),0 8px 24px rgba(20,33,43,.06);
 }
 @media (prefers-color-scheme:dark){:root{
@@ -23,7 +23,7 @@
   --ink:#e7eef3; --muted:#93a3af; --line:#26333f; --line2:#1c2731;
   --accent:#34b3cb; --accent-ink:#06222a; --accent-soft:#123039;
   --mfr:#54c191; --mfr-soft:#12291f; --usr:#d69a4a; --usr-soft:#2c2211;
-  --fn:#8aa3e8; --fn-soft:#151f3a; --risk:#e8846f; --risk-soft:#3a1712;
+  --fn:#8aa3e8; --fn-soft:#151f3a; --risk:#e8846f; --risk-soft:#3a1712; --var:#b59be6;
   --field:#0f1820; --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
 }}
 *{box-sizing:border-box}
@@ -82,10 +82,10 @@ header{display:flex;align-items:center;justify-content:space-between;gap:14px;pa
 .item .pathrow .step i{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:var(--risk);color:#fff;font-style:normal;font-size:10px;font-weight:700}
 .item .pathrow .step button{border:none;background:none;color:var(--muted);cursor:pointer;padding:0 2px}
 .item .pathrow select{width:auto;font-size:11.5px;padding:2px 4px}
-.li{display:grid;grid-template-columns:1.2fr .9fr .6fr .6fr .7fr 1.2fr auto;gap:5px;align-items:center;margin-bottom:5px}
+.li{display:grid;grid-template-columns:1.2fr .9fr .6fr .5fr .7fr .6fr 1.2fr auto;gap:5px;align-items:center;margin-bottom:5px}
 .li input,.li select{width:100%;border:1px solid var(--line);border-radius:5px;padding:4px 6px;background:var(--panel);font-size:12px}
 .li .fcs{display:flex;flex-wrap:wrap;gap:3px 6px;font-size:11px}
-.lihd{display:grid;grid-template-columns:1.2fr .9fr .6fr .6fr .7fr 1.2fr auto;gap:5px;font-family:var(--mono);font-size:10px;letter-spacing:.3px;text-transform:uppercase;color:var(--muted);margin:6px 0 3px}
+.lihd{display:grid;grid-template-columns:1.2fr .9fr .6fr .5fr .7fr .6fr 1.2fr auto;gap:5px;font-family:var(--mono);font-size:10px;letter-spacing:.3px;text-transform:uppercase;color:var(--muted);margin:6px 0 3px}
 .addrow{display:flex;gap:6px;align-items:center;margin-top:4px}
 .empty{color:var(--muted);font-size:12.5px;font-style:italic;padding:6px 2px}
 .figure{background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px}
@@ -95,6 +95,14 @@ header{display:flex;align-items:center;justify-content:space-between;gap:14px;pa
 .figure .fhd select{border:1px solid var(--line);border-radius:5px;padding:3px 6px;background:var(--panel);font-size:12px;max-width:260px}
 .figure .svgwrap{overflow:auto;background:var(--paper);padding:6px}
 .figure svg{display:block;max-width:100%;height:auto;font-family:var(--ui)}
+.var{color:var(--var);font-size:11px;font-weight:600;white-space:nowrap}
+.fcs.vars label{color:var(--var)}
+#figNum{width:3.2em;border:1px solid var(--line);border-radius:5px;padding:3px 5px;background:var(--panel);font-size:12px}
+.figure .svgwrap.arranging{outline:2px dashed var(--line);outline-offset:-4px}
+.figure .svgwrap.arranging svg{touch-action:none;user-select:none;-webkit-user-select:none}
+.figure .svgwrap.arranging [data-drag]{cursor:grab}
+.figure .svgwrap.dragging [data-drag]{cursor:grabbing}
+#figArrange[aria-pressed=true]{background:var(--ink);color:var(--bg)}
 .figure .legend{display:flex;gap:12px;flex-wrap:wrap;padding:8px 12px;border-top:1px solid var(--line2);font-size:11.5px;color:var(--muted)}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 .checks{background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);margin-bottom:12px}
@@ -107,6 +115,11 @@ header{display:flex;align-items:center;justify-content:space-between;gap:14px;pa
 .lv.stop{background:var(--risk-soft);color:var(--risk)}
 .lv.warn{background:var(--usr-soft);color:var(--usr)}
 .lv.ok{background:var(--mfr-soft);color:var(--mfr)}
+.lv.gap{background:var(--fn-soft);color:var(--fn)}
+.lv.sug{background:var(--usr-soft);color:var(--usr);border:1px dashed var(--usr)}
+.fcs label.sug,label.sug{outline:1.5px dashed var(--usr);outline-offset:1px;border-radius:4px;background:var(--usr-soft)}
+.checks .tierhd{font-size:10.5px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);padding:9px 0 3px;border-bottom:1px solid var(--line);margin-top:4px}
+.checks .tierhd:first-child{margin-top:0}
 .checks .why{color:var(--muted);display:block;font-size:11.5px}
 .doc{background:var(--paper);color:#1a1a1a;border-radius:8px;box-shadow:var(--shadow);padding:34px 40px;font-family:var(--doc);font-size:14px;line-height:1.55;margin-bottom:12px}
 .doc h2{font-family:var(--ui);font-size:15px;margin:0 0 4px}
@@ -126,16 +139,71 @@ footer{padding:14px 16px;color:var(--muted);font-size:11.5px;border-top:1px soli
 </style>
 </head>
 <body>
+<!-- vcri-nav:start -->
+<style>
+.vn{position:sticky;top:0;z-index:9999;background:#0a0f1a;border-bottom:1px solid #232c3a;font:500 14px/1.4 Inter,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+.vn *{box-sizing:border-box}
+.vn-in{max-width:1200px;margin:0 auto;padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:56px}
+.vn a{color:#e7ebf2;text-decoration:none}
+.vn-brand{font-weight:800;letter-spacing:.06em;color:#fbbf24!important;font-size:16px}
+.vn-links{display:flex;gap:18px;align-items:center;list-style:none;margin:0;padding:0}
+.vn-links>li{position:relative}
+.vn-links a:hover,.vn-links summary:hover{color:#fbbf24}
+.vn-links .vn-cta{color:#fbbf24}
+.vn details>summary{list-style:none;cursor:pointer;color:#e7ebf2}
+.vn details>summary::-webkit-details-marker{display:none}
+.vn-drop{position:absolute;top:30px;left:-12px;min-width:240px;background:#121824;border:1px solid #232c3a;border-radius:8px;padding:6px 0;list-style:none;margin:0}
+.vn-drop a{display:block;padding:7px 14px}
+.vn-menu{display:none}
+@media(max-width:900px){
+ .vn-links{display:none}
+ .vn-menu{display:block;background:none;border:0;color:#e7ebf2;font-size:22px;line-height:1;cursor:pointer;padding:4px}
+ .vn-open .vn-links{display:flex;flex-direction:column;align-items:flex-start;gap:0;position:absolute;top:56px;left:0;right:0;background:#0a0f1a;border-bottom:1px solid #232c3a;padding:8px 16px 14px}
+ .vn-open .vn-links>li{width:100%;padding:8px 0;border-top:1px solid #1a2130}
+ .vn-drop{position:static;border:0;background:none;padding:4px 0 0 12px}
+}
+@media print{.vn{display:none}}
+</style>
+<div class="vn" role="navigation" aria-label="Site">
+ <div class="vn-in">
+  <a class="vn-brand" href="/">VCRI</a>
+  <button class="vn-menu" type="button" aria-label="Menu" aria-expanded="false" onclick="var n=this.closest('.vn');n.classList.toggle('vn-open');this.setAttribute('aria-expanded',n.classList.contains('vn-open'))">&#9776;</button>
+  <ul class="vn-links">
+   <li><a href="/#cam">Methodology</a></li>
+   <li><details><summary>Tools &#9662;</summary>
+    <ul class="vn-drop">
+     <li><a href="/tools/">All tools</a></li>
+     <li><a href="/scorer/">BeaconScore</a></li>
+     <li><a href="/cra-manual-builder/">CRA Manual Builder</a></li>
+     <li><a href="/cyber-manual/context/">Context &amp; Conditions of Use Builder</a></li>
+     <li><a href="/tara/">CRA TARA Builder</a></li>
+     <li><a href="https://github.com/value-chain-risk-institute/constellation-inventory" rel="noopener">AIBOM Constellation Inventory</a></li>
+     <li><a href="https://attackclock.com" rel="noopener">AttackClock</a></li>
+    </ul></details></li>
+   <li><a href="/community/">Community</a></li>
+   <li><a href="/learn/">Learn</a></li>
+   <li><a href="/research/">Research</a></li>
+   <li><a href="/state-of-supply-chain/">Supply Chain</a></li>
+   <li><a href="/blog/">Blog</a></li>
+   <li><a href="/media/">Media</a></li>
+   <li><a href="/press/">Press</a></li>
+   <li><a class="vn-cta" href="/#contact">Contact</a></li>
+  </ul>
+ </div>
+</div>
+<!-- vcri-nav:end -->
 <header>
-  <div class="brand"><b>Context &amp; Conditions of Use Builder</b><span>Cyber Manual · structure per the working group’s Engineering PC example v0.22 (9 Sep 2026) · free · nothing is uploaded · <a href="next/">preview: version with a non-technical user view</a></span></div>
+  <div class="brand"><b>Context &amp; Conditions of Use Builder</b><span>Cyber Manual · structure per template v0.39 and the working group’s Engineering PC example v0.40 (26 Oct 2026) · free · nothing is uploaded · <a href="next/">preview: version with a non-technical user view</a></span></div>
   <div class="actions">
     <button class="btn" id="btnExample" title="Load the working group’s fictitious Engineering PC example">Load Engineering PC example</button>
     <button class="btn" id="btnNew">New</button>
     <button class="btn" id="btnImport">Import JSON</button>
+    <button class="btn" id="btnDerive" title="Open a manual saved from the CRA Manual Builder (Export JSON). Lists are filled from it and the links derived by rule, each marked as suggested until you decide.">Derive from a manual</button>
     <button class="btn" id="btnExport">Export JSON</button>
     <button class="btn" id="btnSvg">Download diagram (SVG)</button>
     <button class="btn primary" id="btnPrint">Print / PDF</button>
     <input type="file" id="fileIn" accept="application/json" hidden>
+    <input type="file" id="fileManual" accept="application/json,.json" hidden>
   </div>
 </header>
 
@@ -148,7 +216,7 @@ footer{padding:14px 16px;color:var(--muted);font-size:11.5px;border-top:1px soli
         <b>PC, PI → FC</b><span>Each function is performed by product components and reaches the outside through interfaces. Tick which.</span>
         <b>FC → CC, CP, CZ</b><span>Context, in the current template, is three lists: components, persons, zones. Each exists only because a function needs it. Walk each function and ask what outside the product it depends on, and who, and where.</span>
         <b>CC, CP, CZ → CU</b><span>A condition of use exists only because something in the context must satisfy it for a function to be safe. It is born attached to the thing it constrains, which is the “affected” column the template asks for.</span>
-        <b>CU → RI</b><span>A risk is a condition not met, or a function misused. Name the damage, and draw the path it takes as numbered steps.</span>
+        <b>CU → CR</b><span>A risk is a condition not met, or a function misused. Name the damage, and draw the path it takes as numbered steps.</span>
         <b>diagram</b><span>One picture, six layers: product, properties, context, function, conditions, risk. Never drawn separately. Fix the lists and every layer fixes itself.</span>
       </div>
       <p style="margin-top:8px;font-size:11.5px">You work in derivation order. The generated document below follows the template’s chapter order, where context precedes functions. Both are correct: one is how you find the content, the other is how the reader meets it.</p>
@@ -166,6 +234,11 @@ footer{padding:14px 16px;color:var(--muted);font-size:11.5px;border-top:1px soli
             <label><input type="checkbox" id="figSP" checked> SP</label>
             <label><input type="checkbox" id="figCU" checked> CU</label>
             <label><input type="checkbox" id="figProto" checked> protocols</label>
+            <label id="figVarL" hidden>Member <select id="figVar"></select></label>
+            <label><input type="checkbox" id="figLegend" checked> key</label>
+            <label title="Figure number used in the caption, as numbered in your manual">Fig. <input type="text" id="figNum" placeholder="n"></label>
+            <button class="btn" id="figArrange" aria-pressed="false" title="Drag boxes, or a whole zone, to tidy the drawing. Positions only: nothing in the lists changes.">Arrange</button>
+            <button class="btn" id="figReset" title="Put every box back where the tool places it, on all diagram layers">Reset layout</button>
           </div>
         </div>
         <div class="svgwrap" id="svgwrap"></div>
@@ -173,11 +246,11 @@ footer{padding:14px 16px;color:var(--muted);font-size:11.5px;border-top:1px soli
           <span><i style="background:var(--mfr)"></i>inside the product: components (PC), interfaces (PI), security properties (SP)</span>
           <span><i style="background:var(--usr)"></i>context: components (CC), persons (CP), zones (CZ), conditions of use (CU)</span>
           <span><i style="background:var(--fn)"></i>function path (FC)</span>
-          <span><i style="background:var(--risk)"></i>risk path (RI)</span>
+          <span><i style="background:var(--risk)"></i>risk path (CR)</span>
         </div>
       </div>
       <div class="checks">
-        <div class="fhd"><h3>Level-of-detail checks</h3><span class="tag" id="chkSummary"></span></div>
+        <div class="fhd"><h3>Checks: chain, template, CRA</h3><span class="tag" id="chkSummary"></span></div>
         <ul id="checks"></ul>
       </div>
     </div>
@@ -185,7 +258,7 @@ footer{padding:14px 16px;color:var(--muted);font-size:11.5px;border-top:1px soli
 </div>
 <div class="layout" style="padding-top:0"><div class="col" style="grid-column:1/-1"><div class="doc" id="doc"></div></div></div>
 <footer id="foot">
-  This tool populates the <strong>Cyber Manual Movement</strong> template’s product, context, function, conditions-of-use and risk chapters and draws the optional diagrams from the same data. Structure follows the working group’s Engineering PC example v0.22 (9 September 2026). The template, guidance and example are the work of the Cyber Manual Movement working group. This free tool is built on that template by the <strong>Value Chain Risk Institute</strong> and released CC BY 4.0. It does not replace or claim the group’s template.<br>
+  This tool populates the <strong>Cyber Manual Movement</strong> template’s product, context, function, conditions-of-use and risk chapters and draws the optional diagrams from the same data. Structure and chapter numbers follow the template v0.39 and the working group’s Engineering PC example v0.40 (both 26 October 2026). The template, guidance and example are the work of the Cyber Manual Movement working group. This free tool is built on that template by the <strong>Value Chain Risk Institute</strong> and released CC BY 4.0. It does not replace or claim the group’s template.<br>
   Runs entirely in your browser. Nothing is transmitted. Your work is kept in this browser’s local storage until you clear it. · <a href="https://github.com/value-chain-risk-institute/cra-manual-tools" target="_blank" rel="noopener">Source on GitHub</a> · Companions: <a href="/cra-manual-builder/">/cra-manual-builder/</a> (full manual, Annex II) · <a href="/tara/">/tara/</a> (Annex VII)
 </footer>
 <div class="toast" id="toast"></div>
@@ -204,83 +277,135 @@ const KINDS={
   PC:{label:'Product components',plural:'components',hint:'What the product consists of. Inside the boundary, and the one list that is not derived from anything: start here.'},
   PI:{label:'Product interfaces',plural:'interfaces',hint:'Physical interfaces first (Ethernet ports, USB, keyboard, serial). Then the logical interfaces table: which protocol or URL runs over which physical interface, on which port, in which direction, for which function. This table is what draws the connectors.'},
   SP:{label:'Security properties',plural:'security properties',hint:'Security characteristics implemented in the product. Manufacturer’s responsibility. Each one is placed on a component, an interface, or the product as a whole.'},
-  FC:{label:'Functions',plural:'functions',hint:'What the product does. This is where derivation starts: tick the components and interfaces each function uses, then tick or create what it needs from outside. Optionally lay out the path it takes, in order, for the function diagram. Per prEN 40000-1-2 mark intended purpose versus reasonably foreseeable use.'},
+  FC:{label:'Functions',plural:'functions',hint:'What the product does. This is where derivation starts: tick the components and interfaces each function uses, then tick or create what it needs from outside. Optionally lay out the path it takes, in order, for its secure use diagram. Per prEN 40000-1-2 note reasonably foreseeable use (template v0.38 gives it its own row). Each function becomes its own chapter 3.3 subchapter with its conditions of use and circumstances; the update function lands in 3.4.1.'},
   CC:{label:'Context components',plural:'context components',hint:'Things outside the product that a function needs: a PLC, a network, another PC, a server. The manufacturer’s assumptions about the environment. Say which interface each one touches; that draws the connector.'},
   CP:{label:'Context persons',plural:'persons',hint:'People a function needs: the engineer, maintenance staff, remote support. With the skill level the template asks for. Say which interface they touch, if any.'},
   CZ:{label:'Context zones',plural:'zones',hint:'Physical or communication zones the context sits in, with the access level. Optional. Put context components and persons inside a zone and the diagram draws the boundary.'},
-  CU:{label:'Conditions of use',plural:'conditions of use',hint:'Security characteristics the context must have. User’s responsibility. Each one is attached to the context component, person, zone, or the product it constrains.'},
-  RI:{label:'Circumstances leading to risk',plural:'risks',hint:'What happens when a condition of use is not met, or a function is misused. Name the potential damage. Point at the condition it breaks and the function it affects, and lay out the path as numbered steps for the risk diagram.'}
+  CU:{label:'Conditions of use',plural:'conditions of use',hint:'Security characteristics the context must have. User’s responsibility. Each one is attached to the context component, person, zone, or the product it constrains, and listed under every function that needs it (chapter 3.3).'},
+  RI:{label:'Circumstances leading to risk (CR)',plural:'circumstances',hint:'What happens when a condition of use is not met, or a function is misused. Name the potential risk. Each circumstance sits under every function it affects, in that function’s chapter 3.3 subchapter (3.4.1 for updates). Point at the condition it breaks and the function(s) it affects; optionally lay out the path as numbered steps.'}
 };
 let M=blank();
-function blank(){return {product:{name:'',model:'',version:''},PC:[],PI:[],LI:[],SP:[],FC:[],CC:[],CP:[],CZ:[],CU:[],RI:[]};}
-function nextId(kind){const n=M[kind].length+1;return kind+String(n).padStart(2,'0');}
+/* CRA Annex I Part I, the rows of template table 5.1 (table 1.2.3 before v0.38). Same list the Manual Builder uses,
+   so an SP/CU reference here means the same thing there. */
+const ANNEX1=[['2b','Secure by default configuration'],['2c','Secure update mechanism'],['2d','Protection from unauthorized access'],['2e','Confidentiality protection'],['2f','Integrity protection'],['2g','Data minimisation'],['2h','Availability protection'],['2i','Minimisation of negative impact on other services'],['2j','Attack surface limitation'],['2k','Impact reduction'],['2l','Recording and monitoring'],['2m','Secure data removal / transfer']];
+function blank(){return {product:{name:'',model:'',version:'',family:''},PC:[],PI:[],LI:[],SP:[],FC:[],CC:[],CP:[],CZ:[],CU:[],RI:[],layout:{},fig:{}};}
+const ID_PREFIX={RI:'CR'}; /* the group renamed risks to circumstances leading to risk (CR), example v0.28, 21 Sep 2026; the internal kind stays RI so saved files keep working */
+function nextId(kind){const n=M[kind].length+1;return (ID_PREFIX[kind]||kind)+String(n).padStart(2,'0');}
 function add(kind,init={}){
   const b={id:nextId(kind),title:'',desc:''};
-  if(kind==='SP')Object.assign(b,{on:[]});
-  if(kind==='FC')Object.assign(b,{core:'core',use:'intended',pc:[],pi:[],cc:[],cp:[],cz:[],path:[]});
+  if(kind==='SP')Object.assign(b,{on:[],annex:[]});
+  if(kind==='FC')Object.assign(b,{core:'core',use:'intended',rfu:'',pc:[],pi:[],cc:[],cp:[],cz:[],cu:[],path:[]});
   if(kind==='CC')Object.assign(b,{via:[]});
   if(kind==='CP')Object.assign(b,{skill:'instructed',via:[]});
   if(kind==='CZ')Object.assign(b,{type:'physical',access:'controlled',members:[]});
-  if(kind==='CU')Object.assign(b,{on:[]});
+  if(kind==='CU')Object.assign(b,{on:[],annex:[]});
   if(kind==='RI')Object.assign(b,{damage:'',fc:[],cu:[],path:[]});
   M[kind].push(Object.assign(b,init));save();render();return b;
 }
-function addLI(init={}){M.LI.push(Object.assign({proto:'',url:'',pi:'',port:'',dir:'both',fc:[]},init));save();render();}
+function addLI(init={}){M.LI.push(Object.assign({proto:'',url:'',pi:'',port:'',dir:'both',enabled:'',fc:[]},init));save();render();}
 const LINKF=['on','pc','pi','cc','cp','cz','via','members','fc','cu','path'];
 function remove(kind,id){
   M[kind]=M[kind].filter(x=>x.id!==id);
   for(const k of ['SP','FC','CC','CP','CZ','CU','RI'])for(const it of M[k])for(const f of LINKF)if(Array.isArray(it[f]))it[f]=it[f].filter(x=>x!==id);
   for(const li of M.LI){if(li.pi===id)li.pi='';li.fc=li.fc.filter(x=>x!==id);}
+  if(M.layout)delete M.layout[id];
   save();render();
 }
-function relink(o,n){if(!o||o===n)return;for(const k of ['SP','FC','CC','CP','CZ','CU','RI'])for(const it of M[k])for(const f of LINKF)if(Array.isArray(it[f]))it[f]=it[f].map(x=>x===o?n:x);for(const li of M.LI){if(li.pi===o)li.pi=n;li.fc=li.fc.map(x=>x===o?n:x);}}
+function relink(o,n){if(!o||o===n)return;for(const k of ['SP','FC','CC','CP','CZ','CU','RI'])for(const it of M[k])for(const f of LINKF)if(Array.isArray(it[f]))it[f]=it[f].map(x=>x===o?n:x);for(const li of M.LI){if(li.pi===o)li.pi=n;li.fc=li.fc.map(x=>x===o?n:x);}if(M.layout&&M.layout[o]){M.layout[n]=M.layout[o];delete M.layout[o];}}
 function findAny(id){if(id===PRODUCT)return {id:PRODUCT,title:M.product.name||'the product',kind:'PRODUCT'};for(const k of ['PC','PI','SP','FC','CC','CP','CZ','CU','RI']){const x=M[k].find(y=>y.id===id);if(x)return Object.assign({kind:k},x);}return null;}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(M));}catch(e){}}
-function load(){try{const s=localStorage.getItem(KEY);if(s){const o=JSON.parse(s);if(o&&o.FC)M=Object.assign(blank(),o);}}catch(e){}}
+/* saved data and .context.json files from the v0.22 to v0.30 versions of this tool load unchanged: fields added for template v0.38
+   (FC rfu and an explicit per-function CU list, LI enabled-by-default) default to empty, which keeps the old behaviour */
+function normalize(o){const m=Object.assign(blank(),o);for(const k of ['PC','PI','LI','SP','FC','CC','CP','CZ','CU','RI'])if(!Array.isArray(m[k]))m[k]=[];
+  for(const f of m.FC){if(f.rfu==null)f.rfu='';if(!Array.isArray(f.cu))f.cu=[];for(const k of ['pc','pi','cc','cp','cz','path'])if(!Array.isArray(f[k]))f[k]=[];}
+  for(const li of m.LI){if(li.enabled==null)li.enabled='';if(!Array.isArray(li.fc))li.fc=[];}
+  for(const r of m.RI){for(const k of ['fc','cu','path'])if(!Array.isArray(r[k]))r[k]=[];if(r.damage==null)r.damage='';}
+  for(const k of ['SP','CU'])for(const x of m[k]){if(!Array.isArray(x.on))x.on=[];if(!Array.isArray(x.annex))x.annex=[];}
+  if(!m.layout||typeof m.layout!=='object'||Array.isArray(m.layout))m.layout={}; /* diagram positions the user dragged (02 Nov 2026): {id:{dx,dy}} offsets from the automatic layout */
+  if(!m.fig||typeof m.fig!=='object'||Array.isArray(m.fig))m.fig={}; /* figure numbers per diagram layer, for the caption */
+  if(m.product.family==null)m.product.family='';
+  for(const k of ['PC','PI','SP','FC','CC','CP','CZ','CU','RI'])for(const x of m[k])if(!Array.isArray(x.vars))x.vars=[];for(const li of m.LI)if(!Array.isArray(li.vars))li.vars=[];
+  for(const z of m.CZ)if(!Array.isArray(z.members))z.members=[];for(const k of ['CC','CP'])for(const x of m[k])if(!Array.isArray(x.via))x.via=[];
+  return m;}
+function load(){try{const s=localStorage.getItem(KEY);if(s){const o=JSON.parse(s);if(o&&o.FC)M=normalize(o);}}catch(e){}}
+const isUpd=f=>/security update/i.test(f.title||'');
+/* product families (CMM working group, 02 Nov 2026): one manual may cover several family members if it delineates which pieces apply to which.
+   M.product.family lists the members, comma separated; an item's vars lists the members it applies to (empty = every member). */
+function family(){return String(M.product.family||'').split(',').map(x=>x.trim()).filter(Boolean);}
+function onlyFor(it){const f=family(),v=((it&&it.vars)||[]).filter(x=>f.includes(x));return f.length>1&&v.length&&v.length<f.length?v:null;}
+function varTxt(it){const v=onlyFor(it);return v?v.join(', ')+' only':'';}
+function varHTML(it){const t=varTxt(it);return t?` <span class="var">[${esc(t)}]</span>`:'';}
+function appliesTo(it,m){const v=onlyFor(it);return !m||!v||v.includes(m);}
+function forMember(m){const c=JSON.parse(JSON.stringify(M));for(const k of ['PC','PI','SP','FC','CC','CP','CZ','CU','RI'])c[k]=c[k].filter(x=>appliesTo(x,m));c.LI=c.LI.filter(x=>appliesTo(x,m));return c;}
+/* names wrap onto more lines instead of being cut, so the diagram uses exactly the names in the tables */
+function wrapLines(t,n){const out=[];let cur='';for(const w of String(t||'').split(/\s+/).filter(Boolean)){if(!cur)cur=w;else if((cur+' '+w).length<=n)cur+=' '+w;else{out.push(cur);cur=w;}}if(cur||!out.length)out.push(cur);return out;}
+const WRAP={PC:21,PI:14,CC:29,CP:29};
+/* chapter a function lands in under template v0.38: 3.3.n for use functions, 3.4.n for the security update function(s) */
+function fnNum(f){const use=M.FC.filter(x=>!isUpd(x)),upd=M.FC.filter(isUpd);return isUpd(f)?'3.4.'+(upd.indexOf(f)+1):'3.3.'+(use.indexOf(f)+1);}
+/* a function's conditions of use: the ones ticked on it, or, if none are ticked, every condition attached to anything it needs plus conditions on the product itself */
+function derivedCU(f){const scope=new Set([...f.cc,...f.cp,...f.cz,PRODUCT]);return M.CU.filter(u=>u.on.some(o=>scope.has(o))).map(u=>u.id);}
+function fnCU(f){return (f.cu&&f.cu.length)?f.cu.filter(id=>M.CU.some(u=>u.id===id)):derivedCU(f);}
 
-/* ---------- the working group's Engineering PC example, v0.22 ---------- */
+/* ---------- the working group's Engineering PC example, v0.40 (26 Oct 2026; same content as v0.39 here) ----------
+   Two corrections against the printed example, both reported back to the working group: CU07 "affects" is printed as
+   "CU07 Maintenance PC" (CC03 is meant), and CR06 names "CU01 No local admin accounts" (that condition is CU05). */
 function example(){
   M=blank();
-  M.product={name:'Engineering PC „easy engineer“',model:'ee-2026-XT',version:'example v0.22, 9 Sep 2026 (working group)'};
-  M.PC=[{id:'PC01',title:'CPU',desc:'Processing unit running the engineering software.'},{id:'PC02',title:'Storage',desc:'Local storage holding PLC program files.'}];
-  M.PI=[{id:'PI01',title:'ETH1 (Ethernet)',desc:'Ethernet port used for HTTPS: remote support and updates.'},{id:'PI02',title:'ETH2 (Ethernet)',desc:'Ethernet port used for Modbus/IP to the PLC.'},{id:'PI03',title:'USB',desc:'USB ports (CDC and MSC classes). Unused ports disabled by default.'},{id:'PI04',title:'Keyboard',desc:'Local keyboard input.'}];
-  M.LI=[{proto:'HTTPS / TCP',url:'',pi:'PI01',port:'443',dir:'both',fc:['FC03']},{proto:'HTTPS / TCP',url:'www.manufacturer.com/updates',pi:'PI01',port:'443',dir:'both',fc:['FC04']},{proto:'Modbus via IP / TCP',url:'',pi:'PI02',port:'502',dir:'both',fc:['FC01']}];
+  M.product={name:'Engineering PC „easy engineer“',model:'ee-2026-XT',version:'example v0.40, 26 Oct 2026 (working group), template v0.39'};
+  M.PC=[{id:'PC01',title:'CPU',desc:''},{id:'PC02',title:'Storage',desc:''}];
+  M.PI=[{id:'PI01',title:'Ethernet (ETH1)',desc:''},{id:'PI02',title:'Ethernet (ETH2)',desc:''},{id:'PI03',title:'USB',desc:''},{id:'PI04',title:'Keyboard',desc:''}];
+  M.LI=[{proto:'HTTPS / TCP',url:'',pi:'PI01',port:'443',dir:'both',enabled:'yes',fc:['FC03']},{proto:'Modbus via IP / TCP',url:'',pi:'PI02',port:'502',dir:'both',enabled:'yes',fc:['FC01']},{proto:'serial (USB)',url:'',pi:'PI03',port:'/',dir:'both',enabled:'no',fc:['FC01','FC04']},{proto:'human-machine interaction',url:'',pi:'PI04',port:'/',dir:'in',enabled:'yes',fc:['FC01','FC02']}];
   M.SP=[
-    {id:'SP01',title:'Password protection for PLC programs',desc:'The engineering software can password-protect PLC program files. Strong passwords are enforced; complexity requirements are set by the admin role.',on:[PRODUCT]},
-    {id:'SP02',title:'User notification in case of PLC program file change',desc:'The engineering software regularly checks stored PLC program files and notifies users as soon as a file change occurs that has not been made through the software.',on:['PC02']},
-    {id:'SP03',title:'Malware protection',desc:'The Engineering PC has Windows Defender enabled by default.',on:[PRODUCT]},
-    {id:'SP04',title:'Disabling of unused USB ports',desc:'Unused USB ports are disabled by default. They can be enabled temporarily, for example for security updates via USB (see FC05).',on:['PI03']}
+    {id:'SP01',annex:['2d','2e'],title:'Password protection for PLC programs',desc:'The Engineering software has a feature to password protect PLC program files. Strong passwords are enforced (password complexity requirements can be set by role “admin”).',on:[PRODUCT]},
+    {id:'SP02',annex:['2f'],title:'Malware protection',desc:'The Engineering PC by default has Windows Defender enabled for malware protection.',on:[PRODUCT]},
+    {id:'SP03',annex:['2f','2i','2k','2l'],title:'User notification in case of PLC program file change',desc:'The engineering software regularly checks the stored PLC program files and notifies users as soon as a file change occurs that hasn’t been initiated by the user itself.',on:['PC02']},
+    {id:'SP04',annex:['2b','2j'],title:'Disabling of unused USB ports',desc:'Any unused USB ports are disabled by default. They can temporarily be enabled e.g. for security updates via USB (see chapter 3.4.1 Function FC04 Install security updates).',on:['PI03']}
   ];
   M.CC=[
-    {id:'CC01',title:'PLC',desc:'The Programmable Logic Controller that can be programmed using the Engineering PC.',via:['PI02']},
+    {id:'CC01',title:'PLC',desc:'The Programmable Logic Controller (PLC) that can be programmed using the Engineering PC.',via:['PI02']},
     {id:'CC02',title:'Network',desc:'A network connecting the Engineering PC to the PLC(s) to be programmed.',via:['PI02']},
     {id:'CC03',title:'Maintenance PC',desc:'A laptop or PC used by maintenance staff.',via:['PI03']},
     {id:'CC04',title:'VPN termination',desc:'A device to terminate a VPN connection.',via:['PI01']},
-    {id:'CC05',title:'Manufacturer PC',desc:'A laptop or PC used by manufacturer staff.',via:['PI01']}
+    {id:'CC05',title:'Manufacturer PC',desc:'A laptop or PC used by manufacturer staff.',via:[]},
+    {id:'CC06',title:'Manufacturer update server',desc:'The webserver the manufacturer uses to provide security updates.',via:[]}
   ];
   M.CP=[
     {id:'CP01',title:'Engineer',desc:'The person who uses the Engineering PC to program PLCs.',skill:'skilled',via:['PI04']},
     {id:'CP02',title:'Manufacturer staff',desc:'The person(s) responsible for troubleshooting the Engineering PC (manufacturer support).',skill:'skilled',via:[]},
-    {id:'CP03',title:'Maintenance staff',desc:'The person(s) responsible for installing security updates on the Engineering PC.',skill:'instructed',via:[]}
+    {id:'CP03',title:'Maintenance staff',desc:'The person(s) responsible for the installation of security updates on the Engineering PC.',skill:'instructed',via:[]}
   ];
-  M.CZ=[];
+  M.CZ=[
+    {id:'CZ01',title:'product user zone',desc:'Components and persons internal to the product user’s organization',type:'physical + communication',access:'controlled',members:['CC01','CC02','CC03','CC04','CP01','CP03']},
+    {id:'CZ02',title:'manufacturer zone',desc:'Components and persons external to the product user’s organization (internal to the manufacturer’s organization)',type:'physical + communication',access:'limited',members:['CC05','CC06','CP02']}
+  ];
   M.FC=[
-    {id:'FC01',title:'Program a PLC',desc:'Creation and modification of PLC programs on the Engineering PC and transfer of these programs to the PLC.',core:'core',use:'intended',pc:['PC01','PC02'],pi:['PI04','PI02'],cc:['CC02','CC01'],cp:['CP01'],cz:[],path:['CP01','PI04','PC01','PC02','PI02','CC02','CC01']},
-    {id:'FC02',title:'Simulate PLC code',desc:'PLC programs can be simulated on the Engineering PC for testing purposes before transferring them to the PLC.',core:'core',use:'intended',pc:['PC01','PC02'],pi:['PI04'],cc:[],cp:['CP01'],cz:[],path:['CP01','PI04','PC01']},
-    {id:'FC03',title:'Troubleshoot from remote',desc:'Access and administrate the Engineering PC remotely for troubleshooting. Diagnostic capabilities support identification of faults and irregularities in system behaviour.',core:'ancillary',use:'intended',pc:['PC01'],pi:['PI01'],cc:['CC04','CC05'],cp:['CP02'],cz:[],path:['CP02','CC05','CC04','PI01','PC01']},
-    {id:'FC04',title:'Install security updates',desc:'Automatic download of new security updates from www.manufacturer.com/updates (see product interfaces for the required internet connection). Installation after user confirmation.',core:'ancillary',use:'intended',pc:['PC01','PC02'],pi:['PI01'],cc:[],cp:['CP03'],cz:[],path:['PI01','PC01','PC02']},
-    {id:'FC05',title:'Install security updates manually',desc:'Manual installation of security updates by downloading them from www.manufacturer.com/updates to a PC (CC03 Maintenance PC). After the download the Maintenance PC is disconnected from the network and the update is transferred by USB.',core:'ancillary',use:'intended',pc:['PC01','PC02'],pi:['PI03'],cc:['CC03'],cp:['CP03'],cz:[],path:['CP03','CC03','PI03','PC01','PC02']}
+    {id:'FC01',title:'Program a PLC',desc:'Creation and modification of PLC programs on the engineering PC and transfer of these programs to the PLC.',rfu:'Transfer of the PLC programs to the PLC using the USB port.',core:'core',use:'intended',pc:['PC01','PC02'],pi:['PI04','PI02'],cc:['CC02','CC01'],cp:['CP01'],cz:['CZ01'],cu:['CU01','CU02','CU03'],path:['CP01','PI04','PC01','PC02','PI02','CC02','CC01']},
+    {id:'FC02',title:'Simulate PLC code',desc:'PLC programs can be simulated on the Engineering PC for testing purposes before transferring them to the PLC.',rfu:'None beyond the function description.',core:'core',use:'intended',pc:['PC01','PC02'],pi:['PI04'],cc:[],cp:['CP01'],cz:['CZ01'],cu:['CU03'],path:['CP01','PI04','PC01']},
+    {id:'FC03',title:'Troubleshoot from remote',desc:'Access and administrate the Engineering PC remotely for troubleshooting purposes. The available diagnostic capabilities support the identification of faults and irregularities in system behaviour, but not the change of PLC programs.',rfu:'None beyond the function description.',core:'ancillary',use:'intended',pc:['PC01'],pi:['PI01'],cc:['CC04','CC05'],cp:['CP02'],cz:[],cu:['CU04'],path:['CP02','CC05','CC04','PI01','PC01']},
+    {id:'FC04',title:'Install security updates',desc:'Installation of security updates by downloading them from the manufacturer’s webserver (CC06 Manufacturer update server) to a PC (CC03 Maintenance PC) and then connecting the Maintenance PC to the Engineering PC via USB for transfer and installation of the updates.',rfu:'',core:'ancillary',use:'intended',pc:['PC01','PC02'],pi:['PI03'],cc:['CC03','CC06'],cp:['CP03'],cz:[],cu:['CU05','CU06','CU07','CU08'],path:['CP03','CC03','PI03','PC01','PC02']}
   ];
   M.CU=[
-    {id:'CU01',title:'No local admin accounts',desc:'Administrative rights are assigned exclusively through the central identity management system. Only centrally managed and authenticated user accounts are permitted to access the system.',on:['CC03']},
-    {id:'CU02',title:'Regular PLC code integrity checks',desc:'Regular integrity checks of the PLC code must be performed to ensure that only verified and unchanged code is executed on the PLC. This lies outside the product boundary and must be organised by the operator.',on:['CC01']},
-    {id:'CU03',title:'Physical access control',desc:'There must be physical access control in place for the Engineering PC and the PLC.',on:['CC01',PRODUCT]},
-    {id:'CU04',title:'No internet connection',desc:'The Engineering PC operates exclusively within a closed network segment with dedicated communication channels.',on:['CC02']}
+    {id:'CU01',annex:['2d','2i','2j','2k'],title:'No internet connection',desc:'The Engineering PC operates exclusively within a closed network segment with dedicated communication channels.',on:['CC02']},
+    {id:'CU02',annex:['2f','2i','2k','2l'],title:'Regular PLC code integrity checks',desc:'Regular integrity checks of the PLC code must be performed to ensure that only verified and unchanged code is executed on the PLC. This requirement lies outside the product boundary and must be fulfilled by the operator as part of the system environment.',on:['CC01']},
+    {id:'CU03',annex:['2d','2e','2j'],title:'Physical access control',desc:'There must be physical access control in place for the organization’s premises, the Engineering PC and the PLC.',on:['CZ01','CC01',PRODUCT]},
+    {id:'CU04',annex:['2d'],title:'VPN access manually enabled per use',desc:'The VPN connection is disabled by default and only gets manually enabled when there is a maintenance case requiring remote access.',on:['CC04']},
+    {id:'CU05',annex:['2i','2j','2k'],title:'No local admin accounts',desc:'Administrative rights are assigned exclusively through the central identity management system. Only centrally managed and authenticated user accounts are permitted to access the system.',on:['CC03']},
+    {id:'CU06',annex:['2d','2j'],title:'Temporary / restricted internet access',desc:'The Maintenance PC is only temporarily connected to the internet and the accessible URLs are restricted.',on:['CC03']},
+    {id:'CU07',annex:['2c','2j'],title:'Restrict internet access to manufacturer URL',desc:'The Maintenance PC is technically restricted to only download files from the manufacturer URL.',on:['CC03']},
+    {id:'CU08',annex:['2c','2f','2k'],title:'Integrity check of downloaded file',desc:'After downloading a security update file from the manufacturer website, maintenance staff checks the provided hash to assure the integrity of the provided security update file.',on:['CP03']}
   ];
   M.RI=[
-    {id:'RI01',title:'Download of security updates from untrusted source and / or failure to check security update integrity',desc:'Software updates are downloaded from other sources than the URL provided and / or the user does not check the provided hash to assure the integrity of the update file. Files containing malware might be installed on the Engineering PC. In the worst case such malware manipulates PLC programs stored on the Engineering PC, which are then unknowingly transferred to the PLC.',damage:'Damage of controlled equipment or diminished product quality.',fc:['FC05'],cu:[],path:['CC03','PI03','PC02','PI02','CC01']}
+    {id:'CR01',title:'No PLC code integrity checks',desc:'The user never verifies the integrity of the PLC code on the PLC.',damage:'If manipulations of PLC code happen, they are not detected and can cause harm to the controlled process.',fc:['FC01'],cu:['CU02'],path:[]},
+    {id:'CR02',title:'Physically unprotected perimeter',desc:'The organization’s perimeter is physically accessible without restriction.',damage:'The product can be accessed, manipulated, sabotaged, or destroyed by unauthorized persons in a way that disrupts its core functions.',fc:['FC01','FC02'],cu:['CU03'],path:[]},
+    {id:'CR03',title:'Physically unprotected product',desc:'The Engineering PC is physically accessible for all employees.',damage:'The product can be used by unauthorized and / or unskilled persons in a way that disrupts core functions.',fc:['FC01','FC02'],cu:['CU03'],path:[]},
+    {id:'CR04',title:'Connection of the PLC to the public internet',desc:'The PLC or the PLC network are connected to the public internet.',damage:'Files can be downloaded to the PLC from the public internet. In the worst case, the PLC is accessible from the public internet.',fc:['FC01'],cu:['CU01'],path:[]},
+    {id:'CR05',title:'Permanently open VPN connection',desc:'The VPN connection permanently remains enabled for use, even if there is no open maintenance case.',damage:'Remote access can be misused for malicious activities.',fc:['FC03'],cu:['CU04'],path:['CC05','CC04','PI01','PC01']},
+    {id:'CR06',title:'Local admin account enabled on the product',desc:'The user creates a local admin account.',damage:'In case of an authorized access or malware installation, the impact on the product can be more severe because privileged resources can be accessed.',fc:['FC04'],cu:['CU05'],path:[]},
+    {id:'CR07',title:'Product is connected to the internet',desc:'The temporary internet connection to the Maintenance PC is not disabled when downloaded updates onto the Engineering PC or the PLC network is connected to the internet.',damage:'Files containing malware might be installed on the product or remote access to the product may be possible.',fc:['FC04'],cu:['CU06'],path:[]},
+    {id:'CR08',title:'Download of security updates from untrusted source',desc:'Software updates are downloaded from other sources than the URL provided.',damage:'Files containing malware might be installed on the product.',fc:['FC04'],cu:['CU07'],path:['CC06','CC03','PI03','PC02']},
+    {id:'CR09',title:'Failure to check security update integrity',desc:'Maintenance staff does not check the provided hash to assure the integrity of the provided security update file.',damage:'Files containing malware might be installed on the product.',fc:['FC04'],cu:['CU08'],path:[]}
   ];
-  save();render();toast('Engineering PC example v0.22 loaded. The checks on the right are real gaps in the group’s example, not tool errors.');
+  save();render();toast('Engineering PC example v0.40 loaded. The checks on the right are real observations on the group’s example, not tool errors.');
 }
 
 /* ---------- editor ---------- */
@@ -295,7 +420,7 @@ function productCard(){
   const c=el('div',{class:'card'});
   c.append(el('div',{class:'hd',onclick:()=>c.classList.toggle('collapsed')},el('h3',{},'Product'),el('span',{class:'n'},M.product.name||'unnamed')));
   const bd=el('div',{class:'bd'}),it=el('div',{class:'item'});
-  for(const[f,ph]of[['name','Product name'],['model','Type / model / version'],['version','Document version / date']])it.append(el('div',{class:'row'},el('div',{class:'k'},f),el('input',{type:'text',value:M.product[f]||'',placeholder:ph,oninput:e=>{M.product[f]=e.target.value;save();renderDoc();renderFigure();}}),el('span')));
+  for(const[f,ph]of[['name','Product name'],['model','Type / model / version'],['version','Document version / date'],['family','Product family members, comma separated (optional: one manual for several products)']])it.append(el('div',{class:'row'},el('div',{class:'k'},f),el('input',{type:'text',value:M.product[f]||'',placeholder:ph,oninput:e=>{M.product[f]=e.target.value;save();renderDoc();renderFigure();renderChecks();},onchange:()=>{if(f==='family')render();}}),el('span')));
   bd.append(it);c.append(bd);return c;
 }
 function kindCard(kind,step){
@@ -311,8 +436,8 @@ function kindCard(kind,step){
 }
 function logicalTable(){
   const w=el('div',{style:'margin-top:12px;border-top:1px dashed var(--line);padding-top:8px'});
-  w.append(el('p',{class:'hint'},el('span',{class:'tag LI'},'LI'),' Logical interfaces: protocol or URL, over which physical interface, port, direction, for which function. Drawn as connector labels.'));
-  if(M.LI.length){w.append(el('div',{class:'lihd'},el('span',{},'protocol / service'),el('span',{},'URL'),el('span',{},'over PI'),el('span',{},'port'),el('span',{},'direction'),el('span',{},'function(s)'),el('span')));
+  w.append(el('p',{class:'hint'},el('span',{class:'tag LI'},'LI'),' Protocols and services (PP, template 2.1.4): protocol or URL, over which physical interface, port, direction, whether it is enabled by default, for which function. Drawn as connector labels.'));
+  if(M.LI.length){w.append(el('div',{class:'lihd'},el('span',{},'protocol / service'),el('span',{},'URL'),el('span',{},'over PI'),el('span',{},'port'),el('span',{},'direction'),el('span',{},'enabled'),el('span',{},'function(s)'),el('span')));
   M.LI.forEach((li,i)=>{
     const r=el('div',{class:'li'});
     r.append(el('input',{type:'text',value:li.proto,placeholder:'HTTPS / TCP',oninput:e=>{li.proto=e.target.value;save();renderFigure();renderDoc();}}));
@@ -320,36 +445,61 @@ function logicalTable(){
     const sel=el('select',{onchange:e=>{li.pi=e.target.value;save();renderFigure();renderDoc();renderChecks();}});sel.append(el('option',{value:''},'—'));for(const p of M.PI)sel.append(el('option',{value:p.id,selected:li.pi===p.id},p.id+' '+p.title));r.append(sel);
     r.append(el('input',{type:'text',value:li.port,placeholder:'443',oninput:e=>{li.port=e.target.value;save();renderDoc();}}));
     const d=el('select',{onchange:e=>{li.dir=e.target.value;save();renderDoc();}});for(const[v,l]of[['in','incoming'],['out','outgoing'],['both','both']])d.append(el('option',{value:v,selected:li.dir===v},l));r.append(d);
-    const fcs=el('div',{class:'fcs'});for(const f of M.FC)fcs.append(el('label',{},el('input',{type:'checkbox',checked:li.fc.includes(f.id),onchange:e=>{if(e.target.checked){if(!li.fc.includes(f.id))li.fc.push(f.id);}else li.fc=li.fc.filter(x=>x!==f.id);save();renderDoc();renderChecks();}}),f.id));r.append(fcs);
+    const en=el('select',{title:'Enabled by default',onchange:e=>{li.enabled=e.target.value;save();renderDoc();}});for(const[v,l]of[['',''],['yes','yes'],['no','no']])en.append(el('option',{value:v,selected:(li.enabled||'')===v},l||'?'));r.append(en);
+    const fcs=el('div',{class:'fcs'});for(const f of M.FC)fcs.append(el('label',{},el('input',{type:'checkbox',checked:li.fc.includes(f.id),onchange:e=>{if(e.target.checked){if(!li.fc.includes(f.id))li.fc.push(f.id);}else li.fc=li.fc.filter(x=>x!==f.id);save();renderDoc();renderChecks();}}),f.id));const lvp=varPicker(li);if(lvp){fcs.append(el('span',{class:'lbl'},'on:'));for(const c of [...lvp.childNodes])fcs.append(c);}r.append(fcs);
     r.append(el('button',{class:'x',title:'Remove',onclick:()=>{M.LI.splice(i,1);save();render();}},'×'));
     w.append(r);
   });}
   w.append(el('div',{class:'addrow'},el('button',{class:'btn small',onclick:()=>addLI()},'+ Add logical interface')));
   return w;
 }
+function varPicker(it){const f=family();if(f.length<2)return null;if(!Array.isArray(it.vars))it.vars=[];const w=el('div',{class:'fcs vars',title:'Which product family members this applies to. All ticked = every member.'});
+  for(const v of f)w.append(el('label',{},el('input',{type:'checkbox',checked:!onlyFor(it)||it.vars.includes(v),onchange:e=>{let cur=onlyFor(it)?it.vars.filter(x=>f.includes(x)):[...f];
+    if(e.target.checked){if(!cur.includes(v))cur.push(v);}else cur=cur.filter(x=>x!==v);
+    if(!cur.length){e.target.checked=true;toast('Everything applies to at least one family member');return;}
+    it.vars=cur.length===f.length?[]:cur;save();renderFigure();renderDoc();renderChecks();}}),v));
+  return w;}
 function itemRow(kind,it){
   const d=el('div',{class:'item'});
   const idIn=el('input',{type:'text',value:it.id,style:'font-family:var(--mono);font-weight:600;text-align:center',oninput:e=>{const o=it.id;it.id=e.target.value.trim();relink(o,it.id);save();renderFigure();renderChecks();renderDoc();}});
   const title=el('input',{type:'text',value:it.title,placeholder:'Title',oninput:e=>{it.title=e.target.value;save();renderFigure();renderChecks();renderDoc();}});
   d.append(el('div',{class:'row'},idIn,title,el('button',{class:'x',title:'Remove',onclick:()=>remove(kind,it.id)},'×')));
   d.append(el('div',{class:'row'},el('div'),el('textarea',{placeholder:kind==='RI'?'Reasonably foreseeable misuse or circumstance':'Description',oninput:e=>{it.desc=e.target.value;save();renderDoc();}},it.desc),el('span')));
-  if(kind==='RI')d.append(el('div',{class:'row'},el('div',{class:'k'},'damage'),el('textarea',{placeholder:'Potential damage',oninput:e=>{it.damage=e.target.value;save();renderDoc();renderChecks();}},it.damage||''),el('span')));
+  if(kind==='FC')d.append(el('div',{class:'row'},el('div',{class:'k'},'foreseeable'),el('textarea',{placeholder:'Reasonably foreseeable use [optional]: likely deviations from this function',oninput:e=>{it.rfu=e.target.value;save();renderDoc();}},it.rfu||''),el('span')));
+  if(kind==='RI')d.append(el('div',{class:'row'},el('div',{class:'k'},'potential risk'),el('textarea',{placeholder:'Potential risk (what could happen, from the user\'s perspective)',oninput:e=>{it.damage=e.target.value;save();renderDoc();renderChecks();}},it.damage||''),el('span')));
+  const vp=varPicker(it);if(vp)d.append(el('div',{class:'row'},el('div',{class:'k'},'applies to'),vp,el('span')));
   const sub=el('div',{class:'sub'});
   const brk=()=>el('span',{class:'brk'});
-  if(kind==='SP'){sub.append(picker(it,'on',['PRODUCT','PC','PI'],'placed on'));}
+  if(kind==='SP'){sub.append(picker(it,'on',['PRODUCT','PC','PI'],'placed on'));sub.append(brk());sub.append(annexPicker(it));}
   if(kind==='FC'){
     sub.append(radio(it,'core',[['core','core'],['ancillary','ancillary']]));sub.append(el('span',{class:'lbl',style:'margin-left:8px'},'use'));sub.append(radio(it,'use',[['intended','intended purpose'],['foreseeable','reasonably foreseeable use']]));
     sub.append(brk());sub.append(picker(it,'pc',['PC'],'uses components'));sub.append(brk());sub.append(picker(it,'pi',['PI'],'through interfaces'));
     sub.append(brk());sub.append(picker(it,'cc',['CC'],'needs context'));sub.append(brk());sub.append(picker(it,'cp',['CP'],'needs persons'));sub.append(brk());sub.append(picker(it,'cz',['CZ'],'in zones'));
+    sub.append(brk());sub.append(picker(it,'cu',['CU'],'conditions of use in its '+fnNum(it)+' table (none ticked: derived)'));
     sub.append(brk());sub.append(pathEditor(it));
   }
   if(kind==='CC'){sub.append(picker(it,'via',['PI'],'touches interface'));}
   if(kind==='CP'){sub.append(el('span',{class:'lbl'},'skill'));sub.append(radio(it,'skill',[['ordinary','ordinary'],['instructed','instructed'],['skilled','skilled']]));sub.append(brk());sub.append(picker(it,'via',['PI'],'touches interface'));}
-  if(kind==='CZ'){sub.append(el('span',{class:'lbl'},'type'));sub.append(radio(it,'type',[['physical','physical'],['communication','communication']]));sub.append(el('span',{class:'lbl',style:'margin-left:8px'},'access'));sub.append(radio(it,'access',[['public','public'],['limited','limited'],['controlled','controlled']]));sub.append(brk());sub.append(picker(it,'members',['CC','CP'],'contains'));}
-  if(kind==='CU'){sub.append(picker(it,'on',['CC','CP','CZ','PRODUCT'],'affects'));}
-  if(kind==='RI'){sub.append(picker(it,'cu',['CU'],'breaks condition'));sub.append(brk());sub.append(picker(it,'fc',['FC'],'affects function'));sub.append(brk());sub.append(pathEditor(it));}
+  if(kind==='CZ'){sub.append(el('span',{class:'lbl'},'type'));sub.append(radio(it,'type',[['physical','physical'],['communication','communication'],['physical + communication','both']]));sub.append(el('span',{class:'lbl',style:'margin-left:8px'},'access'));sub.append(radio(it,'access',[['public','public'],['limited','limited'],['controlled','controlled']]));sub.append(brk());sub.append(picker(it,'members',['CC','CP'],'contains'));}
+  if(kind==='CU'){sub.append(picker(it,'on',['CC','CP','CZ','PRODUCT'],'affects'));sub.append(brk());sub.append(annexPicker(it));}
+  if(kind==='RI'){sub.append(picker(it,'cu',['CU'],'breaks condition'));sub.append(brk());sub.append(picker(it,'fc',['FC'],'listed under function(s)'));sub.append(brk());sub.append(pathEditor(it));}
   if(sub.childNodes.length)d.append(el('div',{class:'row'},el('div'),sub,el('span')));
   return d;
+}
+function annexPicker(it){
+  if(!Array.isArray(it.annex))it.annex=[];
+  const w=el('span',{style:'display:contents'});
+  w.append(el('span',{class:'lbl'},'satisfies CRA Annex I'));
+  for(const[ref,name]of ANNEX1){
+    const cb=el('input',{type:'checkbox',checked:it.annex.includes(ref),onchange:e=>{
+      if(e.target.checked){if(!it.annex.includes(ref))it.annex.push(ref);}
+      else it.annex=it.annex.filter(x=>x!==ref);
+      it.annex.sort((a,b)=>ANNEX1.findIndex(x=>x[0]===a)-ANNEX1.findIndex(x=>x[0]===b));
+      save();renderChecks();renderDoc();
+    }});
+    w.append(el('label',{title:name},cb,el('span',{class:'tag SP'},ref),name));
+  }
+  return w;
 }
 function radio(it,field,opts){const w=el('span');for(const[v,l]of opts){w.append(el('label',{},el('input',{type:'radio',name:'r_'+it.id+'_'+field,checked:it[field]===v,onchange:()=>{it[field]=v;save();renderDoc();renderChecks();renderFigure();}}),l));}return w;}
 function picker(it,field,kinds,label){
@@ -358,8 +508,9 @@ function picker(it,field,kinds,label){
   for(const kind of kinds){
     const pool=kind==='PRODUCT'?[{id:PRODUCT,title:'the product as a whole'}]:M[kind];
     for(const t of pool){
-      const cb=el('input',{type:'checkbox',checked:it[field].includes(t.id),onchange:e=>{if(e.target.checked){if(!it[field].includes(t.id))it[field].push(t.id);}else it[field]=it[field].filter(x=>x!==t.id);save();renderFigure();renderChecks();renderDoc();}});
-      w.append(el('label',{title:t.desc||''},cb,el('span',{class:'tag '+kind},kind==='PRODUCT'?'Product':t.id),t.title||'(untitled)'));
+      const sr=it[field].includes(t.id)?sugRule(it,field,t.id):null;
+      const cb=el('input',{type:'checkbox',checked:it[field].includes(t.id),onchange:e=>{if(e.target.checked){if(!it[field].includes(t.id))it[field].push(t.id);}else it[field]=it[field].filter(x=>x!==t.id);decide(it,field,t.id);e.target.parentNode.classList.remove('sug');save();renderFigure();renderChecks();renderDoc();}});
+      w.append(el('label',{class:sr?'sug':false,title:sr?`Suggested (${sr}: ${RULE_TXT[sr]}). Untick if wrong; ticking it again confirms it.`:(t.desc||'')},cb,el('span',{class:'tag '+kind},kind==='PRODUCT'?'Product':t.id),t.title||'(untitled)'));
     }
     if(kind!=='PRODUCT')w.append(el('button',{class:'addmini',title:'Create a new '+kind+' and link it here',onclick:()=>{const n=add(kind);it[field].push(n.id);save();render();}},'+ new '+kind));
   }
@@ -377,7 +528,8 @@ function pathEditor(it){
 
 /* ---------- checks ---------- */
 function checks(){
-  const out=[];
+  const T1=[],T2=[],T3=[];
+  const out=T1;  /* existing chain-integrity checks land in tier 1 unchanged */
   const needCC=new Set(),needCP=new Set(),usePC=new Set(),usePI=new Set();
   for(const f of M.FC){f.cc.forEach(x=>needCC.add(x));f.cp.forEach(x=>needCP.add(x));f.pc.forEach(x=>usePC.add(x));f.pi.forEach(x=>usePI.add(x));}
   for(const s of M.SP)s.on.forEach(x=>{usePC.add(x);usePI.add(x);});
@@ -392,33 +544,89 @@ function checks(){
   const constrained=new Set();for(const u of M.CU)u.on.forEach(x=>constrained.add(x));
   for(const c of M.CC)if(needCC.has(c.id)&&!constrained.has(c.id))out.push(['warn',`${c.id} ${c.title} has no condition of use`,'A function depends on it, but nothing must be true about it? Usually something must. If genuinely nothing, say so in its description.']);
   const broken=new Set();for(const r of M.RI)r.cu.forEach(x=>broken.add(x));
-  for(const u of M.CU)if(!broken.has(u.id))out.push(['warn',`${u.id} ${u.title} has no risk stating what happens if it is not met`,'Chapter 2.5 is the consequence of chapter 2.4. A condition with no named consequence will not be taken seriously.']);
+  for(const u of M.CU)if(!broken.has(u.id))out.push(['warn',`${u.id} ${u.title} has no risk stating what happens if it is not met`,'Guidance v0.33: for each condition of use there should be at least one circumstance leading to risk, in the same 3.3 subchapter. A condition with no named consequence will not be taken seriously.']);
   for(const s of M.SP)if(!s.on.length)out.push(['warn',`${s.id} ${s.title} is not placed on anything`,'The template’s “affected component” column: a component, an interface, or the product.']);
-  for(const r of M.RI){if(!r.cu.length&&!r.fc.length)out.push(['warn',`${r.id} ${r.title} points at no condition and no function`,'A risk needs an anchor.']);if(!(r.damage||'').trim())out.push(['warn',`${r.id} ${r.title} names no potential damage`,'The template asks for it.']);}
+  for(const r of M.RI){if(!r.cu.length&&!r.fc.length)out.push(['warn',`${r.id} ${r.title} points at no condition and no function`,'A risk needs an anchor.']);if(!(r.damage||'').trim())out.push(['warn',`${r.id} ${r.title} names no potential risk`,'The template asks for it.']);}
   for(const li of M.LI){if(!li.pi)out.push(['warn',`Logical interface “${li.proto||'?'}” is not assigned to a physical interface`,'The connector cannot be drawn without one.']);if(!li.fc.length)out.push(['warn',`Logical interface “${li.proto||'?'}” serves no function`,'The template’s function column. An open port with no function is a finding, not a feature.']);}
+  for(const f of M.FC){if(!(f.cu||[]).length)continue;const der=derivedCU(f);
+    for(const id of der)if(!f.cu.includes(id))out.push(['warn',`${f.id} does not list ${id}, although ${id} constrains something ${f.id} needs`,'Its '+fnNum(f)+' table shows only the ticked conditions. Intended? If the condition matters for this function, tick it.']);
+    for(const id of f.cu)if(!der.includes(id))out.push(['warn',`${f.id} lists ${id}, but ${id} constrains nothing ${f.id} needs`,'A condition belongs to a function through the context it constrains. Tick what it affects on the function, or attach the condition to the right component.']);}
   const ids={};for(const k of ['PC','PI','SP','FC','CC','CP','CZ','CU','RI'])for(const it of M[k]){if(ids[it.id])out.push(['stop',`Duplicate ID ${it.id}`,'IDs must be unique.']);ids[it.id]=1;}
-  return out;
+
+  /* ---- TIER 2: does the v0.38 template have what it asks for? ---- */
+  if(!(M.product.name||'').trim())T2.push(['stop','Product name is empty','Template 2.1.1 Product identification is not optional.']);
+  if(!(M.product.model||'').trim()&&!(M.product.version||'').trim())T2.push(['warn','No type, model or version','2.1.1 asks for what uniquely identifies this product to a user holding it.']);
+  const req=[['FC','functions','3.3'],['CC','context components','2.3.2'],['CU','conditions of use','3.3'],['RI','circumstances leading to risk','3.3'],['SP','security properties','2.2.2']];
+  for(const[k,label,sec]of req)if(!M[k].length)T2.push(['warn',`No ${label} yet`,`Template ${sec}. The chain cannot be checked until this list exists.`]);
+  if(M.FC.length&&!M.FC.some(isUpd))
+    T2.push(['stop','No "install security updates" function','CRA Annex I (2c) makes a secure update mechanism mandatory, and the template ships this subchapter pre-written as 3.4.1 Function FC0x Install security updates. A manual without it is non-conformant, not merely incomplete.']);
+  for(const f of M.FC){
+    if(M.CU.length&&!fnCU(f).length)T2.push(['warn',`${f.id} ${f.title} has no conditions of use in its ${fnNum(f)} subchapter`,'Each function subchapter carries its own conditions of use table. If the function truly needs none, say so in its description.']);
+    if(M.RI.length&&!M.RI.some(r=>(r.fc||[]).includes(f.id)))T2.push(['warn',`${f.id} ${f.title} has no circumstances leading to risk in its ${fnNum(f)} subchapter`,'Circumstances are defined per function (guidance v0.33); tick this function on the circumstances that apply to it.']);
+  }
+  const cores=M.FC.filter(f=>f.core==='core');
+  if(M.FC.length&&!cores.length)T2.push(['warn','No function is marked core','One core functionality is what sets the Annex III and IV conformity regime. Something here is the core.']);
+  if(cores.length>1)T2.push(['warn',`${cores.length} functions are marked core (${cores.map(f=>f.id).join(', ')})`,'The guidance: a product has one core functionality, which can span several functions. Check that these together are that one core functionality, and that none of them is really ancillary.']);
+
+  /* ---- TIER 3: does this discharge the regulation? Table 5.1 coverage. ---- */
+  const claims=r=>[...M.SP.filter(x=>(x.annex||[]).includes(r)).map(x=>x.id),...M.CU.filter(x=>(x.annex||[]).includes(r)).map(x=>x.id)];
+  if(M.SP.length||M.CU.length){
+    const updFn=M.FC.find(f=>/security update/i.test(f.title||''));
+    for(const[ref,name]of ANNEX1){
+      const c=claims(ref);
+      if(ref==='2c'&&updFn)continue;  /* the template answers 2c with chapter 3.4 (the update function), not only an SP or CU */
+      if(!c.length)T3.push(['gap',`(${ref}) ${name}: nothing claims it`,'This row of template table 5.1 renders empty. Either a security property or a condition of use should carry it, or you should be ready to say why it does not apply to this product.']);
+    }
+    for(const x of M.SP)if(!(x.annex||[]).length)T3.push(['warn',`${x.id} ${x.title} claims no Annex I requirement`,'It will not appear anywhere in table 5.1. A security property that satisfies nothing is worth a second look.']);
+    for(const x of M.CU)if(!(x.annex||[]).length)T3.push(['warn',`${x.id} ${x.title} claims no Annex I requirement`,'It will not appear anywhere in table 5.1.']);
+  }
+
+  if(family().length>1){const f=family();
+    for(const k of ['PC','PI','SP','FC','CC','CP','CZ','CU','RI'])for(const x of M[k])for(const v of (x.vars||[]))if(!f.includes(v))T1.push(['warn',`${x.id} names "${v}", which is not in the product family list`,'Tick the members it applies to again; until then it is treated as applying to every member.']);
+    for(const fn of M.FC)for(const m of f){if(!appliesTo(fn,m))continue;for(const id of [...fn.pc,...fn.pi,...fn.cc,...fn.cp,...fn.cz]){const x=findAny(id);if(x&&!appliesTo(x,m))T1.push(['stop',`${fn.id} ${fn.title} applies to ${m}, but needs ${id} ${x.title}, which ${m} does not have`,'Either the function is not available on that member (untick it there) or the element applies to it too.']);}}}
+  const G=[['Chain integrity',T1],['Template completeness, v0.39',T2],['CRA coverage, Annex I Part I (chapter 5.1)',T3]];
+  if(M.derived&&M.derived.rules){const T0=[],n=Object.keys(M.derived.rules).length;
+    if(n)T0.push(['sug',`${n} link${n>1?'s':''} filled in by rule, marked with a dashed outline`,'Hover a marked link to see the rule. Untick what is wrong; the mark goes when you decide. Derived from '+(M.derived.from||'a manual')+' on '+(M.derived.date||'')+'.']);
+    for(const g of derivedGaps())T0.push(['sug',g,'No rule reaches this; the manual does not say it.']);
+    if(T0.length)G.unshift(['Derived from a manual',T0]);}
+  return G;
 }
 function renderChecks(){
-  const ul=$('#checks');ul.innerHTML='';const out=checks();
-  const stops=out.filter(x=>x[0]==='stop').length,warns=out.length-stops;
-  const sm=$('#chkSummary');sm.className='tag '+(stops?'RI':warns?'CU':'PC');sm.textContent=stops?stops+' to fix':warns?warns+' to look at':'clean';
-  if(!out.length){ul.append(el('li',{},el('span',{class:'lv ok'},'OK'),el('span',{},'Every context item is needed by a function, every condition constrains something, every condition has a named consequence.')));return;}
-  for(const[lv,msg,why]of out)ul.append(el('li',{},el('span',{class:'lv '+lv},lv==='stop'?'FIX':'CHECK'),el('span',{},msg,el('span',{class:'why'},why))));
+  const ul=$('#checks');ul.innerHTML='';
+  const groups=checks();
+  const all=groups.flatMap(g=>g[1]);
+  const stops=all.filter(x=>x[0]==='stop').length;
+  const gaps=all.filter(x=>x[0]==='gap').length;
+  const warns=all.filter(x=>x[0]==='warn').length;
+  const sm=$('#chkSummary');
+  sm.className='tag '+(stops?'RI':gaps?'FC':warns?'CU':'PC');
+  sm.textContent=stops?stops+' to fix':gaps?gaps+' CRA gap'+(gaps>1?'s':''):warns?warns+' to look at':'clean';
+  if(!all.length){
+    ul.append(el('li',{},el('span',{class:'lv ok'},'OK'),el('span',{},'Every context item is needed by a function, every condition constrains something, every condition has a named consequence, the template has what it asks for, and every Annex I Part I requirement is claimed by something.')));
+    return;
+  }
+  for(const[title,items]of groups){
+    if(!items.length)continue;
+    ul.append(el('li',{class:'tierhd'},title,title==='Derived from a manual'&&Object.keys(M.derived.rules).length?el('button',{class:'addmini',style:'margin-left:8px;width:auto;flex:none',title:'Keep every derived link and remove the marks. The gaps stay listed until they are filled.',onclick:()=>{M.derived.rules={};save();render();toast('Suggested links accepted');}},'accept all suggested links'):null));
+    for(const[lv,msg,why]of items)
+      ul.append(el('li',{},el('span',{class:'lv '+lv},lv==='stop'?'FIX':lv==='gap'?'CRA':lv==='sug'?'DERIVED':'CHECK'),el('span',{},msg,el('span',{class:'why'},why))));
+  }
 }
 
 /* ---------- figure: one picture, layers ---------- */
 function renderScope(){
   const s=$('#figScope');const cur=s.value;s.innerHTML='';
-  s.append(el('option',{value:'product'},'1.1.4 Product diagram'));
-  s.append(el('option',{value:'sp'},'1.2.3 Security property diagram'));
-  s.append(el('option',{value:'context'},'2.2.4 Context diagram'));
-  for(const f of M.FC)s.append(el('option',{value:'fc:'+f.id},'2.3.2 Function diagram: '+f.id+' '+f.title));
-  s.append(el('option',{value:'cu'},'2.4.2 Conditions of use diagram'));
-  for(const r of M.RI)s.append(el('option',{value:'ri:'+r.id},'2.5.2 Risk diagram: '+r.id+' '+r.title.slice(0,40)));
+  s.append(el('option',{value:'product'},'2.1.2 Product diagram'));
+  s.append(el('option',{value:'sp'},'2.2.1 Security property diagram'));
+  s.append(el('option',{value:'context'},'2.3.1 Context diagram'));
+  for(const f of M.FC)s.append(el('option',{value:'fc:'+f.id},fnNum(f)+' Secure use diagram: '+f.id+' '+f.title));
+  s.append(el('option',{value:'cu'},'Conditions of use overview (not in the template since v0.32)'));
+  for(const r of M.RI)s.append(el('option',{value:'ri:'+r.id},'Risk diagram (guidance only, no template slot): '+r.id+' '+r.title.slice(0,40)));
   s.value=[...s.options].some(o=>o.value===cur)?cur:'context';
+  const fv=$('#figVar'),fc=fv.value,fam=family();fv.innerHTML='';fv.append(el('option',{value:''},'all members'));for(const m of fam)fv.append(el('option',{value:m},m));fv.value=fam.includes(fc)?fc:'';$('#figVarL').hidden=fam.length<2;
 }
-function figureSVG(scope,opts){
+function figureSVG(scope,opts){const M0=M;const m=opts.variant&&family().includes(opts.variant)?opts.variant:'';if(m)M=forMember(m);try{return figureSVG0(scope,Object.assign({},opts,{member:m}));}finally{M=M0;}}
+function figureSVG0(scope,opts){
   const layer=scope.split(':')[0],focusId=scope.split(':')[1];
   const showCtx=!(layer==='product'||layer==='sp');
   const showSP=layer==='sp'||(opts.sp&&(layer==='fc'||layer==='ri'||layer==='cu'));
@@ -429,17 +637,18 @@ function figureSVG(scope,opts){
   if(focus&&layer==='ri'){focus.cu.forEach(u=>{const cu=M.CU.find(x=>x.id===u);if(cu)cu.on.forEach(x=>hi.add(x));});}
   const dim=id=>focus&&hi.size&&!hi.has(id)?' opacity=".28"':'';
 
-  const W=1000,pad=16;const boxX=pad+8,boxW=330,nodeH=34,gapY=12;
+  const W=1000,pad=16;let boxX=pad+8,boxW=330;const nodeH=34,gapY=12;
   const spOn={};if(showSP)for(const s of M.SP)for(const o of s.on)(spOn[o]=spOn[o]||[]).push(s);
   const cuOn={};if(showCU)for(const u of M.CU)for(const o of u.on)(cuOn[o]=cuOn[o]||[]).push(u);
-  const hOf=(id,base)=>base+((spOn[id]||[]).length+(cuOn[id]||[]).length)*15;
+  const nLines=id=>{const x=findAny(id);return (x&&WRAP[x.kind]?wrapLines(x.title,WRAP[x.kind]).length:1)+(x&&!opts.member&&varTxt(x)?1:0);};
+  const hOf=(id,base)=>base+(nLines(id)-1)*13+((spOn[id]||[]).length+(cuOn[id]||[]).length)*15;
   const pos={};let y=70;const pcX=boxX+14,pcW=150;
   for(const p of M.PC){const h=hOf(p.id,nodeH);pos[p.id]={x:pcX,y,w:pcW,h,kind:'PC'};y+=h+gapY;}
   const pcBottom=y;y=70;const piX=boxX+boxW-98,piW=110;
   for(const p of M.PI){const h=hOf(p.id,nodeH);pos[p.id]={x:piX,y,w:piW,h,kind:'PI'};y+=h+gapY;}
   const piBottom=y;
   const prodSP=(spOn[PRODUCT]||[]),prodCU=(cuOn[PRODUCT]||[]);
-  const boxTop=42,boxBottom=Math.max(pcBottom,piBottom,140)+10+(prodSP.length+prodCU.length)*15;
+  const boxTop=42;let boxBottom=Math.max(pcBottom,piBottom,140)+10+(prodSP.length+prodCU.length)*15;
   const ctxX=boxX+boxW+150,ctxW=200;const zoneOf={};for(const z of M.CZ)for(const m of z.members)zoneOf[m]=z.id;
   const groups=[];for(const z of M.CZ)groups.push({z,members:[...M.CC,...M.CP].filter(n=>zoneOf[n.id]===z.id)});
   const unz=[...M.CC,...M.CP].filter(n=>!zoneOf[n.id]);if(unz.length)groups.push({z:null,members:unz});
@@ -447,22 +656,66 @@ function figureSVG(scope,opts){
   if(showCtx)for(const g of groups){
     const gy=y;if(g.z){y+=22;}
     for(const n of g.members){const kind=M.CP.includes(n)?'CP':'CC';const h=hOf(n.id,nodeH);pos[n.id]={x:ctxX,y,w:ctxW,h,kind};y+=h+gapY;}
-    if(g.z){const extra=((cuOn[g.z.id]||[]).length*15);zoneRects.push({z:g.z,x:ctxX-14,y:gy-8,w:ctxW+28,h:(y-gy)+6+extra});y+=extra+10;}
+    if(g.z){const extra=((cuOn[g.z.id]||[]).length*15);zoneRects.push({z:g.z,ids:g.members.map(n=>n.id),extra,x:ctxX-14,y:gy-8,w:ctxW+28,h:(y-gy)+6+extra});y+=extra+10;}
     y+=6;
   }
-  const H=Math.max(boxBottom,y,200)+40;
+  /* dragged positions: offsets from the automatic layout, clamped to the drawing; zones and the product boundary then grow to hold their members */
+  const L=M.layout||{};
+  for(const id in pos){const o=L[id];if(!o)continue;const P=pos[id],x0=P.x,y0=P.y;const minY=(P.kind==='PC'||P.kind==='PI')?boxTop+16:(showCtx?58:40);
+    P.x=Math.min(Math.max(x0+o.dx,6),W-P.w-6);P.y=Math.max(y0+o.dy,minY);o.dx=P.x-x0;o.dy=P.y-y0;}
+  for(const zr of zoneRects){const ms=zr.ids.map(i=>pos[i]).filter(Boolean);if(!ms.length)continue;const l=Math.min(...ms.map(m=>m.x)),t=Math.min(...ms.map(m=>m.y));
+    zr.x=l-14;zr.y=t-30;zr.w=Math.max(...ms.map(m=>m.x+m.w))-l+28;zr.h=Math.max(...ms.map(m=>m.y+m.h))-t+40+zr.extra;}
+  const inner=[...M.PC,...M.PI].map(p=>pos[p.id]).filter(Boolean);
+  if(inner.length){const l=Math.min(boxX,...inner.map(m=>m.x-14)),r=Math.max(boxX+boxW,...inner.map(m=>m.x+m.w+14));boxX=l;boxW=r-l;
+    boxBottom=Math.max(boxBottom,Math.max(...inner.map(m=>m.y+m.h))+10+(prodSP.length+prodCU.length)*15);}
+  const contentBottom=Math.max(boxBottom,y,200,...Object.values(pos).map(m=>m.y+m.h+10),...zoneRects.map(z=>z.y+z.h));
+  const ttl=layerTitle(scope)+(opts.member?' ('+opts.member+')':'');
+  /* key: only the symbols this diagram actually uses (diagram guidelines, CMM, Nov 2026) */
+  const anyVia=showCtx&&[...M.CC,...M.CP].some(n=>(n.via||[]).some(v=>pos[v])&&pos[n.id]);
+  const anyPcPi=M.PC.some(p=>M.PI.some(i=>M.FC.some(f=>f.pc.includes(p.id)&&f.pi.includes(i.id))));
+  const anyVar=!opts.member&&family().length>1&&['PC','PI','CC','CP','SP','CU'].some(k=>M[k].some(onlyFor));
+  const LEG=opts.legend===false?[]:[
+    [1,'Product boundary (manufacturer’s responsibility)',(x,y)=>`<rect x="${x}" y="${y}" width="26" height="12" rx="3" fill="none" stroke="#2f7d5b" stroke-width="1.4" stroke-dasharray="4 3"/>`],
+    [M.PC.length,'Product component (PC)',(x,y)=>`<rect x="${x}" y="${y}" width="26" height="12" rx="2" fill="#e7f3ec" stroke="#2f7d5b"/>`],
+    [M.PI.length,'Product interface (PI)',(x,y)=>`<rect x="${x}" y="${y}" width="26" height="12" rx="2" fill="#eef7f2" stroke="#2f7d5b"/><text x="${x+23}" y="${y+9}" text-anchor="end" font-size="7" fill="#5b6b78">PI</text>`],
+    [anyPcPi,'Component reached through an interface',(x,y)=>`<line x1="${x}" y1="${y+6}" x2="${x+26}" y2="${y+6}" stroke="#2f7d5b" opacity=".45"/>`],
+    [showCtx&&M.CC.length,'Context component (CC): system outside the product',(x,y)=>`<rect x="${x}" y="${y}" width="26" height="12" rx="2" fill="#f6ecdc" stroke="#a9660f"/>`],
+    [showCtx&&M.CP.length,'Context person (CP), with skill level',(x,y)=>`<rect x="${x}" y="${y}" width="26" height="12" rx="6" fill="#fbf3e6" stroke="#a9660f"/>`],
+    [showCtx&&zoneRects.length,'Context zone (CZ): type and access',(x,y)=>`<rect x="${x}" y="${y}" width="26" height="12" rx="4" fill="none" stroke="#a9660f" stroke-dasharray="3 3"/>`],
+    [anyVia,'Connection through an interface'+(opts.proto?', labelled with its protocol':''),(x,y)=>`<line x1="${x}" y1="${y+6}" x2="${x+26}" y2="${y+6}" stroke="#6b7a86" stroke-width="1.1"/>`],
+    [(showSP)&&M.SP.length,'◆ Security property (SP) the product provides',(x,y)=>`<text x="${x+13}" y="${y+10}" text-anchor="middle" font-size="11" fill="#2f7d5b">◆</text>`],
+    [(showCU)&&M.CU.length,'▸ Condition of use (CU) the user must meet',(x,y)=>`<text x="${x+13}" y="${y+10}" text-anchor="middle" font-size="11" fill="#a9660f">▸</text>`],
+    [layer==='fc'&&path.length,'Function steps, in numbered order',(x,y)=>`<line x1="${x}" y1="${y+6}" x2="${x+16}" y2="${y+6}" stroke="#3b5bb5" stroke-width="2" stroke-dasharray="5 3"/><circle cx="${x+21}" cy="${y+6}" r="5.5" fill="#3b5bb5"/><text x="${x+21}" y="${y+9}" text-anchor="middle" font-size="7" font-weight="700" fill="#fff">1</text>`],
+    [layer==='ri'&&path.length,'How the circumstance unfolds, in numbered order',(x,y)=>`<line x1="${x}" y1="${y+6}" x2="${x+16}" y2="${y+6}" stroke="#b3382c" stroke-width="2" stroke-dasharray="5 3"/><circle cx="${x+21}" cy="${y+6}" r="5.5" fill="#b3382c"/><text x="${x+21}" y="${y+9}" text-anchor="middle" font-size="7" font-weight="700" fill="#fff">1</text>`],
+    [focus&&hi.size,'Faded: not involved',(x,y)=>`<rect x="${x}" y="${y}" width="26" height="12" rx="2" fill="#f6ecdc" stroke="#a9660f" opacity=".28"/>`],
+    [anyVar,'[… only]: present only on the family members named',(x,y)=>`<text x="${x+13}" y="${y+10}" text-anchor="middle" font-size="9" font-weight="700" fill="#6b4fa0">[…]</text>`]
+  ].filter(l=>l[0]);
+  const TAKE={product:'The product’s main components and the interfaces through which it is reached. Everything inside the dashed line is the manufacturer’s responsibility.',
+    sp:'Which security properties the product provides, and on which component or interface each one sits.',
+    context:'What the product relies on outside its boundary, who works with it, and in which zones. Everything outside the dashed line is an assumption the user is responsible for making true.',
+    cu:'Every condition of use, attached to the context component, person or zone it constrains.'};
+  let take=TAKE[layer]||'';
+  if(layer==='fc'&&focus)take=`The steps of function ${focus.id} ${focus.title}, in order, and what it needs from outside the product.`+(showCU?' The conditions of use shown are what the user must ensure for it to be used securely.':'');
+  if(layer==='ri'&&focus){const v=(focus.cu||[]).filter(id=>M.CU.some(u=>u.id===id));take=`How circumstance ${focus.id} unfolds, step by step`+(v.length?`; it arises when ${v.join(', ')} ${v.length>1?'are':'is'} not met`:'')+`. Potential risk: ${String(focus.damage||'not yet described').trim().replace(/\.$/,'')}.`;}
+  if(opts.member)take+=` Shown for ${opts.member}; elements not present on this family member are left out.`;
+  else if(anyVar)take+=' Elements marked [… only] are not present on every family member.';
+  const cap=opts.caption===false?[]:wrapLines((opts.fig?'Figure '+opts.fig+': ':'')+ttl+'. '+take,165);
+  const focusY=contentBottom+24;let legY=contentBottom+(focus&&path.length?44:20);
+  const legRows=Math.ceil(LEG.length/3),legH=LEG.length?22+legRows*18:0;
+  const capY=legY+legH+(legH?10:0),footY=capY+cap.length*15+16;
+  const H=footY+10;
   const s=[];
-  s.push(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${esc(layerTitle(scope))}: product components and interfaces inside the product boundary; context components and persons outside, attached to the interfaces they touch; security properties and conditions of use as badges; function and risk paths as numbered steps." font-family="system-ui,Helvetica,Arial,sans-serif" font-size="11">`);
+  s.push(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${esc(ttl)}: product components and interfaces inside the product boundary; context components and persons outside, attached to the interfaces they touch; security properties and conditions of use as badges; function and risk paths as numbered steps." font-family="system-ui,Helvetica,Arial,sans-serif" font-size="11">`);
   s.push(`<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6b7a86"/></marker></defs>`);
   s.push(`<rect x="0" y="0" width="${W}" height="${H}" fill="#fcfcf9"/>`);
-  s.push(`<text x="${pad}" y="22" font-size="12" font-weight="600" fill="#16212b">${esc(layerTitle(scope))}</text>`);
+  s.push(`<text x="${pad}" y="22" font-size="12" font-weight="600" fill="#16212b">${esc(ttl)}</text>`);
   s.push(`<rect x="${boxX}" y="${boxTop}" width="${boxW}" height="${boxBottom-boxTop}" rx="8" fill="none" stroke="#2f7d5b" stroke-width="1.6" stroke-dasharray="6 4"${dim(PRODUCT)}/>`);
-  s.push(`<text x="${boxX+10}" y="${boxTop-6}" fill="#2f7d5b" font-size="10.5" letter-spacing="1">${esc((M.product.name||'PRODUCT').toUpperCase())}${M.product.model?' '+esc(M.product.model):''} (PRODUCT BOUNDARY)</text>`);
+  s.push(`<text x="${boxX+10}" y="${boxTop-6}" fill="#2f7d5b" font-size="10.5" letter-spacing=".3">${esc(M.product.name||'Product')}${M.product.model?' '+esc(M.product.model):''}${opts.member?' · '+esc(opts.member):''} · product boundary</text>`);
   let py=boxBottom-8-(prodSP.length+prodCU.length)*15;
   for(const sp of prodSP){s.push(badge(boxX+12,py,sp,'#2f7d5b'));py+=15;}
   for(const cu of prodCU){s.push(badge(boxX+12,py,cu,'#a9660f'));py+=15;}
   if(showCtx)s.push(`<text x="${ctxX-14}" y="${boxTop-6}" fill="#a9660f" font-size="10.5" letter-spacing="1">CONTEXT · manufacturer’s assumptions · user’s responsibility</text>`);
-  for(const zr of zoneRects){s.push(`<rect x="${zr.x}" y="${zr.y}" width="${zr.w}" height="${zr.h}" rx="10" fill="none" stroke="#a9660f" stroke-width="1" stroke-dasharray="3 3"${dim(zr.z.id)}/>`);s.push(`<text x="${zr.x+8}" y="${zr.y+13}" font-size="10" fill="#a9660f"><tspan font-family="ui-monospace,Menlo,monospace" font-weight="700">${esc(zr.z.id)}</tspan> ${esc(zr.z.title)} · ${esc(zr.z.type)} · ${esc(zr.z.access)}</text>`);let cy=zr.y+zr.h-6-((cuOn[zr.z.id]||[]).length*15);for(const cu of (cuOn[zr.z.id]||[])){s.push(badge(zr.x+8,cy,cu,'#a9660f'));cy+=15;}}
+  for(const zr of zoneRects){s.push(`<rect data-drag="zone:${esc(zr.z.id)}" x="${zr.x}" y="${zr.y}" width="${zr.w}" height="${zr.h}" rx="10" fill="#000" fill-opacity="0" stroke="#a9660f" stroke-width="1" stroke-dasharray="3 3"${dim(zr.z.id)}/>`);s.push(`<text x="${zr.x+8}" y="${zr.y+13}" font-size="10" fill="#a9660f"><tspan font-family="ui-monospace,Menlo,monospace" font-weight="700">${esc(zr.z.id)}</tspan> ${esc(zr.z.title)} · ${esc(zr.z.type)} · ${esc(zr.z.access)}</text>`);let cy=zr.y+zr.h-6-((cuOn[zr.z.id]||[]).length*15);for(const cu of (cuOn[zr.z.id]||[])){s.push(badge(zr.x+8,cy,cu,'#a9660f'));cy+=15;}}
   for(const p of M.PC)for(const i of M.PI){const A=pos[p.id],B=pos[i.id];if(A&&B&&M.FC.some(f=>f.pc.includes(p.id)&&f.pi.includes(i.id)))s.push(`<line x1="${A.x+A.w}" y1="${A.y+17}" x2="${B.x}" y2="${B.y+17}" stroke="#2f7d5b" stroke-width="1" opacity=".35"/>`);}
   if(showCtx)for(const n of [...M.CC,...M.CP]){const B=pos[n.id];if(!B)continue;for(const piId of (n.via||[])){const A=pos[piId];if(!A)continue;
     const lis=M.LI.filter(l=>l.pi===piId);const lab=opts.proto?[...new Set(lis.map(l=>l.proto).filter(Boolean))].join(', '):'';
@@ -471,11 +724,13 @@ function figureSVG(scope,opts){
     s.push(`<line x1="${A.x+A.w}" y1="${A.y+17}" x2="${B.x}" y2="${B.y+17}" stroke="${col}" stroke-width="${onPath?2.2:1.1}"${onPath?'':' opacity=".7"'}${dim(n.id)}/>`);
     if(lab){const mx=(A.x+A.w+B.x)/2,my=(A.y+B.y)/2+17;s.push(`<text x="${mx}" y="${my-4}" text-anchor="middle" font-size="9.5" fill="#5b6b78"${dim(n.id)}>${esc(lab)}</text>`);}
   }}
-  const node=(id,fill,stroke,title,sub,kind)=>{const P=pos[id];if(!P)return'';let o=`<g${dim(id)}><rect x="${P.x}" y="${P.y}" width="${P.w}" height="${P.h}" rx="${kind==='CP'?17:5}" fill="${fill}" stroke="${stroke}" stroke-width="${hi.has(id)&&focus?2.2:1.2}"/>`;
+  const node=(id,fill,stroke,title,sub,kind)=>{const P=pos[id];if(!P)return'';let o=`<g data-drag="${esc(id)}"${dim(id)}><rect x="${P.x}" y="${P.y}" width="${P.w}" height="${P.h}" rx="${kind==='CP'?17:5}" fill="${fill}" stroke="${stroke}" stroke-width="${hi.has(id)&&focus?2.2:1.2}"/>`;
     o+=`<text x="${P.x+9}" y="${P.y+14}" font-size="9.5" font-weight="700" fill="${stroke}" font-family="ui-monospace,Menlo,monospace">${esc(id)}</text>`;
-    o+=`<text x="${P.x+9}" y="${P.y+27}" font-size="11.5" fill="#16212b">${esc(trunc(title,kind==='PI'?15:26))}</text>`;
+    const tl=wrapLines(title,WRAP[kind]||29);tl.forEach((t,i)=>{o+=`<text x="${P.x+9}" y="${P.y+27+i*13}" font-size="11.5" fill="#16212b">${esc(t)}</text>`;});
+    const vt=opts.member?'':varTxt(findAny(id));
     if(sub)o+=`<text x="${P.x+P.w-6}" y="${P.y+14}" text-anchor="end" font-size="9" fill="#5b6b78">${esc(sub)}</text>`;
-    let by=P.y+nodeH+4;for(const sp of (spOn[id]||[])){o+=badge(P.x+9,by,sp,'#2f7d5b');by+=15;}for(const cu of (cuOn[id]||[])){o+=badge(P.x+9,by,cu,'#a9660f');by+=15;}
+    if(vt)o+=`<text x="${P.x+9}" y="${P.y+26+tl.length*13}" font-size="9" font-weight="700" fill="#6b4fa0">[${esc(vt)}]</text>`;
+    let by=P.y+nodeH+4+(tl.length-1+(vt?1:0))*13;for(const sp of (spOn[id]||[])){o+=badge(P.x+9,by,sp,'#2f7d5b');by+=15;}for(const cu of (cuOn[id]||[])){o+=badge(P.x+9,by,cu,'#a9660f');by+=15;}
     return o+'</g>';};
   for(const p of M.PC)s.push(node(p.id,'#e7f3ec','#2f7d5b',p.title,'','PC'));
   for(const p of M.PI)s.push(node(p.id,'#eef7f2','#2f7d5b',p.title,'PI','PI'));
@@ -484,39 +739,140 @@ function figureSVG(scope,opts){
     for(let i=0;i<path.length-1;i++){const A=pos[path[i]]||(path[i]===PRODUCT?boxP:null),B=pos[path[i+1]]||(path[i+1]===PRODUCT?boxP:null);if(!A||!B)continue;
       s.push(`<line x1="${A.x+A.w/2}" y1="${A.y+A.h/2}" x2="${B.x+B.w/2}" y2="${B.y+B.h/2}" stroke="${col}" stroke-width="2" stroke-dasharray="7 4" opacity=".85" marker-end="url(#ah)"/>`);}
     path.forEach((id,i)=>{const P=pos[id]||(id===PRODUCT?{x:boxX,y:boxTop,w:boxW,h:0}:null);if(!P)return;const cx=P.x+P.w-12,cy=P.y+8;s.push(`<circle cx="${cx}" cy="${cy}" r="9" fill="${col}"/><text x="${cx}" y="${cy+3.5}" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">${i+1}</text>`);});
-    s.push(`<text x="${pad}" y="${H-28}" font-size="11" fill="${col}"><tspan font-weight="700">${esc(focus.id)}</tspan> ${esc(trunc(focus.title,90))}</text>`);
+    s.push(`<text x="${pad}" y="${focusY}" font-size="11" fill="${col}"><tspan font-weight="700">${esc(focus.id)}</tspan> ${esc(trunc(focus.title,150))}</text>`);
   }
   if(!M.PC.length&&!M.PI.length)s.push(`<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="#5b6b78" font-size="13">Add product components and interfaces, then a function, then tick what it needs from outside.</text>`);
-  s.push(`<text x="${W-pad}" y="${H-10}" text-anchor="end" font-size="9" fill="#b3ae9d">Drawn from the same lists as the tables · Cyber Manual template, example v0.22 structure · Value Chain Risk Institute · Method: the Derivation Rule, Marpet &amp; Viktor 2026 · CC BY 4.0</text>`);
+  if(LEG.length){s.push(`<line x1="${pad}" y1="${legY}" x2="${W-pad}" y2="${legY}" stroke="#e3e0d4"/><text x="${pad}" y="${legY+15}" font-size="10" font-weight="700" fill="#16212b" letter-spacing=".5">KEY</text>`);
+    LEG.forEach((l,i)=>{const cx=pad+(i%3)*((W-2*pad)/3),cy=legY+22+Math.floor(i/3)*18;s.push(l[2](cx,cy)+`<text x="${cx+34}" y="${cy+10}" font-size="10" fill="#33414d">${esc(l[1].replace(/^[◆▸] /,''))}</text>`);});}
+  cap.forEach((t,i)=>s.push(`<text x="${pad}" y="${capY+12+i*15}" font-size="11.5" fill="#16212b">${i===0&&opts.fig?`<tspan font-weight="700">${esc(t.slice(0,('Figure '+opts.fig+':').length))}</tspan>${esc(t.slice(('Figure '+opts.fig+':').length))}`:esc(t)}</text>`));
+  s.push(`<text x="${W-pad}" y="${footY}" text-anchor="end" font-size="9" fill="#b3ae9d">Drawn from the same lists as the tables · Cyber Manual template v0.39 structure · Value Chain Risk Institute · Method: the Derivation Rule, Marpet &amp; Viktor 2026 · CC BY 4.0</text>`);
   s.push('</svg>');return s.join('');
 }
-function badge(x,y,it,col){return `<text x="${x}" y="${y+10}" font-size="9.5" fill="${col}">${col==='#2f7d5b'?'◆':'▸'} <tspan font-family="ui-monospace,Menlo,monospace" font-weight="700">${esc(it.id)}</tspan> ${esc(trunc(it.title,30))}</text>`;}
+function badge(x,y,it,col){const vt=varTxt(it);return `<text x="${x}" y="${y+10}" font-size="9.5" fill="${col}">${col==='#2f7d5b'?'◆':'▸'} <tspan font-family="ui-monospace,Menlo,monospace" font-weight="700">${esc(it.id)}</tspan> ${esc(trunc(it.title,30))}${vt?` <tspan fill="#6b4fa0" font-weight="700">[${esc(vt)}]</tspan>`:''}</text>`;}
 function trunc(t,n){t=String(t||'');return t.length>n?t.slice(0,n-1)+'…':t;}
-function layerTitle(scope){const[l,id]=scope.split(':');if(l==='product')return '1.1.4 Product diagram';if(l==='sp')return '1.2.3 Security property diagram';if(l==='context')return '2.2.4 Context diagram';if(l==='cu')return '2.4.2 Conditions of use diagram';if(l==='fc')return '2.3.2 Function diagram: '+id;if(l==='ri')return '2.5.2 Risk diagram: '+id;return 'Diagram';}
-function renderFigure(){const scope=$('#figScope').value||'context';$('#svgwrap').innerHTML=figureSVG(scope,{sp:$('#figSP').checked,cu:$('#figCU').checked,proto:$('#figProto').checked});$('#figTitle').textContent=layerTitle(scope);}
+function layerTitle(scope){const[l,id]=scope.split(':');if(l==='product')return '2.1.2 Product diagram';if(l==='sp')return '2.2.1 Security property diagram';if(l==='context')return '2.3.1 Context diagram';if(l==='cu')return 'Conditions of use overview';if(l==='fc'){const f=M.FC.find(x=>x.id===id);return (f?fnNum(f)+' ':'')+'Secure use diagram: Function '+id;}if(l==='ri')return 'Risk diagram: '+id;return 'Diagram';}
+function figOpts(scope){return {sp:$('#figSP').checked,cu:$('#figCU').checked,proto:$('#figProto').checked,variant:$('#figVar').value,legend:$('#figLegend').checked,fig:((M.fig||{})[scope]||'').trim()};}
+function renderFigure(){const scope=$('#figScope').value||'context';if(document.activeElement!==$('#figNum'))$('#figNum').value=(M.fig||{})[scope]||'';$('#svgwrap').innerHTML=figureSVG(scope,figOpts(scope));$('#figTitle').textContent=layerTitle(scope);}
 
-/* ---------- document, in the template's chapter order ---------- */
+/* ---------- document, in the template v0.38 chapter order ---------- */
 function renderDoc(){
   const d=$('#doc');
   const ref=id=>{const x=findAny(id);if(!x)return esc(id);return x.kind==='PRODUCT'?'<span class="id">Product</span> '+esc(x.title):`<span class="id">${esc(x.id)}</span> ${esc(x.title||'')}`;};
   const list=ids=>(ids||[]).map(ref).join('<br>');
+  const useFns=M.FC.filter(f=>!isUpd(f)),updFns=M.FC.filter(isUpd);
+  const crHdr=`<tr><th>ID</th><th>Title and Description<br>(reasonably foreseeable misuse or circumstance leading to risk)</th><th>Violated Condition of Use (CU)</th><th>Potential risk</th></tr>`;
+  const crRow=r=>`<tr><td class="id">${esc(r.id)}</td><td><b>${esc(r.title)}</b>${varHTML(r)}<br>${esc(r.desc)}</td><td>${list(r.cu)}</td><td>${esc(r.damage||'')}</td></tr>`;
+  const cuHdr=`<tr><th>ID</th><th>Affects<br>(component CC / person CP / zone CZ)</th><th>Title &amp; Description</th></tr>`;
+  const cuRow=u=>`<tr><td class="id">${esc(u.id)}</td><td>${list(u.on)}</td><td><b>${esc(u.title)}</b>${varHTML(u)}<br>${esc(u.desc)}</td></tr>`;
+  const fnBlock=(num,f)=>{
+    const cus=fnCU(f).map(id=>M.CU.find(u=>u.id===id)).filter(Boolean);
+    const rs=M.RI.filter(r=>(r.fc||[]).includes(f.id));
+    const rfu=(!isUpd(f)||(f.rfu||'').trim())?`<tr><th>Reasonably foreseeable use [optional]</th><td>${esc(f.rfu||'')}${f.use==='foreseeable'?(f.rfu?'<br>':'')+'(this whole function is reasonably foreseeable use)':''}</td></tr>`:'';
+    let o=`<h4>${num} Function ${esc(f.id)} ${esc(f.title)}${varHTML(f)}</h4>`;
+    o+=`<table><tr><th style="width:30%">ID</th><td>${esc(f.id)}</td></tr><tr><th>Title</th><td>${esc(f.title)}</td></tr><tr><th>Description</th><td>${esc(f.desc)}</td></tr>${rfu}<tr><th>Core / ancillary functionality</th><td>${f.core==='core'?'core functionality':'ancillary functionality'}</td></tr></table>`;
+    o+=`<div class="note">Secure use diagram [optional]: pick “${esc(fnNum(f))} Secure use diagram: ${esc(f.id)}” in the figure above. Derivation, not part of the template: uses ${list([...f.pc,...f.pi]).replace(/<br>/g,', ')||'nothing yet'}; needs ${list([...f.cc,...f.cp,...f.cz]).replace(/<br>/g,', ')||'nothing from the context'}. Conditions of use ${(f.cu||[]).length?'as ticked on the function':'derived: every condition attached to anything it needs, plus conditions on the product itself'}.</div>`;
+    o+=`<h4>Conditions of use (CU)</h4><table>${cuHdr}${cus.length?cus.map(cuRow).join(''):'<tr><td colspan="3" class="empty">None for this function.</td></tr>'}</table>`;
+    o+=`<h4>Circumstances potentially leading to significant cybersecurity risk (CR)</h4><table>${crHdr}${rs.length?rs.map(crRow).join(''):'<tr><td colspan="4" class="empty">No circumstances recorded for this function.</td></tr>'}</table>`;
+    return o;
+  };
   let h=`<h2>${esc(M.product.name||'Product')}${M.product.model?' · '+esc(M.product.model):''}</h2><div class="ver">${esc(M.product.version||'')} · generated ${new Date().toISOString().slice(0,10)} · paste into the template</div>`;
-  h+=`<div class="note">Chapter numbers and column order follow the working group’s Engineering PC example v0.22 (9 September 2026). The diagrams for 1.1.4, 1.2.3, 2.2.4, 2.3.2, 2.4.2 and 2.5.2 are the figure above; pick the layer, then use Download diagram.</div>`;
-  h+=`<h3>1.1.2 Product component (PC) list</h3><table><tr><th>ID</th><th>Title / Description</th></tr>`;for(const p of M.PC)h+=`<tr><td class="id">${esc(p.id)}</td><td><b>${esc(p.title)}</b><br>${esc(p.desc)}</td></tr>`;h+=`</table>`;
-  h+=`<h3>1.1.3 Product interfaces (PI) list</h3><h4>Physical interfaces</h4><table><tr><th>ID</th><th>Title / Description</th></tr>`;for(const p of M.PI)h+=`<tr><td class="id">${esc(p.id)}</td><td><b>${esc(p.title)}</b><br>${esc(p.desc)}</td></tr>`;h+=`</table>`;
-  h+=`<h4>Logical interfaces</h4><table><tr><th>Protocol / Service / URL</th><th>Physical interface</th><th>Port</th><th>Incoming, outgoing</th><th>Function</th></tr>`;for(const li of M.LI)h+=`<tr><td>${esc(li.proto)}${li.url?'<br>'+esc(li.url):''}</td><td>${li.pi?ref(li.pi):''}</td><td>${esc(li.port)}</td><td>${{in:'Incoming',out:'Outgoing',both:'Both'}[li.dir]||''}</td><td>${list(li.fc)}</td></tr>`;h+=`</table>`;
-  h+=`<h3>1.2.1 Security property (SP) list</h3><table><tr><th>ID</th><th>Affected component(s)</th><th>Title &amp; Description</th></tr>`;for(const s of M.SP)h+=`<tr><td class="id">${esc(s.id)}</td><td>${list(s.on)}</td><td><b>${esc(s.title)}</b><br>${esc(s.desc)}</td></tr>`;h+=`</table>`;
-  h+=`<h3>2.2.1 Context component (CC) list</h3><table><tr><th>ID</th><th>Title &amp; Description</th><th>Touches interface</th><th>Needed by</th></tr>`;for(const c of M.CC){const by=M.FC.filter(f=>f.cc.includes(c.id)).map(f=>f.id);h+=`<tr><td class="id">${esc(c.id)}</td><td><b>${esc(c.title)}</b><br>${esc(c.desc)}</td><td>${list(c.via)}</td><td>${list(by)}</td></tr>`;}h+=`</table>`;
-  h+=`<h3>2.2.2 Context person (CP) list</h3><table><tr><th>ID</th><th>Title &amp; Description</th><th>Skill</th><th>Needed by</th></tr>`;for(const c of M.CP){const by=M.FC.filter(f=>f.cp.includes(c.id)).map(f=>f.id);h+=`<tr><td class="id">${esc(c.id)}</td><td><b>${esc(c.title)}</b><br>${esc(c.desc)}</td><td>${esc(c.skill)}</td><td>${list(by)}</td></tr>`;}h+=`</table>`;
-  h+=`<h3>2.2.3 Context zone (CZ) list</h3><table><tr><th>ID</th><th>Title &amp; Description</th><th>Type</th><th>Access</th><th>Contains</th></tr>`;for(const z of M.CZ)h+=`<tr><td class="id">${esc(z.id)}</td><td><b>${esc(z.title)}</b><br>${esc(z.desc)}</td><td>${esc(z.type)}</td><td>${esc(z.access)}</td><td>${list(z.members)}</td></tr>`;h+=`</table>`;
-  h+=`<h3>2.3.1 Function (FC) list</h3><table><tr><th>ID</th><th>Title &amp; Description</th><th>Core / ancillary</th><th>Intended purpose / foreseeable use</th><th>Uses</th><th>Needs</th></tr>`;for(const f of M.FC)h+=`<tr><td class="id">${esc(f.id)}</td><td><b>${esc(f.title)}</b><br>${esc(f.desc)}</td><td>${esc(f.core)}</td><td>${f.use==='foreseeable'?'reasonably foreseeable use':'intended purpose'}</td><td>${list([...f.pc,...f.pi])}</td><td>${list([...f.cc,...f.cp,...f.cz])}</td></tr>`;h+=`</table>`;
-  h+=`<h3>2.4.1 Conditions of use (CU) list</h3><table><tr><th>ID</th><th>Affected context component (CC) / person (CP) / zone (CZ)</th><th>Title &amp; Description</th></tr>`;for(const u of M.CU)h+=`<tr><td class="id">${esc(u.id)}</td><td>${list(u.on)}</td><td><b>${esc(u.title)}</b><br>${esc(u.desc)}</td></tr>`;h+=`</table>`;
-  h+=`<h3>2.5.1 Risk (RI) list</h3><table><tr><th>ID</th><th>Title and Description (reasonably foreseeable misuse or circumstance leading to risk)</th><th>Potential damage</th><th>Affects (FC) / breaks (CU)</th></tr>`;for(const r of M.RI)h+=`<tr><td class="id">${esc(r.id)}</td><td><b>${esc(r.title)}</b><br>${esc(r.desc)}</td><td>${esc(r.damage||'')}</td><td>${list([...r.fc,...r.cu])}</td></tr>`;h+=`</table>`;
-  h+=`<h3>2.7.2 Secure use, derived (function → conditions)</h3><table><tr><th>Function</th><th>Conditions of use that apply</th></tr>`;for(const f of M.FC){const scope=new Set([...f.cc,...f.cp,...f.cz,PRODUCT]);const cus=M.CU.filter(u=>u.on.some(o=>scope.has(o)));h+=`<tr><td>${ref(f.id)}</td><td>${cus.map(u=>ref(u.id)).join('<br>')||'<i>none derived</i>'}</td></tr>`;}h+=`</table><div class="note">This table is computed, not typed: a function inherits every condition attached to anything it needs, plus conditions on the product itself. That is what the template’s 2.7.2 “instructions for secure use” table is, and it is why deriving context from functions matters.</div>`;
-  h+=`<small class="wm">Generated with the VCRI Context &amp; Conditions of Use Builder · valuechainrisk.org/cyber-manual/context/ · Method: The Derivation Rule for Context and Conditions of Use, Marpet &amp; Viktor, VCRI 2026 · CC BY 4.0 · built on the Cyber Manual Movement template</small>`;
+  if(family().length>1)h+=`<div class="note">Product family: ${family().map(esc).join(', ')}. This manual covers every member. Items marked <span class="var">[… only]</span> apply only to the members named; unmarked items apply to all of them.</div>`;
+  h+=`<div class="note">Chapter numbers and column order follow the Cyber Manual template v0.39 and the working group’s Engineering PC example v0.40 (26 October 2026). The diagrams for 2.1.2, 2.2.1, 2.3.1 and each function’s secure use diagram (3.3.n, 3.4.1) are the figure above; pick the layer, then use Download diagram. Columns marked as derivation are this tool’s, not the template’s.</div>`;
+  h+=`<h3>2.1.3 Product components (PC) list</h3><table><tr><th>ID</th><th>Title / Description</th></tr>`;for(const p of M.PC)h+=`<tr><td class="id">${esc(p.id)}</td><td><b>${esc(p.title)}</b>${varHTML(p)}${p.desc?'<br>'+esc(p.desc):''}</td></tr>`;h+=`</table>`;
+  h+=`<h3>2.1.4 Product interfaces</h3><h4>Physical interfaces</h4><table><tr><th>ID</th><th>Title / Description</th></tr>`;for(const p of M.PI)h+=`<tr><td class="id">${esc(p.id)}</td><td><b>${esc(p.title)}</b>${varHTML(p)}${p.desc?'<br>'+esc(p.desc):''}</td></tr>`;h+=`</table>`;
+  h+=`<h4>Protocols and services</h4><table><tr><th>ID</th><th>Protocol / Service / URL</th><th>Physical interface</th><th>Port</th><th>Function</th><th>Enabled by default</th><th>Direction [optional]</th></tr>`;M.LI.forEach((li,i)=>{h+=`<tr><td class="id">PP${String(i+1).padStart(2,'0')}</td><td>${esc(li.proto)}${varHTML(li)}${li.url?'<br>'+esc(li.url):''}</td><td>${li.pi?ref(li.pi):''}</td><td>${esc(li.port)}</td><td>${list(li.fc)}</td><td>${esc(li.enabled||'')}</td><td>${{in:'Incoming',out:'Outgoing',both:'Both'}[li.dir]||''}</td></tr>`;});h+=`</table>`;
+  h+=`<h3>2.2.2 Security property list</h3><table><tr><th>ID</th><th>Affected component(s)</th><th>Title &amp; Description</th></tr>`;for(const s of M.SP)h+=`<tr><td class="id">${esc(s.id)}</td><td>${list(s.on)}</td><td><b>${esc(s.title)}</b>${varHTML(s)}<br>${esc(s.desc)}</td></tr>`;h+=`</table>`;
+  h+=`<h3>2.3.2 Context component (CC) list</h3><table><tr><th>ID</th><th>Title &amp; Description</th><th>Touches interface (derivation)</th><th>Needed by (derivation)</th></tr>`;for(const c of M.CC){const by=M.FC.filter(f=>f.cc.includes(c.id)).map(f=>f.id);h+=`<tr><td class="id">${esc(c.id)}</td><td><b>${esc(c.title)}</b>${varHTML(c)}<br>${esc(c.desc)}</td><td>${list(c.via)}</td><td>${list(by)}</td></tr>`;}h+=`</table>`;
+  h+=`<h3>2.3.3 Context person (CP) list</h3><table><tr><th>ID</th><th>Title &amp; Description</th><th>Skill (ordinary, instructed, skilled)</th><th>Needed by (derivation)</th></tr>`;for(const c of M.CP){const by=M.FC.filter(f=>f.cp.includes(c.id)).map(f=>f.id);h+=`<tr><td class="id">${esc(c.id)}</td><td><b>${esc(c.title)}</b>${varHTML(c)}<br>${esc(c.desc)}</td><td>${esc(c.skill)}</td><td>${list(by)}</td></tr>`;}h+=`</table>`;
+  h+=`<h3>2.3.4 Context zone (CZ) list</h3><table><tr><th>ID</th><th>Title &amp; Description</th><th>Type (physical, communication)</th><th>Access (public, limited, controlled)</th><th>Contains (derivation)</th></tr>`;for(const z of M.CZ)h+=`<tr><td class="id">${esc(z.id)}</td><td><b>${esc(z.title)}</b>${varHTML(z)}<br>${esc(z.desc)}</td><td>${esc(z.type)}</td><td>${esc(z.access)}</td><td>${list(z.members)}</td></tr>`;h+=`</table>`;
+  h+=`<h3>3.3 Secure use: Conditions of Use (CU) and Circumstances leading to Risk (CR) per product Function (FC)</h3>`;
+  h+=useFns.length?useFns.map((f,i)=>fnBlock('3.3.'+(i+1),f)).join(''):'<p class="empty">Add functions: each becomes its own subchapter here.</p>';
+  const loose=M.RI.filter(r=>!(r.fc||[]).some(id=>M.FC.some(f=>f.id===id)));
+  if(loose.length)h+=`<h4>3.3.${useFns.length+1} Circumstances not tied to a function (tool note: attach them before publishing)</h4><table>${crHdr}${loose.map(crRow).join('')}</table>`;
+  h+=`<h3>3.4 Secure installation of security updates</h3>`;
+  h+=updFns.length?updFns.map((f,i)=>fnBlock('3.4.'+(i+1),f)).join(''):'<p class="empty">3.4.1 Function FC0x Install security updates: add a function whose title contains “security update” (CRA-mandatory).</p>';
+  h+=`<small class="wm">Generated with the VCRI Context &amp; Conditions of Use Builder · valuechainrisk.org/cyber-manual/context/ · Method: The Derivation Rule for Context and Conditions of Use, Marpet &amp; Viktor, VCRI 2026 · CC BY 4.0 · built on the Cyber Manual Movement template v0.39</small>`;
   d.innerHTML=h;
 }
 
+/* ---------- derive links from a manual (8 Nov 2026) ----------
+   Reads a CRA Manual Builder file (template v0.39) and fills this tool's lists and links by twelve stated rules.
+   Every derived link is marked suggested (M.derived.rules) until a person ticks or unticks it, or accepts them all;
+   whatever no rule reaches is listed as a gap. Same rules as derive_links.py in the CMM examples, so the two agree.
+     R1  protocol rows (2.1.4)           -> logical interfaces, and FC.pi
+     R2  function CU list (3.3)          -> FC.cu
+     R3  CU "affected" field             -> CU.on (IDs named there; "Product boundary" -> the product)
+     R4  SP "component" field            -> SP.on (ID named there; "Product: ..." -> the product)
+     R5  a function's CUs' targets       -> FC.cc / FC.cp / FC.cz
+     R6  CR rows                         -> CR.fc / CR.cu
+     R7  titles named in the text        -> FC.pc, FC.cc, FC.cp, CC.via, CP.via, CZ.members
+     R8  path                            -> persons, context, interfaces, components, in that order
+     R9  processor and software          -> take part in every function (FC.pc)
+     R10 a function with one interface   -> its context components are reached through it (CC.via)
+     R11 zones holding a function's CC/CP -> FC.cz
+     R12 as R10, for persons             -> CP.via
+   Measured on the working group's Engineering PC example, held out: 76% of derived links right, 67% of the hand links found. */
+const RULE_TXT={R1:'protocol table',R2:'the function’s conditions of use',R3:'the condition’s affected column',R4:'the property’s component column',R5:'a condition this function lists constrains it',R6:'the circumstances table',R7:'named in the text',R8:'path order',R9:'processor or software, used by every function',R10:'the function’s only interface',R11:'its zone holds what the function needs',R12:'the function’s only interface'};
+const DSTOP=new Set(['the','and','with','for','from','used','uses','a','an','of','to','or','in','on','by','via','by default','x1','only']);
+function dNamed(s,kinds){return String(s||'').match(new RegExp('\\b(?:'+kinds.join('|')+')\\d\\d\\b','g'))||[];}
+function dKeywords(t){t=String(t||'').toLowerCase().replace(/\(.*?\)/g,' ');return (t.match(/[a-z0-9][a-z0-9\-.]+/g)||[]).filter(w=>!DSTOP.has(w)&&w.length>2);}
+function dMentions(text,title){const kw=dKeywords(title);if(!kw.length)return false;text=String(text||'').toLowerCase();
+  const hits=kw.filter(w=>new RegExp('\\b'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b').test(text)).length;return hits>=Math.max(1,Math.min(2,kw.length));}
+function isManual(o){return !!(o&&o.tpl&&Array.isArray(o.fc)&&Array.isArray(o.pc)&&!o.FC);}
+function deriveFromManual(m){
+  const pad=n=>String(n).padStart(2,'0');
+  const E={};for(const[k,src]of [['PC','pc'],['PI','pi'],['SP','sp'],['CC','cc'],['CP','cp'],['CZ','cz'],['CU','cu'],['FC','fc']])E[k]=(m[src]||[]).map((x,i)=>[k+pad(i+1),x]);
+  const how={};const put=(kind,i,field,t,rule)=>{const h=how[kind+'|'+i+'|'+field]||(how[kind+'|'+i+'|'+field]={});if(!(t in h))h[t]=rule;};
+  const get=(kind,i,field)=>Object.keys(how[kind+'|'+i+'|'+field]||{});
+  const LI=[];
+  for(const row of (m.pp||[])){const pis=dNamed(row.pi,['PI']),fcs=dNamed(row.fc,['FC']);   /* R1 */
+    LI.push({proto:row.proto||'',url:'',pi:pis[0]||'',port:row.port||'',dir:'both',enabled:row.enabled||'',fc:fcs});
+    for(const f of fcs)for(const p of pis)put('FC',f,'pi',p,'R1');}
+  for(const[i,cu]of E.CU){const tg=dNamed(cu.affected,['CC','CP','CZ','PC','PI']);if(/product boundary/i.test(cu.affected||''))tg.push(PRODUCT);for(const t of tg)put('CU',i,'on',t,'R3');}
+  for(const[i,sp]of E.SP){let tg=dNamed(sp.comp,['PC','PI']);if(!tg.length&&/^\s*product\b/i.test(sp.comp||''))tg=[PRODUCT];for(const t of tg)put('SP',i,'on',t,'R4');}
+  for(const[i,f]of E.FC)for(const u of dNamed(f.cus,['CU'])){put('FC',i,'cu',u,'R2');   /* R2, R5 */
+    for(const t of get('CU',u,'on')){const k=t.slice(0,2);if(['CC','CP','CZ'].includes(k))put('FC',i,k.toLowerCase(),t,'R5');}}
+  for(const[i,f]of E.FC){const text=[f.title,f.desc,f.rfu||''].join(' ');   /* R7 */
+    for(const k of ['PC','CC','CP'])for(const[j,x]of E[k])if(dMentions(text,x.title))put('FC',i,k.toLowerCase(),j,'R7');}
+  for(const k of ['CC','CP'])for(const[i,x]of E[k])for(const[j,pi]of E.PI)if(dMentions((x.desc||'')+' '+(x.title||''),pi.title))put(k,i,'via',j,'R7');
+  for(const[i,z]of E.CZ)for(const k of ['CC','CP'])for(const[j,x]of E[k])if(dMentions((z.desc||'')+' '+(z.title||''),x.title))put('CZ',i,'members',j,'R7');
+  for(const[i]of E.CU){const tg=get('CU',i,'on');for(const z of tg.filter(t=>t.startsWith('CZ')))for(const t of tg)if(['CC','CP'].includes(t.slice(0,2)))put('CZ',z,'members',t,'R3');}
+  const core=E.PC.filter(([,x])=>/\b(cpu|soc|processor|firmware|operating system|application|software)\b/i.test(x.title||'')).map(([j])=>j);
+  for(const[i]of E.FC)for(const j of core)put('FC',i,'pc',j,'R9');
+  for(const[i]of E.FC){const pis=get('FC',i,'pi');if(pis.length===1){for(const t of get('FC',i,'cc'))put('CC',t,'via',pis[0],'R10');for(const t of get('FC',i,'cp'))put('CP',t,'via',pis[0],'R12');}}
+  for(const[i]of E.FC){const mine=new Set([...get('FC',i,'cc'),...get('FC',i,'cp')]);for(const[z]of E.CZ)if(get('CZ',z,'members').some(t=>mine.has(t)))put('FC',i,'cz',z,'R11');}
+  /* the context file */
+  const p=m.product||{},refs=s=>String(s||'').split(',').map(x=>x.trim()).filter(Boolean);
+  const c=blank();
+  c.product={name:p.name||'',model:p.tmv||'',version:'',family:p.family||''};
+  c.PC=E.PC.map(([id,x])=>({id,title:x.title||'',desc:''}));
+  c.PI=E.PI.map(([id,x])=>({id,title:x.title||'',desc:''}));
+  c.LI=LI;
+  c.SP=E.SP.map(([id,x])=>({id,annex:refs(x.refs),title:x.title||'',desc:x.desc||'',on:get('SP',id,'on')}));
+  c.CC=E.CC.map(([id,x])=>({id,title:x.title||'',desc:x.desc||'',via:get('CC',id,'via')}));
+  c.CP=E.CP.map(([id,x])=>({id,title:x.title||'',desc:x.desc||'',skill:x.skill||'instructed',via:get('CP',id,'via')}));
+  c.CZ=E.CZ.map(([id,x])=>({id,title:x.title||'',desc:x.desc||'',type:x.type||'physical',access:x.access||'controlled',members:get('CZ',id,'members')}));
+  c.CU=E.CU.map(([id,x])=>({id,annex:refs(x.refs),title:x.title||'',desc:x.desc||'',on:get('CU',id,'on')}));
+  c.FC=E.FC.map(([id,x])=>{const f={id,title:x.title||'',desc:x.desc||'',rfu:x.rfu||'',core:x.kind==='ancillary'?'ancillary':'core',use:'intended'};
+    for(const k of ['pc','pi','cc','cp','cz','cu'])f[k]=get('FC',id,k);f.path=[...f.cp,...f.cc,...f.pi,...f.pc];return f;});   /* R8 */
+  c.RI=(m.ri||[]).map((x,i)=>{const id='CR'+pad(i+1),fc=dNamed(x.fc,['FC']),cu=dNamed(x.cu,['CU']);fc.forEach(t=>put('RI',id,'fc',t,'R6'));cu.forEach(t=>put('RI',id,'cu',t,'R6'));
+    return {id,title:x.title||'',desc:x.desc||'',damage:x.risk||'',fc,cu,path:[]};});
+  const rules={};for(const[key,h]of Object.entries(how))for(const[t,r]of Object.entries(h))rules[key+'|'+t]=r;
+  c.derived={from:p.name||'manual',date:new Date().toISOString().slice(0,10),rules};
+  return c;
+}
+/* what no rule reaches, read from the current lists so the list shrinks as a person fills it in */
+function derivedGaps(){const g=[];
+  for(const f of M.FC){if(!f.pc.length)g.push(`${f.id} ${f.title}: no component could be derived. Tick the ones it uses.`);if(!f.pi.length)g.push(`${f.id} ${f.title}: no interface could be derived. Tick the ones it reaches the outside through.`);}
+  for(const k of ['CC','CP'])for(const x of M[k])if(!x.via.length)g.push(`${x.id} ${x.title}: which interface it touches could not be derived. Tick one, or leave it empty if it touches none.`);
+  const placed=new Set(M.CZ.flatMap(z=>z.members));
+  for(const k of ['CC','CP'])for(const x of M[k])if(!placed.has(x.id))g.push(`${x.id} ${x.title}: in no zone. Zones are the manufacturer’s assumption and no manual states them; put it in one if it belongs there.`);
+  return g;}
+/* a derived link stays marked until a person decides on it: ticking or unticking it removes the mark */
+function sugRule(it,field,t){const D=M.derived;if(!D||!D.rules)return null;const kind=(it.id===PRODUCT?'':(it.id||'').replace(/\d+$/,''));return D.rules[(kind==='CR'?'RI':kind)+'|'+it.id+'|'+field+'|'+t]||null;}
+function decide(it,field,t){const D=M.derived;if(!D||!D.rules)return;const kind=(it.id||'').replace(/\d+$/,'');delete D.rules[(kind==='CR'?'RI':kind)+'|'+it.id+'|'+field+'|'+t];}
+function importManual(o){const n=deriveFromManual(o);M=normalize(n);save();render();
+  const s=Object.keys(M.derived.rules).length;toast(`Derived from the manual: ${s} suggested links, ${derivedGaps().length} gaps`);}
 /* ---------- io ---------- */
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1600);}
 function download(name,mime,data){const b=new Blob([data],{type:mime});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},300);}
@@ -524,10 +880,30 @@ $('#btnExample').onclick=()=>{if(!M.FC.length||confirm('Replace current work wit
 $('#btnNew').onclick=()=>{if(confirm('Clear everything and start a new product?')){M=blank();save();render();}};
 $('#btnExport').onclick=()=>download((M.product.name||'cyber-manual-context').replace(/[^\w.-]+/g,'-')+'.context.json','application/json',JSON.stringify(M,null,2));
 $('#btnImport').onclick=()=>$('#fileIn').click();
-$('#fileIn').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||!o.FC)throw 0;M=Object.assign(blank(),o);save();render();toast('Imported');}catch(err){alert('That file is not a context JSON from this tool.');}};r.readAsText(f);e.target.value='';};
-$('#btnSvg').onclick=()=>{const scope=$('#figScope').value||'context';download((M.product.name||'context').replace(/[^\w.-]+/g,'-')+'-'+scope.replace(':','-')+'.svg','image/svg+xml',figureSVG(scope,{sp:$('#figSP').checked,cu:$('#figCU').checked,proto:$('#figProto').checked}));};
+$('#btnDerive').onclick=()=>$('#fileManual').click();
+$('#fileManual').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{let o;try{o=JSON.parse(r.result);}catch(err){o=null;}
+  if(!isManual(o)){alert('That file is not a manual saved from the CRA Manual Builder (Export JSON there).');return;}
+  if(!M.FC.length||confirm('Replace current work with what can be derived from this manual?'))importManual(o);};r.readAsText(f);e.target.value='';};
+$('#fileIn').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(isManual(o)){if(!M.FC.length||confirm('That is a manual from the CRA Manual Builder. Replace current work with what can be derived from it?'))importManual(o);return;}if(!o||!o.FC)throw 0;M=normalize(o);save();render();toast('Imported');}catch(err){alert('That file is not a context JSON from this tool.');}};r.readAsText(f);e.target.value='';};
+/* the download carries the arranged positions; drag hooks are stripped so the file opens clean in Inkscape, Illustrator, Visio or draw.io */
+$('#btnSvg').onclick=()=>{const scope=$('#figScope').value||'context';download((M.product.name||'context').replace(/[^\w.-]+/g,'-')+'-'+scope.replace(':','-')+'.svg','image/svg+xml','<?xml version="1.0" encoding="UTF-8"?>\n'+figureSVG(scope,figOpts(scope)).replace(/ data-drag="[^"]*"/g,'').replace(/ fill="#000" fill-opacity="0"/g,' fill="none"'));};
 $('#btnPrint').onclick=()=>window.print();
-for(const id of ['figScope','figSP','figCU','figProto'])$('#'+id).onchange=()=>{if(id==='figScope')location.hash='layer='+encodeURIComponent($('#figScope').value);renderFigure();};
+/* Arrange: drag boxes (or a zone with its members) to reposition them. Only positions are stored (M.layout); the chain stays the source of truth. */
+(()=>{const wrap=$('#svgwrap'),btn=$('#figArrange');let drag=null;
+  btn.onclick=()=>{const on=btn.getAttribute('aria-pressed')!=='true';btn.setAttribute('aria-pressed',on);wrap.classList.toggle('arranging',on);if(on)toast('Drag boxes or zones. Positions save with your work.');};
+  $('#figReset').onclick=()=>{if(!M.layout||!Object.keys(M.layout).length){toast('Already the automatic layout');return;}M.layout={};save();renderFigure();toast('Layout reset');};
+  wrap.addEventListener('pointerdown',e=>{if(btn.getAttribute('aria-pressed')!=='true'||e.button>0)return;const g=e.target.closest('[data-drag]');const svg=wrap.querySelector('svg');if(!g||!svg)return;
+    const id=g.getAttribute('data-drag');const ids=id.startsWith('zone:')?((M.CZ.find(z=>z.id===id.slice(5))||{}).members||[]).filter(m=>[...M.CC,...M.CP].some(x=>x.id===m)):[id];if(!ids.length)return;
+    if(!M.layout)M.layout={};drag={x:e.clientX,y:e.clientY,k:svg.viewBox.baseVal.width/svg.getBoundingClientRect().width,start:ids.map(i=>({i,dx:(M.layout[i]||{}).dx||0,dy:(M.layout[i]||{}).dy||0})),moved:false,raf:0};
+    try{wrap.setPointerCapture(e.pointerId);}catch(err){}wrap.classList.add('dragging');e.preventDefault();});
+  wrap.addEventListener('pointermove',e=>{if(!drag)return;const dx=(e.clientX-drag.x)*drag.k,dy=(e.clientY-drag.y)*drag.k;if(!drag.moved&&Math.hypot(dx,dy)<3)return;drag.moved=true;
+    const snap=v=>Math.round(v/4)*4;for(const st of drag.start)M.layout[st.i]={dx:snap(st.dx+dx),dy:snap(st.dy+dy)};
+    if(!drag.raf)drag.raf=requestAnimationFrame(()=>{if(drag)drag.raf=0;renderFigure();});});
+  const end=()=>{if(!drag)return;const moved=drag.moved;drag=null;wrap.classList.remove('dragging');if(moved){renderFigure();save();}};
+  wrap.addEventListener('pointerup',end);wrap.addEventListener('pointercancel',end);
+})();
+$('#figNum').oninput=e=>{const sc=$('#figScope').value||'context';if(!M.fig)M.fig={};M.fig[sc]=e.target.value;save();renderFigure();};
+for(const id of ['figScope','figSP','figCU','figProto','figVar','figLegend'])$('#'+id).onchange=()=>{if(id==='figScope')location.hash='layer='+encodeURIComponent($('#figScope').value);renderFigure();};
 function applyHash(){const m=/layer=([^&]+)/.exec(location.hash);if(m){const v=decodeURIComponent(m[1]);const s=$('#figScope');if([...s.options].some(o=>o.value===v)){s.value=v;renderFigure();}}}
 window.addEventListener('hashchange',applyHash);
 
@@ -536,5 +912,9 @@ if(!M.FC.length&&!M.PC.length)example();else render();
 applyHash();
 })();
 </script>
+<!-- vcri-social:start -->
+<style>.vcri-follow{max-width:960px;margin:2rem auto 1.5rem;padding:0 1.5rem;text-align:center;font-size:.85rem;line-height:2;opacity:.9}.vcri-follow a{white-space:nowrap}@media print{.vcri-follow,.vcri-share{display:none!important}}</style>
+<div class="vcri-follow">Follow The Value Chain Risk Institute: <a href="https://www.linkedin.com/company/valuechainrisk" rel="me noopener" target="_blank">LinkedIn</a> &middot; <a href="https://bsky.app/profile/valuechainrisk.org" rel="me noopener" target="_blank">Bluesky</a> &middot; <a href="https://infosec.exchange/@valuechainrisk" rel="me noopener" target="_blank">Mastodon</a> &middot; <a href="https://x.com/ValueChainRisk" rel="me noopener" target="_blank">X (@ValueChainRisk)</a> &middot; <a href="https://buttondown.com/vcri" rel="me noopener" target="_blank">Newsletter</a> &middot; <a href="https://github.com/value-chain-risk-institute" rel="me noopener" target="_blank">GitHub</a><br><a href="/tools/">All tools</a> &middot; <a href="/media/">Talks and videos</a> &middot; <a href="/brand/">Press kit</a></div>
+<!-- vcri-social:end -->
 </body>
 </html>
