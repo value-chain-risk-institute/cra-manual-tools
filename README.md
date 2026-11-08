@@ -11,7 +11,17 @@ Cyber Resilience Act (CRA) requires of every product with digital elements:
 | **Context & Conditions of Use Builder** | Cyber Manual ch. 2.2–2.5 (functions, context components, conditions of use, risks) + the diagrams | [valuechainrisk.org/cyber-manual/context](https://valuechainrisk.org/cyber-manual/context/) | [`/cyber-manual/context`](./cyber-manual/context) |
 
 Together they cover the pair: the user-facing manual, and the risk assessment
-behind it. Built for the small and mid-size manufacturers who cannot reach for
+behind it.
+
+The tools work alone or as a chain. Each one can bring in another's work from
+the same browser with one button: the Manual Builder brings in the Context
+builder's lists and every diagram, or merges the TARA's accepted risks; the
+Context builder and the TARA can start from the manual saved in the Manual
+Builder. The other page is opened in a hidden frame on the same site and hands
+its data back, so nothing is uploaded. The Context builder owns the chain
+(components, interfaces, context, functions, conditions of use, circumstances,
+diagrams); bringing it into the manual replaces those lists and never the prose.
+The Manual Builder saves only when you press Save. Built for the small and mid-size manufacturers who cannot reach for
 paywalled standards or a consultant for every product.
 
 ## A Cyber Manual Movement contribution

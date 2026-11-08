@@ -62,6 +62,8 @@ main{display:grid;grid-template-columns:minmax(360px,1fr) minmax(420px,1.15fr);g
 .edit{padding:16px 16px 80px;border-right:1px solid var(--line)}
 .preview{background:var(--bg);padding:22px 22px 80px}
 .tabbar{display:none}
+.savestate{font-size:11.5px;color:var(--muted)}.savestate.dirty{color:#a9660f}.savestate a{color:var(--accent);cursor:pointer;text-decoration:underline}
+#bring{border:none;background:transparent;font:inherit;color:inherit;width:auto;padding:0;margin:0}
 #fillMeter{border:1px solid var(--line);border-radius:11px;background:var(--panel);padding:10px 12px;margin-bottom:10px}#fillMeter .fm-t{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:12.5px}#fillMeter .fm-t span{color:var(--muted,#777);font-size:11.5px}#fillMeter .fm-bar{height:6px;border-radius:3px;background:var(--line);margin-top:7px;overflow:hidden}#fillMeter .fm-bar i{display:block;height:100%;background:var(--accent)}
 .sec>summary .fill{margin-left:auto;font:500 11px/1 var(--mono);color:var(--muted,#777);white-space:nowrap}.sec>summary .fill.full{color:var(--accent)}
 @media print{#fillMeter{display:none}}
@@ -242,6 +244,9 @@ footer{padding:14px 16px;color:var(--muted);font-size:11.5px;border-top:1px soli
     <label class="btn" id="viewL" hidden title="Product family: print the manual for every member, or one member's edition with what does not apply to it left out">Manual for <select id="view" aria-label="Manual for which family member"></select></label>
     <button class="btn" id="example"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>Load example</button>
     <button class="btn" id="impSbom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Import SBOM</button>
+    <button class="btn pri" id="save" title="Keep this manual in this browser (Ctrl+S or ⌘S). Nothing is uploaded.">Save</button>
+    <span id="saveState" class="savestate" aria-live="polite"></span>
+    <label class="btn" title="Bring lists in from the other two tools in this browser. Nothing is uploaded.">Bring in <select id="bring" aria-label="Bring in from"><option value="">from…</option><option value="context" title="Lists and every diagram">Context builder</option><option value="tara" title="Risks, conditions of use and security properties">TARA Builder</option></select></label>
     <button class="btn" id="impJson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 9l-2 3 2 3M16 9l2 3-2 3"/></svg>Import JSON</button>
     <button class="btn" id="expJson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5-5 5 5M12 5v10"/></svg>Export JSON</button>
     <!-- Light output retired 2026-09-13: CMM template v0.23 (18 Aug 2026) merged the light manual into the Quick-reference front layer; one template now. -->
@@ -869,7 +874,7 @@ function render(){
   <table><tr><th>Requirement</th><th class="refcol">CRA Annex I Part II reference</th><th>Information</th></tr>${crosswalk2()}</table>
 
   <small class="watermark">Based on the Cyber Manual Movement’s Cybersecurity Manual template v0.39 (26 October 2026), guidance v0.33 and boilerplate v0.23. Generated with the VCRI Cyber Manual Builder, a free populator by the Value Chain Risk Institute. Data stays in your browser. CC BY 4.0 · valuechainrisk.org</small>`;
-  fillMeter();
+  fillMeter();saveState();
 }
 /* completeness meter (08 Nov 2026): counts empty fields, nothing else. A mechanical count, not a judgement of what is written.
    Fields labelled optional, diagram slots, and chapter 5 [optional] are left out of the percentage. */
@@ -922,6 +927,55 @@ function mergeTara(t){
   alert(`Merged from the TARA Builder${t.product?" for "+t.product:""}: ${M.ri.length-before.ri} circumstances (CR) into 3.3 under their functions, ${M.cu.length-before.cu} condition-of-use candidates into the CU list, ${M.sp.length-before.sp} security-property candidates into 2.2. Edit the drafted titles; nothing already in the manual was changed.`);
 }
 
+/* ---------- save (08 Nov 2026): explicit, in this browser only ----------
+   Nothing saves until the person presses Save. Opening the page restores the last saved copy. Leaving with unsaved changes asks first. */
+const SKEY="vcri.cm.manual.v1";
+let SAVED=null,UNDO=null,NOTE="";
+function snapshot(){return JSON.stringify(M);}
+function saveState(){const st=$("#saveState");if(!st)return;const dirty=snapshot()!==SAVED;st.classList.toggle("dirty",dirty);
+  let t=dirty?(SAVED===null&&!M.product.name?"Not saved":"Unsaved changes"):"Saved in this browser";
+  st.innerHTML=esc(t)+(NOTE?" · "+NOTE:"")+(UNDO?' · <a id="undo">undo</a>':"")+(SAVED!==null?' · <a id="forget" title="Remove the saved copy from this browser, for example on a shared computer">forget saved copy</a>':"");
+  const u=$("#undo");if(u)u.onclick=()=>{M=JSON.parse(UNDO);UNDO=null;NOTE="";buildForm();render();};
+  const f=$("#forget");if(f)f.onclick=()=>{if(!confirm("Remove the saved copy of this manual from this browser? What is on screen stays until you close the page."))return;try{localStorage.removeItem(SKEY);}catch(e){}SAVED=null;saveState();};}
+function saveNow(){try{const s=snapshot();localStorage.setItem(SKEY,s);SAVED=s;UNDO=null;NOTE="";saveState();}
+  catch(e){alert("This browser would not store the manual (it may be too large, for example with many embedded images, or storage may be blocked). Use Export JSON to keep a copy.");}}
+function restore(){try{const s=localStorage.getItem(SKEY);if(s){M=migrate(JSON.parse(s));SAVED=snapshot();}}catch(e){}}
+window.addEventListener("beforeunload",e=>{if(snapshot()!==SAVED&&(SAVED!==null||M.product.name)){e.preventDefault();e.returnValue="";}});
+document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"){e.preventDefault();saveNow();}});
+
+/* ---------- bring in from the other tools (08 Nov 2026) ----------
+   The three tools live on one site, so each can ask another for its current work: the other page is opened in a hidden frame,
+   reads its own saved state, and hands back what this tool needs (schema vcri.cmm-export/v1). Nothing leaves the browser.
+   Ownership: the Context builder owns the chain (components, interfaces, protocols, properties, context, functions, conditions,
+   circumstances, diagrams); bringing it in replaces those lists here and never touches prose, contacts or chapter 4 and 5. */
+const TOOLS={context:{url:"/cyber-manual/context/",name:"the Context & Conditions of Use Builder"},tara:{url:"/tara/",name:"the TARA Builder"}};
+function askTool(tool){return new Promise((ok,no)=>{
+  const fr=document.createElement("iframe");fr.style.display="none";fr.src=TOOLS[tool].url+"#export=manual";
+  const done=(f,v)=>{clearTimeout(tm);window.removeEventListener("message",on);fr.remove();f(v);};
+  const on=e=>{if(e.origin!==location.origin||e.source!==fr.contentWindow||!e.data||e.data.schema!=="vcri.cmm-export/v1")return;done(ok,e.data);};
+  const tm=setTimeout(()=>done(no,new Error("timeout")),15000);
+  window.addEventListener("message",on);document.body.append(fr);});}
+function applyContext(d){
+  const n=k=>(d[k]||[]).length;
+  const msg=`Bring in from the Context builder${d.product?" (“"+d.product+"”)":""}:\n${n("pc")} components, ${n("pi")} interfaces, ${n("pp")} protocols, ${n("sp")} security properties, ${n("cc")} context components, ${n("cp")} persons, ${n("cz")} zones, ${n("fc")} functions, ${n("cu")} conditions of use, ${n("ri")} circumstances, ${Object.keys(d.dia||{}).length+(d.fc||[]).filter(f=>f.dia).length} diagrams.\n\nThis replaces those lists and diagrams here. Introduction, commissioning, updates, decommissioning, contacts and chapter 5 stay as they are. You can undo until you save.`;
+  if(!confirm(msg))return;
+  UNDO=snapshot();
+  for(const k of VLISTS)M[k]=JSON.parse(JSON.stringify(d[k]||[]));
+  for(const k of ["product","sp","context"])if(d.dia&&d.dia[k])M.dia[k]=d.dia[k];
+  if(!M.product.name&&d.product)M.product.name=d.product;
+  if(!M.product.tmv&&d.model)M.product.tmv=d.model;
+  if(!M.product.family&&d.family)M.product.family=d.family;
+  NOTE="brought in from the Context builder";buildForm();render();}
+async function bringIn(tool){
+  const st=$("#saveState");if(st)st.textContent="Asking "+TOOLS[tool].name+"…";
+  let d;try{d=await askTool(tool);}catch(e){alert("Could not reach "+TOOLS[tool].name+" in this browser. Open it once, then try again, or use its Export and Import JSON here.");saveState();return;}
+  if(d.error){alert(d.error);saveState();return;}
+  if(tool==="context")applyContext(d.data);
+  else{UNDO=snapshot();mergeTara(d.data);NOTE="merged from the TARA Builder";}
+  saveState();}
+$("#save").addEventListener("click",saveNow);
+$("#bring").addEventListener("change",e=>{const v=e.target.value;e.target.value="";if(v)bringIn(v);});
+
 /* ---------- wiring ---------- */
 $("#example").addEventListener("click",()=>{M=example();buildForm();render();});
 $("#print").addEventListener("click",()=>window.print());
@@ -951,7 +1005,8 @@ $("#tabPrev").addEventListener("click",()=>{document.body.classList.add("show-pr
 
 $("#foot").innerHTML='Template (v0.39, 26 Oct 2026), guidance (v0.33, 2 Nov 2026), boilerplate (v0.23, 24 Oct 2026), and the Engineering PC example (v0.40, 26 Oct 2026; diagrams by Sarah Fluchs) © the <strong>Cyber Manual Movement</strong> working group, CC BY 4.0. This free populator built on that template by the <strong>Value Chain Risk Institute</strong> · CC BY 4.0 · runs entirely in your browser · <a href="/cyber-manual/context/">Context &amp; Conditions of Use Builder</a> · <a href="/tara/">TARA Builder (Annex VII)</a> · <a href="/cra-manual-builder/v023/">previous version (template v0.23)</a> · <a href="https://github.com/value-chain-risk-institute/cra-manual-tools" target="_blank" rel="noopener">Source on GitHub</a>';
 
-buildForm();render();
+restore();buildForm();render();
+{const m=/bring=(context|tara)/.exec(location.hash);if(m){history.replaceState(null,"",location.pathname);bringIn(m[1]);}}
 </script>
 <!-- vcri-social:start -->
 <style>.vcri-follow{max-width:960px;margin:2rem auto 1.5rem;padding:0 1.5rem;text-align:center;font-size:.85rem;line-height:2;opacity:.9}.vcri-follow a{white-space:nowrap}@media print{.vcri-follow,.vcri-share{display:none!important}}</style>

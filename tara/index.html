@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VCRI TARA Builder — CRA Annex VII Risk Assessment</title>
+<title>VCRI TARA Builder · CRA Annex VII risk assessment, companion to the Cyber Manual (template v0.39)</title>
 <style>
 :root{
   --ui:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -73,10 +73,63 @@ details{margin:6px 0} summary{cursor:pointer;font-size:12.5px;color:var(--accent
 </style>
 </head>
 <body>
+<!-- vcri-nav:start -->
+<style>
+.vn{position:sticky;top:0;z-index:9999;background:#0a0f1a;border-bottom:1px solid #232c3a;font:500 14px/1.4 Inter,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+.vn *{box-sizing:border-box}
+.vn-in{max-width:1200px;margin:0 auto;padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:56px}
+.vn a{color:#e7ebf2;text-decoration:none}
+.vn-brand{font-weight:800;letter-spacing:.06em;color:#fbbf24!important;font-size:16px}
+.vn-links{display:flex;gap:18px;align-items:center;list-style:none;margin:0;padding:0}
+.vn-links>li{position:relative}
+.vn-links a:hover,.vn-links summary:hover{color:#fbbf24}
+.vn-links .vn-cta{color:#fbbf24}
+.vn details>summary{list-style:none;cursor:pointer;color:#e7ebf2}
+.vn details>summary::-webkit-details-marker{display:none}
+.vn-drop{position:absolute;top:30px;left:-12px;min-width:240px;background:#121824;border:1px solid #232c3a;border-radius:8px;padding:6px 0;list-style:none;margin:0}
+.vn-drop a{display:block;padding:7px 14px}
+.vn-menu{display:none}
+@media(max-width:900px){
+ .vn-links{display:none}
+ .vn-menu{display:block;background:none;border:0;color:#e7ebf2;font-size:22px;line-height:1;cursor:pointer;padding:4px}
+ .vn-open .vn-links{display:flex;flex-direction:column;align-items:flex-start;gap:0;position:absolute;top:56px;left:0;right:0;background:#0a0f1a;border-bottom:1px solid #232c3a;padding:8px 16px 14px}
+ .vn-open .vn-links>li{width:100%;padding:8px 0;border-top:1px solid #1a2130}
+ .vn-drop{position:static;border:0;background:none;padding:4px 0 0 12px}
+}
+@media print{.vn{display:none}}
+</style>
+<div class="vn" role="navigation" aria-label="Site">
+ <div class="vn-in">
+  <a class="vn-brand" href="/">VCRI</a>
+  <button class="vn-menu" type="button" aria-label="Menu" aria-expanded="false" onclick="var n=this.closest('.vn');n.classList.toggle('vn-open');this.setAttribute('aria-expanded',n.classList.contains('vn-open'))">&#9776;</button>
+  <ul class="vn-links">
+   <li><a href="/#cam">Methodology</a></li>
+   <li><details><summary>Tools &#9662;</summary>
+    <ul class="vn-drop">
+     <li><a href="/tools/">All tools</a></li>
+     <li><a href="/scorer/">BeaconScore</a></li>
+     <li><a href="/cra-manual-builder/">CRA Manual Builder</a></li>
+     <li><a href="/cyber-manual/context/">Context &amp; Conditions of Use Builder</a></li>
+     <li><a href="/tara/">CRA TARA Builder</a></li>
+     <li><a href="https://github.com/value-chain-risk-institute/constellation-inventory" rel="noopener">AIBOM Constellation Inventory</a></li>
+     <li><a href="https://attackclock.com" rel="noopener">AttackClock</a></li>
+    </ul></details></li>
+   <li><a href="/community/">Community</a></li>
+   <li><a href="/learn/">Learn</a></li>
+   <li><a href="/research/">Research</a></li>
+   <li><a href="/state-of-supply-chain/">Supply Chain</a></li>
+   <li><a href="/blog/">Blog</a></li>
+   <li><a href="/media/">Media</a></li>
+   <li><a href="/press/">Press</a></li>
+   <li><a class="vn-cta" href="/#contact">Contact</a></li>
+  </ul>
+ </div>
+</div>
+<!-- vcri-nav:end -->
 <header>
   <div class="row">
     <h1>VCRI TARA Builder</h1>
-    <span class="tag">CRA Annex VII · v0.1 MVP</span>
+    <span class="tag">CRA Annex VII · v0.3 · loops with the Cyber Manual Builder (template v0.39)</span>
     <span class="privacy"><span class="dot"></span>All local. Nothing is transmitted.</span>
     <span class="sp"></span>
     <button class="mini" onclick="toggleTheme()">Theme</button>
@@ -84,6 +137,11 @@ details{margin:6px 0} summary{cursor:pointer;font-size:12.5px;color:var(--accent
     <button class="mini" onclick="exportJSON()">Export JSON</button>
     <button class="mini" onclick="document.getElementById('imp').click()">Import</button>
     <input id="imp" type="file" accept="application/json" style="display:none" onchange="importJSON(event)">
+    <button class="mini" onclick="document.getElementById('impcm').click()" title="Seed this assessment from a Cyber Manual Builder export">Import Cyber Manual JSON</button>
+    <input id="impcm" type="file" accept="application/json" style="display:none" onchange="importCyberManual(event)">
+    <button class="mini" onclick="bringManual()" title="Seed this assessment from the manual last saved in the Cyber Manual Builder in this browser">Bring in from the Manual Builder</button>
+    <a class="mini" href="/cra-manual-builder/#bring=tara" title="Open the Cyber Manual Builder and merge these risks, conditions and properties into the manual there. Your work here is already saved." style="text-decoration:none;display:inline-block;padding:3px 8px;font-size:12px;border:1px solid var(--line,#ccd);border-radius:6px;color:inherit;background:var(--panel,#fff)">Send to the Manual Builder →</a>
+    <button class="mini" onclick="exportForManual()" title="Risks, conditions of use and security properties in the template's shape">Export for the Cyber Manual</button>
     <button class="mini" onclick="window.print()">Print / PDF</button>
     <button class="mini" onclick="wipe()">Reset</button>
   </div>
@@ -92,16 +150,20 @@ details{margin:6px 0} summary{cursor:pointer;font-size:12.5px;color:var(--accent
 
 <div class="panel" style="border-left:4px solid var(--accent);background:var(--accent-soft)">
   <p style="margin:0;font-size:13px">
-    <strong>A Cyber Manual Movement tool.</strong> The Value Chain Risk Institute is a member of the
-    <a href="/cra-manual-builder/">Cyber Manual Movement</a> working group. This is the Annex VII (product cybersecurity risk assessment)
-    companion to the Movement's CRA user-information manual template — the risk-assessment half of the pair, built in the Movement's
-    established mode: VCRI provides the engine and drafting aids; the working group owns the scenario libraries and worked examples.
+    <strong>A Value Chain Risk Institute tool, built to sit next to the Cyber Manual.</strong> The
+    <a href="/cra-manual-builder/">Cyber Manual Builder</a> fills the Cyber Manual Movement's user-information template (CRA Annex II).
+    This tool is the risk-assessment side (CRA Annex VII (3)). Import a manual to start from its interfaces, components, functions and
+    conditions of use; export the accepted risks back in the manual's own shape (circumstances leading to risk and condition-of-use candidates grouped per function, for the
+    manual's chapter 3.3 subchapters, and security-property candidates for 2.2). The Movement's guidance is explicit that the manual's risk list is not the full risk assessment; this is where the full one lives.
+    The Cyber Manual Movement working group owns the template, guidance, boilerplate and examples; it has not adopted or reviewed this tool.
+    Scenario classes and scoring anchors are VCRI's own, CC BY 4.0.
   </p>
 </div>
 
 <div class="panel">
   <h2>1 · Product model</h2>
-  <p class="hint">The product with digital elements under assessment. In the full tool this pre-populates from a Manual Builder export (Annex II ↔ Annex VII loop); in this MVP, enter it directly.</p>
+  <p class="hint">The product with digital elements under assessment. Use <b>Import Cyber Manual JSON</b> (top bar) to seed this from a Cyber Manual Builder export: interfaces from PI and PP, assets from PC, plus the manual's functions and conditions of use for reference. Or enter it directly.</p>
+  <div id="cmlink" class="small" style="margin:0 0 8px"></div>
   <div class="grid2">
     <div><label>Product name</label><input type="text" id="pname" oninput="save()" placeholder="e.g. FlowSense PLC Gateway 200"></div>
     <div><label>Version / model</label><input type="text" id="pver" oninput="save()" placeholder="e.g. HW rev C, FW 3.2"></div>
@@ -139,18 +201,18 @@ details{margin:6px 0} summary{cursor:pointer;font-size:12.5px;color:var(--accent
 
 <div class="panel">
   <h2>4 · Risk register &amp; treatment</h2>
-  <p class="hint">Feasibility × impact → risk. Choose a treatment per scenario. <span class="usrtag">User-borne</span> treatments emit Condition-of-Use candidates that flow back into the Annex II manual; <span class="mfrtag">manufacturer-borne</span> ones become product security properties.</p>
+  <p class="hint">Feasibility × impact → risk. Choose a treatment per scenario and, where you know it, the function it affects (FC) or the condition of use it would violate (CU). <span class="usrtag">User-borne</span> treatments become condition-of-use candidates in the affected function's chapter 3.3 subchapter; <span class="mfrtag">manufacturer-borne</span> ones become security-property candidates for 2.2. Every accepted risk becomes a circumstance-leading-to-risk (CR) row in its function's 3.3 subchapter (3.4.1 for the update function).</p>
   <div id="register"></div>
 </div>
 
 <div class="panel">
-  <h2>5 · Annex VII summary &amp; Annex I trace</h2>
-  <p class="hint">The assessment as a CRA-shaped summary. Each accepted risk can be traced to the Annex I essential requirement it justifies. Indicative, not a conformance claim.</p>
+  <h2>5 · Annex VII summary, Annex I trace, and what goes back into the manual</h2>
+  <p class="hint">The assessment as a CRA-shaped summary, then the same content in the Cyber Manual template's shape (v0.39): per function, the circumstances leading to risk (CR) and condition-of-use candidates for its chapter 3.3 subchapter; then security-property candidates for 2.2. Indicative, not a conformance claim.</p>
   <div id="summary"></div>
 </div>
 
 <p class="small muted" style="text-align:center;margin:24px 0">
-  A <strong>Cyber Manual Movement</strong> tool. Built by the Value Chain Risk Institute, a member of the Cyber Manual Movement working group, as the Annex VII companion to the Movement's CRA user-information manual template.<br>
+  Built by the Value Chain Risk Institute as the CRA Annex VII companion to its <a href="/cra-manual-builder/">Cyber Manual Builder</a>, which fills the Cyber Manual Movement's template (v0.39). Not a Movement deliverable.<br>
   Value Chain Risk Institute · valuechainrisk.org/tara · CC BY 4.0 · <a href="https://github.com/value-chain-risk-institute/cra-manual-tools" target="_blank" rel="noopener">Source on GitHub</a> · Companion: /cra-manual-builder/ (Annex II) · /scorer/ (posture)<br>
   Methodology informed by ISO/SAE 21434-style TARA practice; all anchors authored originally. This tool makes no conformance determination.
 </p>
@@ -209,7 +271,7 @@ const RUBRIC = {
 
 // ---------- state ----------
 let S = load() || blank();
-function blank(){return{product:{name:"",ver:"",purpose:""},interfaces:[...RUBRIC.interfaces_default.slice(0,4)],custIf:[],assets:[],scenarios:[]};}
+function blank(){return{product:{name:"",ver:"",purpose:""},interfaces:[...RUBRIC.interfaces_default.slice(0,4)],custIf:[],assets:[],scenarios:[],cm:null};}
 function save(){collectProduct();localStorage.setItem("vcri-tara",JSON.stringify(S));}
 function load(){try{return JSON.parse(localStorage.getItem("vcri-tara"));}catch(e){return null;}}
 function uid(){return "s"+Math.random().toString(36).slice(2,8);}
@@ -264,7 +326,7 @@ function generate(){
         accepted:false,
         feas:{time:1,expertise:1,knowledge:0,window:1,equipment:1},
         imp:{safety:0,operational:1,financial:1,privacy:0},
-        treatment:"", bearer:"", annex:RUBRIC.classToAnnex[cls.id]||""
+        treatment:"", bearer:"", annex:RUBRIC.classToAnnex[cls.id]||"", fc:"", cu:"", damage:""
       });
       added++;
     });
@@ -321,7 +383,12 @@ function renderRegister(){
           ${opt(["","Manufacturer → security property","User → condition of use"],s.bearer)}</select></div>
       </div>
       <div style="margin-top:8px"><label>Justifies CRA Annex I requirement</label><select onchange="S.scenarios[${idx}].annex=this.value;save();renderSummary()">
-        ${annexOpt(s.annex)}</select></div>`;
+        ${annexOpt(s.annex)}</select></div>
+      <div class="grid2" style="margin-top:8px">
+        <div><label>Affected function (FCxx) in the manual</label>${fcInput(idx,s.fc)}</div>
+        <div><label>Violated condition of use (CUxx), if any</label>${cuInput(idx,s.cu)}</div>
+      </div>
+      <div style="margin-top:8px"><label>Potential risk, from the user's perspective (the CR table's last column)</label><input type="text" value="${esc(s.damage||"")}" oninput="S.scenarios[${idx}].damage=this.value;save()" placeholder="${esc((S.assets[0]&&S.assets[0].damage)||'e.g. manipulation of PLC logic, damage to controlled equipment')}"></div>`;
     d.appendChild(el);
   });
 }
@@ -350,6 +417,7 @@ function renderSummary(){
       <td>${ax?ax.id:"—"}</td></tr>`;
   });
   html+=`</tbody></table>`;
+  html+=manualShaped(acc);
   // condition-of-use feedback (Annex VII -> Annex II loop)
   const cous=acc.filter(s=>s.bearer.startsWith("User")&&s.treatment);
   if(cous.length){
@@ -388,7 +456,109 @@ function seedExample(){
 }
 
 const esc=s=>(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+// ---------- Cyber Manual (template v0.38) loop ----------
+// Template v0.38 puts each function's conditions of use (CU) and circumstances leading to risk (CR) together in one
+// chapter 3.3 subchapter (3.4.1 for the update function). The export schema is unchanged (vcri.tara-to-manual/v1);
+// v0.38 adds an optional fc on condition-of-use candidates, which older builders ignore.
+const padId=(p,i)=>p+String(i+1).padStart(2,"0");
+const fcIdOf=v=>((v||"").match(/FC\d\d/)||[""])[0];
+function fcInput(idx,cur){
+  const fcs=(S.cm&&S.cm.fc)||[];
+  if(!fcs.length)return `<input type="text" value="${esc(cur||"")}" oninput="S.scenarios[${idx}].fc=this.value;save()" placeholder="FC01 Program a PLC">`;
+  return `<select onchange="S.scenarios[${idx}].fc=this.value;save();renderSummary()"><option value="">(none)</option>`+fcs.map((f,i)=>{const id=padId("FC",i);const v=id+" "+f.title;return `<option value="${esc(v)}" ${v===cur?"selected":""}>${esc(v)}</option>`;}).join("")+`</select>`;
+}
+function cuInput(idx,cur){
+  const cus=(S.cm&&S.cm.cu)||[];
+  if(!cus.length)return `<input type="text" value="${esc(cur||"")}" oninput="S.scenarios[${idx}].cu=this.value;save()" placeholder="CU04 No internet connection">`;
+  return `<select onchange="S.scenarios[${idx}].cu=this.value;save();renderSummary()"><option value="">(none)</option>`+cus.map((c,i)=>{const id=padId("CU",i);const v=id+" "+c.title;return `<option value="${esc(v)}" ${v===cur?"selected":""}>${esc(v)}</option>`;}).join("")+`</select>`;
+}
+function riRows(acc){
+  return acc.map((s,i)=>({id:padId("CR",i),title:`${s.clsName} on ${s.iface}`,desc:s.text,fc:fcIdOf(s.fc),fcLabel:s.fc||"",cu:s.cu||"",risk:s.damage||"",level:riskOf(s)}));
+}
+function cuCandidates(acc){
+  return acc.filter(s=>(s.bearer||"").startsWith("User")&&s.treatment).map(s=>({affected:"",title:`${s.treatment.replace(/\s*\(.*\)$/,"")}: ${s.clsName.replace(" assumption violated","")} on ${s.iface}`,desc:`The operator must act so that: ${s.text}`,refs:s.annex||"",fc:fcIdOf(s.fc),fcLabel:s.fc||""}));
+}
+function spCandidates(acc){
+  return acc.filter(s=>(s.bearer||"").startsWith("Manuf")&&s.treatment).map(s=>({comp:s.iface,title:`${s.clsName.replace(" assumption violated","")} protection on ${s.iface}`,desc:`Product control addressing: ${s.text}`,refs:s.annex||""}));
+}
+/* group CR rows and CU candidates by the manual function they belong to, in the manual's function order */
+function fnGroups(ri,cu){
+  const cmf=(S.cm&&S.cm.fc)||[];
+  const order=[],label={};
+  cmf.forEach((f,i)=>{const id=padId("FC",i);order.push(id);label[id]=id+" "+f.title;});
+  [...ri,...cu].forEach(x=>{if(x.fc&&!order.includes(x.fc)){order.push(x.fc);label[x.fc]=x.fcLabel||x.fc;}});
+  const kinds=cmf.map((f,i)=>({id:padId("FC",i),upd:/security update/i.test(f.title||"")}));
+  const num=id=>{const k=kinds.find(x=>x.id===id);if(!k)return "";const same=kinds.filter(x=>x.upd===k.upd);return (k.upd?"3.4.":"3.3.")+(same.indexOf(k)+1);};
+  const g=order.map(id=>({id,label:label[id],num:num(id),ri:ri.filter(r=>r.fc===id),cu:cu.filter(c=>c.fc===id)})).filter(x=>x.ri.length||x.cu.length);
+  const none={id:"",label:"Not yet assigned to a function (set the affected function in the register)",num:"",ri:ri.filter(r=>!r.fc),cu:cu.filter(c=>!c.fc)};
+  if(none.ri.length||none.cu.length)g.push(none);
+  return g;
+}
+function manualShaped(acc){
+  const ri=riRows(acc), cu=cuCandidates(acc), sp=spCandidates(acc);
+  let h=`<div style="margin-top:18px"><div class="small mfrtag">In the Cyber Manual's shape (template v0.39)</div>`;
+  h+=`<div class="small" style="margin:6px 0 2px"><b>3.3 Secure use: Conditions of Use (CU) and Circumstances leading to Risk (CR) per product Function (FC)</b>, one subchapter per function in the manual</div>`;
+  for(const g of fnGroups(ri,cu)){
+    h+=`<div class="small" style="margin:12px 0 2px"><b>${g.num?esc(g.num)+" ":""}${g.id?"Function ":""}${esc(g.label)}</b></div>`;
+    if(g.cu.length){h+=`<div class="small usrtag" style="margin:4px 0 0">Condition-of-use candidates (user-borne treatments)</div><table><thead><tr><th>Title</th><th>Description</th><th>Annex I</th></tr></thead><tbody>`+g.cu.map(c=>`<tr><td>${esc(c.title)}</td><td>${esc(c.desc)}</td><td>${esc(c.refs)}</td></tr>`).join("")+`</tbody></table>`;}
+    if(g.ri.length){h+=`<div class="small" style="margin:4px 0 0">Circumstances potentially leading to significant cybersecurity risk (CR)</div><table><thead><tr><th>ID</th><th>Title and Description</th><th>Violated Condition of Use (CU)</th><th>Potential risk</th><th>Assessed</th></tr></thead><tbody>`;
+      g.ri.forEach(r=>{h+=`<tr><td><b>${r.id}</b></td><td><b>${esc(r.title)}</b><br>${esc(r.desc)}</td><td>${esc(r.cu)||'<span class="muted">(none)</span>'}</td><td>${esc(r.risk)||'<span class="muted">enter in the register</span>'}</td><td><span class="pill ${riskClass(r.level)}">${r.level}</span></td></tr>`;});
+      h+=`</tbody></table>`;}
+  }
+  if(sp.length){h+=`<div class="small" style="margin:14px 0 2px"><b>2.2 Security-property candidates</b> (manufacturer-borne treatments)</div><table><thead><tr><th>Affected</th><th>Title</th><th>Description</th><th>Annex I</th></tr></thead><tbody>`+sp.map(c=>`<tr><td>${esc(c.comp)}</td><td>${esc(c.title)}</td><td>${esc(c.desc)}</td><td>${esc(c.refs)}</td></tr>`).join("")+`</tbody></table>`;}
+  h+=`<p class="small muted" style="margin-top:8px">Export for the Cyber Manual (top bar) writes these lists as a file the Cyber Manual Builder merges into an existing manual: each circumstance lands in its function's subchapter, and each condition-of-use candidate is attached to its function. IDs are assigned by the builder on import; the titles here are drafts to be edited there.</p></div>`;
+  return h;
+}
+function manualExport(){   /* the lists the Manual Builder merges, or null if nothing is accepted yet */
+  collectProduct();const acc=S.scenarios.filter(s=>s.accepted);
+  if(!acc.length)return null;
+  return {schema:"vcri.tara-to-manual/v1",tpl:"0.39",generated:new Date().toISOString(),product:S.product.name,ri:riRows(acc).map(r=>({title:r.title,desc:r.desc,fc:r.fc,cu:r.cu,risk:r.risk})),cu:cuCandidates(acc).map(c=>({affected:c.affected,title:c.title,desc:c.desc,refs:c.refs,fc:c.fc})),sp:spCandidates(acc)};
+}
+function exportForManual(){
+  const out=manualExport();if(!out){alert("Accept at least one scenario first.");return;}
+  const blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(S.product.name||"tara").replace(/\W+/g,"_")+"_for-cyber-manual.json";a.click();
+}
+function importCyberManual(e){
+  const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{
+    seedFromManual(JSON.parse(r.result));
+  }catch(err){alert("Could not read that file.");}};
+  r.readAsText(f);e.target.value="";
+}
+function seedFromManual(m){
+  {
+    if(!m||!m.product||!Array.isArray(m.fc)){alert("That is not a Cyber Manual Builder export.");return;}
+    if(!m.tpl){alert("This manual was saved by the v0.25 builder. Open it in the current Cyber Manual Builder (it migrates on import), export it again, then import it here.");return;}
+    S.product={name:m.product.name||"",ver:m.product.tmv||"",purpose:[m.product.additional,(m.cc||[]).length?"Context: "+(m.cc||[]).map((c,i)=>padId("CC",i)+" "+c.title).join(", "):"",(m.cz||[]).length?"Zones: "+(m.cz||[]).map((z,i)=>padId("CZ",i)+" "+z.title).join(", "):""].filter(Boolean).join(" ")};
+    const ifs=[...(m.pi||[]).map((p,i)=>padId("PI",i)+" "+p.title),...(m.pp||[]).map((p,i)=>padId("PP",i)+" "+p.proto+(p.pi?" via "+p.pi:""))].filter(x=>x.trim());
+    S.custIf=ifs.filter(x=>!RUBRIC.interfaces_default.includes(x)); S.interfaces=ifs.length?ifs:S.interfaces;
+    S.assets=(m.pc||[]).map(c=>({name:c.title,damage:""}));
+    S.cm={fc:(m.fc||[]).map(f=>({title:f.title,cus:f.cus||""})),cu:(m.cu||[]).map(c=>({title:c.title,affected:c.affected})),sp:(m.sp||[]).map(x=>({title:x.title})),tpl:m.tpl};
+    S.scenarios=[]; render(); save();
+    document.getElementById("cmlink").innerHTML=`Seeded from the manual for <b>${esc(m.product.name||"(unnamed)")}</b> (template v${esc(m.tpl)}${!["0.38","0.39"].includes(m.tpl)?"; this tool now groups by the template v0.39 chapter 3.3 function subchapters, and the function and CU IDs are the same":""}): ${ifs.length} interfaces, ${(m.pc||[]).length} components, ${(m.fc||[]).length} functions, ${(m.cu||[]).length} conditions of use. Generate scenarios next.`;
+  }
+}
+/* ---------- the chain between the three tools (08 Nov 2026) ----------
+   Same site, so the tools read each other's work in this browser; nothing is uploaded. Bring in reads the manual last saved in the
+   Manual Builder. The Manual Builder asks for this tool's risks and conditions by opening it in a hidden frame with #export=manual. */
+function bringManual(){let m=null;try{m=JSON.parse(localStorage.getItem("vcri.cm.manual.v1")||"null");}catch(e){}
+  if(!m){alert("No manual is saved in the CRA Manual Builder in this browser yet. Open it, press Save there, then come back. (Or use Import Cyber Manual JSON with an exported file.)");return;}
+  if(S.scenarios.length&&!confirm("Seeding from the manual replaces the product, interfaces, assets and scenarios here. Continue?"))return;
+  seedFromManual(m);}
+if(/export=manual/.test(location.hash)&&window.parent!==window){
+  let out;try{render();const o=manualExport();   /* render first: the export reads the product fields from the page */out=o?{schema:"vcri.cmm-export/v1",from:"tara",data:o}:{schema:"vcri.cmm-export/v1",from:"tara",error:"The TARA Builder has no accepted scenarios in this browser yet. Accept at least one there first."};}
+  catch(e){out={schema:"vcri.cmm-export/v1",from:"tara",error:"The TARA Builder could not prepare its lists: "+e};}
+  window.parent.postMessage(out,location.origin);
+}else{
 render();
+if(/bring=manual/.test(location.hash)){history.replaceState(null,"",location.pathname);bringManual();}
+}
 </script>
+<!-- vcri-social:start -->
+<style>.vcri-follow{max-width:960px;margin:2rem auto 1.5rem;padding:0 1.5rem;text-align:center;font-size:.85rem;line-height:2;opacity:.9}.vcri-follow a{white-space:nowrap}@media print{.vcri-follow,.vcri-share{display:none!important}}</style>
+<div class="vcri-follow">Follow The Value Chain Risk Institute: <a href="https://www.linkedin.com/company/valuechainrisk" rel="me noopener" target="_blank">LinkedIn</a> &middot; <a href="https://bsky.app/profile/valuechainrisk.org" rel="me noopener" target="_blank">Bluesky</a> &middot; <a href="https://infosec.exchange/@valuechainrisk" rel="me noopener" target="_blank">Mastodon</a> &middot; <a href="https://x.com/ValueChainRisk" rel="me noopener" target="_blank">X (@ValueChainRisk)</a> &middot; <a href="https://buttondown.com/vcri" rel="me noopener" target="_blank">Newsletter</a> &middot; <a href="https://github.com/value-chain-risk-institute" rel="me noopener" target="_blank">GitHub</a><br><a href="/tools/">All tools</a> &middot; <a href="/media/">Talks and videos</a> &middot; <a href="/brand/">Press kit</a></div>
+<!-- vcri-social:end -->
 </body>
 </html>

@@ -198,6 +198,8 @@ footer{padding:14px 16px;color:var(--muted);font-size:11.5px;border-top:1px soli
     <button class="btn" id="btnExample" title="Load the working group’s fictitious Engineering PC example">Load Engineering PC example</button>
     <button class="btn" id="btnNew">New</button>
     <button class="btn" id="btnImport">Import JSON</button>
+    <button class="btn" id="btnFromManual" title="Bring in the manual last saved in the CRA Manual Builder in this browser, and derive the links from it">Bring in from the Manual Builder</button>
+    <a class="btn" id="btnToManual" style="text-decoration:none;color:inherit;display:inline-block" href="/cra-manual-builder/#bring=context" title="Open the CRA Manual Builder and bring these lists and every diagram into the manual there. Your work here is already saved.">Send to the Manual Builder →</a>
     <button class="btn" id="btnDerive" title="Open a manual saved from the CRA Manual Builder (Export JSON). Lists are filled from it and the links derived by rule, each marked as suggested until you decide.">Derive from a manual</button>
     <button class="btn" id="btnExport">Export JSON</button>
     <button class="btn" id="btnSvg">Download diagram (SVG)</button>
@@ -607,7 +609,7 @@ function renderChecks(){
   }
   for(const[title,items]of groups){
     if(!items.length)continue;
-    ul.append(el('li',{class:'tierhd'},title,title==='Derived from a manual'&&Object.keys(M.derived.rules).length?el('button',{class:'addmini',style:'margin-left:8px;width:auto;flex:none',title:'Keep every derived link and remove the marks. The gaps stay listed until they are filled.',onclick:()=>{M.derived.rules={};save();render();toast('Suggested links accepted');}},'accept all suggested links'):null));
+    ul.append(el('li',{class:'tierhd'},title,title==='Derived from a manual'&&Object.keys(M.derived.rules).length?el('button',{class:'addmini',style:'margin-left:8px;width:auto;flex:none',title:'Keep every derived link and remove the marks. The gaps stay listed until they are filled.',onclick:()=>{M.derived.rules={};save();render();toast('Suggested links accepted');}},'accept all suggested links'):null,title==='Derived from a manual'&&hasUndo()?el('button',{class:'addmini',style:'margin-left:6px;width:auto;flex:none',title:'Put back the model you had before bringing the manual in',onclick:()=>{try{const u=localStorage.getItem(KEY+'.undo');if(u){M=normalize(JSON.parse(u));localStorage.removeItem(KEY+'.undo');save();render();toast('Previous model restored');}}catch(e){}}},'undo'):null));
     for(const[lv,msg,why]of items)
       ul.append(el('li',{},el('span',{class:'lv '+lv},lv==='stop'?'FIX':lv==='gap'?'CRA':lv==='sug'?'DERIVED':'CHECK'),el('span',{},msg,el('span',{class:'why'},why))));
   }
@@ -873,13 +875,47 @@ function sugRule(it,field,t){const D=M.derived;if(!D||!D.rules)return null;const
 function decide(it,field,t){const D=M.derived;if(!D||!D.rules)return;const kind=(it.id||'').replace(/\d+$/,'');delete D.rules[(kind==='CR'?'RI':kind)+'|'+it.id+'|'+field+'|'+t];}
 function importManual(o){const n=deriveFromManual(o);M=normalize(n);save();render();
   const s=Object.keys(M.derived.rules).length;toast(`Derived from the manual: ${s} suggested links, ${derivedGaps().length} gaps`);}
-/* ---------- io ---------- */
+/* ---------- the chain between the three tools (08 Nov 2026) ----------
+   Same site, so the tools read each other's work in this browser; nothing is uploaded. The Manual Builder asks for this tool's
+   lists by opening it in a hidden frame with #export=manual; this tool answers with manual-shaped lists and every diagram
+   (schema vcri.cmm-export/v1). Bringing a manual in here reads the copy last saved in the Manual Builder. */
+const MANUAL_KEY='vcri.cm.manual.v1';
+function svgURI(scope){const svg='<?xml version="1.0" encoding="UTF-8"?>\n'+figureSVG(scope,{sp:scope==='sp',cu:false,proto:true,variant:'',legend:true,fig:(M.fig||{})[scope]||''}).replace(/ data-drag="[^"]*"/g,'').replace(/ fill="#000" fill-opacity="0"/g,' fill="none"');
+  return 'data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svg)));}
+function toManual(){
+  const num={};for(const k of ['PC','PI','SP','FC','CC','CP','CZ','CU','RI'])M[k].forEach((x,i)=>num[x.id]=(k==='RI'?'CR':k)+String(i+1).padStart(2,'0'));
+  const ref=id=>{if(id===PRODUCT)return null;const x=findAny(id);return x?num[id]+' '+(x.title||''):'';};
+  const refs=a=>(a||[]).map(ref).filter(Boolean).join(', ');
+  const ids=a=>(a||[]).map(id=>num[id]).filter(Boolean).join(', ');
+  const v=x=>Array.isArray(x.vars)?x.vars.slice():[];
+  const d={product:M.product.name||'',model:M.product.model||'',family:M.product.family||''};
+  d.pc=M.PC.map(x=>({title:x.title||'',desc:x.desc||'',vars:v(x)}));
+  d.pi=M.PI.map(x=>({title:x.title||'',desc:x.desc||'',vars:v(x)}));
+  d.pp=M.LI.map(x=>({proto:(x.proto||'')+(x.url?' ('+x.url+')':''),pi:x.pi?ref(x.pi)||'':'',port:x.port||'',fc:refs(x.fc),enabled:x.enabled||'',vars:v(x)}));
+  d.sp=M.SP.map(x=>({comp:x.on.includes(PRODUCT)&&!x.on.some(t=>t!==PRODUCT)?'Product: '+(M.product.name||'the product'):refs(x.on),title:x.title||'',desc:x.desc||'',refs:(x.annex||[]).join(','),vars:v(x)}));
+  d.cc=M.CC.map(x=>({title:x.title||'',desc:x.desc||'',vars:v(x)}));
+  d.cp=M.CP.map(x=>({title:x.title||'',desc:x.desc||'',skill:x.skill||'instructed',vars:v(x)}));
+  d.cz=M.CZ.map(x=>({title:x.title||'',desc:x.desc||'',type:x.type||'physical',access:x.access||'controlled',vars:v(x)}));
+  d.fc=M.FC.map(x=>({title:x.title||'',desc:x.desc||'',rfu:x.rfu||'',kind:x.core==='ancillary'?'ancillary':'core',cus:ids(fnCU(x)),dia:svgURI('fc:'+x.id),vars:v(x)}));
+  d.cu=M.CU.map(x=>({affected:[x.on.includes(PRODUCT)?'Product boundary':'',refs(x.on)].filter(Boolean).join(', '),title:x.title||'',desc:x.desc||'',refs:(x.annex||[]).join(','),vars:v(x)}));
+  d.ri=M.RI.map(x=>({title:x.title||'',desc:x.desc||'',fc:ids(x.fc),cu:ids(x.cu),risk:x.damage||'',vars:v(x)}));
+  d.dia={product:svgURI('product'),sp:svgURI('sp'),context:svgURI('context')};
+  return d;}
+function hasUndo(){try{return !!localStorage.getItem(KEY+'.undo');}catch(e){return false;}}
+function manualSaved(){try{const s=localStorage.getItem(MANUAL_KEY);return s?JSON.parse(s):null;}catch(e){return null;}}
+function bringManual(){const m=manualSaved();
+  if(!m||!isManual(Object.assign({tpl:m.tpl||'0.39'},m))){alert('No manual is saved in the CRA Manual Builder in this browser yet. Open it, press Save there, then come back. (Or use “Derive from a manual” with an exported file.)');return;}
+  if(!M.FC.length||confirm(`Replace the work here with what can be derived from the manual “${m.product&&m.product.name||'unnamed'}” saved in the Manual Builder?\n\nThe Context builder owns the chain, so do this to start a model, not to update one you have drawn: links, zones and arrangement made here would be replaced. Your current model can be undone once.`)){
+    try{localStorage.setItem(KEY+'.undo',JSON.stringify(M));}catch(e){}
+    importManual(Object.assign({tpl:'0.39'},m));}}
+
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1600);}
 function download(name,mime,data){const b=new Blob([data],{type:mime});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},300);}
 $('#btnExample').onclick=()=>{if(!M.FC.length||confirm('Replace current work with the Engineering PC example?'))example();};
 $('#btnNew').onclick=()=>{if(confirm('Clear everything and start a new product?')){M=blank();save();render();}};
 $('#btnExport').onclick=()=>download((M.product.name||'cyber-manual-context').replace(/[^\w.-]+/g,'-')+'.context.json','application/json',JSON.stringify(M,null,2));
 $('#btnImport').onclick=()=>$('#fileIn').click();
+$('#btnFromManual').onclick=bringManual;
 $('#btnDerive').onclick=()=>$('#fileManual').click();
 $('#fileManual').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{let o;try{o=JSON.parse(r.result);}catch(err){o=null;}
   if(!isManual(o)){alert('That file is not a manual saved from the CRA Manual Builder (Export JSON there).');return;}
@@ -907,9 +943,18 @@ for(const id of ['figScope','figSP','figCU','figProto','figVar','figLegend'])$('
 function applyHash(){const m=/layer=([^&]+)/.exec(location.hash);if(m){const v=decodeURIComponent(m[1]);const s=$('#figScope');if([...s.options].some(o=>o.value===v)){s.value=v;renderFigure();}}}
 window.addEventListener('hashchange',applyHash);
 
+if(/export=manual/.test(location.hash)&&window.parent!==window){   /* answering the Manual Builder from a hidden frame */
+  let had=false;try{had=!!localStorage.getItem(KEY);}catch(e){}
+  load();let out;
+  if(!had||(!M.FC.length&&!M.PC.length))out={schema:'vcri.cmm-export/v1',from:'context',error:'The Context & Conditions of Use Builder has no work saved in this browser yet.'};
+  else{try{render();out={schema:'vcri.cmm-export/v1',from:'context',data:toManual()};}catch(e){out={schema:'vcri.cmm-export/v1',from:'context',error:'The Context builder could not prepare its lists: '+e};}}
+  window.parent.postMessage(out,location.origin);
+}else{
 load();
+if(/bring=manual/.test(location.hash)){history.replaceState(null,'',location.pathname);if(!M.FC.length&&!M.PC.length)render();bringManual();}
 if(!M.FC.length&&!M.PC.length)example();else render();
 applyHash();
+}
 })();
 </script>
 <!-- vcri-social:start -->
