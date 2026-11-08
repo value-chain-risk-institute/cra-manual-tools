@@ -50,6 +50,7 @@ owns the template, the scenario libraries, and the worked examples.**
   what no rule reaches (zones, which interface a person touches) is listed as a
   gap. On the working group's Engineering PC example, held out, 76% of derived
   links are right and 67% of the hand-drawn links are found.
+  How it works and what it leaves to a person: [DERIVE.md](./cyber-manual/context/DERIVE.md).
 - The **TARA Builder** is the Annex VII companion VCRI authored to complete the
   pair. Its methodology is informed by ISO/SAE 21434-style TARA practice; all
   rubric anchors are authored originally, with no text reproduced from paywalled
