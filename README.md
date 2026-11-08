@@ -8,7 +8,7 @@ Cyber Resilience Act (CRA) requires of every product with digital elements:
 | **CRA Manual Builder** | Annex II: Information & instructions to the user | [valuechainrisk.org/cra-manual-builder](https://valuechainrisk.org/cra-manual-builder/) | [`/cra-manual-builder`](./cra-manual-builder) |
 | **TARA Builder** | Annex VII: product cybersecurity risk assessment | [valuechainrisk.org/tara](https://valuechainrisk.org/tara/) | [`/tara`](./tara) |
 | **Context & Conditions of Use Builder, user-view preview** | The same tool plus a non-technical “user view” layer, in two renderings (A picture, B cards), for the working group to compare. Adds a fictitious consumer example with an ordinary-skill user. | [valuechainrisk.org/cyber-manual/context/next](https://valuechainrisk.org/cyber-manual/context/next/) | [`/cyber-manual/context/next`](./cyber-manual/context/next) |
-| **Context & Conditions of Use Builder** | Cyber Manual ch. 2.2–2.5 (functions, context components, conditions of use, risks) + the diagrams | [valuechainrisk.org/cyber-manual/context](https://valuechainrisk.org/cyber-manual/context/) | [`/cyber-manual/context`](./cyber-manual/context) |
+| **Context & Conditions of Use Builder** | Cyber Manual ch. 2.2 to 2.5 (functions, context components, conditions of use, risks) + the diagrams | [valuechainrisk.org/cyber-manual/context](https://valuechainrisk.org/cyber-manual/context/) | [`/cyber-manual/context`](./cyber-manual/context) |
 
 Together they cover the pair: the user-facing manual, and the risk assessment
 behind it.
