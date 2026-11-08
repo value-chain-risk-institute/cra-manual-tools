@@ -1,0 +1,672 @@
+{
+  "product": {
+    "name": "Home Assistant Green",
+    "model": "NC-GREEN-9703",
+    "version": "illustrative example v0.1, 8 Nov 2026, template v0.39",
+    "family": ""
+  },
+  "layout": {},
+  "fig": {},
+  "PC": [
+    {
+      "id": "PC01",
+      "title": "Rockchip RK3566 SoC (quad-core Cortex-A55, 1.8 GHz)",
+      "desc": ""
+    },
+    {
+      "id": "PC02",
+      "title": "4 GB LPDDR4X RAM",
+      "desc": ""
+    },
+    {
+      "id": "PC03",
+      "title": "32 GB eMMC",
+      "desc": ""
+    },
+    {
+      "id": "PC04",
+      "title": "Home Assistant Operating System (Home Assistant Core and Supervisor)",
+      "desc": ""
+    },
+    {
+      "id": "PC05",
+      "title": "Optional CR2032 battery (not included)",
+      "desc": ""
+    }
+  ],
+  "PI": [
+    {
+      "id": "PI01",
+      "title": "Gigabit Ethernet",
+      "desc": ""
+    },
+    {
+      "id": "PI02",
+      "title": "2x USB 2.0 Type-A",
+      "desc": ""
+    },
+    {
+      "id": "PI03",
+      "title": "HDMI (diagnostics only)",
+      "desc": ""
+    },
+    {
+      "id": "PI04",
+      "title": "microSD slot (recovery and diagnostics)",
+      "desc": ""
+    },
+    {
+      "id": "PI05",
+      "title": "DC power, 12 V 1 A",
+      "desc": ""
+    },
+    {
+      "id": "PI06",
+      "title": "3 status LEDs",
+      "desc": ""
+    }
+  ],
+  "LI": [
+    {
+      "proto": "HTTP / TCP",
+      "url": "",
+      "pi": "PI01",
+      "port": "8123 or 80",
+      "dir": "both",
+      "enabled": "yes",
+      "fc": [
+        "FC01",
+        "FC02"
+      ]
+    },
+    {
+      "proto": "Local console",
+      "url": "",
+      "pi": "PI03",
+      "port": "/",
+      "dir": "both",
+      "enabled": "yes, opens automatically",
+      "fc": [
+        "FC04"
+      ]
+    },
+    {
+      "proto": "Zigbee, Thread or Z-Wave...",
+      "url": "",
+      "pi": "PI02",
+      "port": "/",
+      "dir": "both",
+      "enabled": "no (adapter needed)",
+      "fc": [
+        "FC01"
+      ]
+    },
+    {
+      "proto": "Outbound connection to...",
+      "url": "",
+      "pi": "PI01",
+      "port": "/",
+      "dir": "both",
+      "enabled": "yes",
+      "fc": [
+        "FC05",
+        "FC06"
+      ]
+    }
+  ],
+  "SP": [
+    {
+      "id": "SP01",
+      "annex": [
+        "2b",
+        "2d"
+      ],
+      "title": "No default account",
+      "desc": "The owner account and password are created during onboarding; there is no default password.",
+      "on": [
+        "PC04"
+      ]
+    },
+    {
+      "id": "SP02",
+      "annex": [
+        "2j"
+      ],
+      "title": "No onboard radios",
+      "desc": "The device has no Wi-Fi, Bluetooth, Zigbee or Thread radio; radio interfaces exist only if the user adds adapters.",
+      "on": [
+        "PRODUCT"
+      ]
+    },
+    {
+      "id": "SP03",
+      "annex": [
+        "2h",
+        "2k"
+      ],
+      "title": "Backup before update",
+      "desc": "Updates offer an automatic or manual backup before they are installed.",
+      "on": [
+        "PC04"
+      ]
+    },
+    {
+      "id": "SP04",
+      "annex": [
+        "2m"
+      ],
+      "title": "Factory reset clears the data partition",
+      "desc": "The reset removes all user data as well as Home Assistant Core, the Supervisor and installed apps.",
+      "on": [
+        "PC03"
+      ]
+    }
+  ],
+  "CC": [
+    {
+      "id": "CC01",
+      "title": "Home router and network",
+      "desc": "The wired network the device connects to by Ethernet.",
+      "via": [
+        "PI01"
+      ]
+    },
+    {
+      "id": "CC02",
+      "title": "Smart home devices",
+      "desc": "Devices controlled through integrations or USB radio adapters.",
+      "via": []
+    },
+    {
+      "id": "CC03",
+      "title": "USB radio adapters",
+      "desc": "For example Home Assistant Connect ZBT-1 (Zigbee or Thread) or ZWA-2 (Z-Wave).",
+      "via": [
+        "PI02"
+      ]
+    },
+    {
+      "id": "CC04",
+      "title": "Administration device",
+      "desc": "A browser or phone used to open the web interface.",
+      "via": [
+        "PI01"
+      ]
+    },
+    {
+      "id": "CC05",
+      "title": "Update servers",
+      "desc": "Servers delivering Home Assistant versions during onboarding and updates.",
+      "via": []
+    },
+    {
+      "id": "CC06",
+      "title": "Off-device backup location",
+      "desc": "Home Assistant Cloud or another location outside the device.",
+      "via": []
+    },
+    {
+      "id": "CC07",
+      "title": "Monitor and keyboard",
+      "desc": "Used for the local console during recovery.",
+      "via": [
+        "PI03",
+        "PI02"
+      ]
+    }
+  ],
+  "CP": [
+    {
+      "id": "CP01",
+      "title": "Owner",
+      "desc": "The person who sets up the hub and holds the owner account.",
+      "skill": "instructed",
+      "via": []
+    },
+    {
+      "id": "CP02",
+      "title": "Household users",
+      "desc": "People with their own Home Assistant accounts.",
+      "skill": "ordinary",
+      "via": []
+    }
+  ],
+  "CZ": [
+    {
+      "id": "CZ01",
+      "title": "Home network",
+      "desc": "The owner's local network",
+      "type": "communication",
+      "access": "controlled",
+      "members": [
+        "CC01",
+        "CC02",
+        "CC03",
+        "CC04",
+        "CP01",
+        "CP02"
+      ]
+    },
+    {
+      "id": "CZ02",
+      "title": "Internet",
+      "desc": "Everything outside the home network",
+      "type": "communication",
+      "access": "public",
+      "members": [
+        "CC05",
+        "CC06"
+      ]
+    },
+    {
+      "id": "CZ03",
+      "title": "Physical location",
+      "desc": "Where the hub is installed (indoors, 0 to 40 C)",
+      "type": "physical",
+      "access": "controlled",
+      "members": [
+        "CC07"
+      ]
+    }
+  ],
+  "CU": [
+    {
+      "id": "CU01",
+      "annex": [
+        "2d"
+      ],
+      "title": "Strong passwords, trusted users only",
+      "desc": "Use a strong owner password and create accounts only for people you trust fully: Home Assistant assumes every user is trusted.",
+      "on": [
+        "CP01"
+      ]
+    },
+    {
+      "id": "CU02",
+      "annex": [
+        "2d",
+        "2j"
+      ],
+      "title": "Wired, local, not exposed",
+      "desc": "Connect by Ethernet to a network you control and do not expose the web interface (port 8123) directly to the internet.",
+      "on": [
+        "CC01"
+      ]
+    },
+    {
+      "id": "CU03",
+      "annex": [
+        "2d",
+        "2f"
+      ],
+      "title": "Trusted integrations and apps only",
+      "desc": "Install only integrations, apps and plugins from sources you trust; malicious third-party additions are outside Home Assistant's security scope.",
+      "on": [
+        "CP01"
+      ]
+    },
+    {
+      "id": "CU04",
+      "annex": [
+        "2f"
+      ],
+      "title": "Known adapters",
+      "desc": "Use radio adapters from known sources.",
+      "on": [
+        "CC03"
+      ]
+    },
+    {
+      "id": "CU05",
+      "annex": [
+        "2h"
+      ],
+      "title": "Backups off the device",
+      "desc": "Store backups outside the device, for example in Home Assistant Cloud or another location.",
+      "on": [
+        "CC06"
+      ]
+    },
+    {
+      "id": "CU06",
+      "annex": [
+        "2d",
+        "2f"
+      ],
+      "title": "Control physical access",
+      "desc": "Anyone with a monitor and keyboard can reset the owner password from the console. Keep the hub where only trusted people can reach it.",
+      "on": [
+        "CZ03"
+      ]
+    },
+    {
+      "id": "CU07",
+      "annex": [
+        "2c"
+      ],
+      "title": "Install updates and check afterwards",
+      "desc": "Install Home Assistant OS updates when offered, then check Settings > System > Repairs and Logs.",
+      "on": [
+        "PC04"
+      ]
+    },
+    {
+      "id": "CU08",
+      "annex": [
+        "2h"
+      ],
+      "title": "Internet during reset",
+      "desc": "Make sure the hub has a working internet connection before a factory reset; otherwise the reset fails.",
+      "on": [
+        "CC05"
+      ]
+    }
+  ],
+  "FC": [
+    {
+      "id": "FC01",
+      "title": "Run the smart home",
+      "desc": "Run Home Assistant integrations and automations for connected devices.",
+      "rfu": "Installing third-party integrations or apps.",
+      "core": "core",
+      "use": "intended",
+      "cu": [
+        "CU02",
+        "CU03",
+        "CU04"
+      ],
+      "pc": [
+        "PC01",
+        "PC04"
+      ],
+      "pi": [
+        "PI01",
+        "PI02"
+      ],
+      "cc": [
+        "CC01",
+        "CC02",
+        "CC03"
+      ],
+      "cp": [
+        "CP02"
+      ],
+      "cz": [
+        "CZ01"
+      ],
+      "path": [
+        "CC02",
+        "CC03",
+        "PI02",
+        "PC04"
+      ]
+    },
+    {
+      "id": "FC02",
+      "title": "Administer Home Assistant",
+      "desc": "Configure the system and accounts in the web interface.",
+      "rfu": "Giving accounts to people who should not have full trust.",
+      "core": "core",
+      "use": "intended",
+      "cu": [
+        "CU01",
+        "CU02"
+      ],
+      "pc": [
+        "PC04"
+      ],
+      "pi": [
+        "PI01"
+      ],
+      "cc": [
+        "CC01",
+        "CC04"
+      ],
+      "cp": [
+        "CP01"
+      ],
+      "cz": [
+        "CZ01"
+      ],
+      "path": [
+        "CP01",
+        "CC04",
+        "CC01",
+        "PI01",
+        "PC04"
+      ]
+    },
+    {
+      "id": "FC03",
+      "title": "Back up and restore",
+      "desc": "Create backups and restore or migrate from them.",
+      "rfu": "None beyond the function description.",
+      "core": "ancillary",
+      "use": "intended",
+      "cu": [
+        "CU05"
+      ],
+      "pc": [
+        "PC03",
+        "PC04"
+      ],
+      "pi": [
+        "PI01"
+      ],
+      "cc": [
+        "CC06"
+      ],
+      "cp": [
+        "CP01"
+      ],
+      "cz": [
+        "CZ02"
+      ],
+      "path": [
+        "PC03",
+        "PC04",
+        "PI01",
+        "CC06"
+      ]
+    },
+    {
+      "id": "FC04",
+      "title": "Recover access",
+      "desc": "Reset the owner password from the local console with an HDMI monitor and USB keyboard.",
+      "rfu": "None beyond the function description.",
+      "core": "ancillary",
+      "use": "intended",
+      "cu": [
+        "CU06"
+      ],
+      "pc": [
+        "PC04"
+      ],
+      "pi": [
+        "PI02",
+        "PI03"
+      ],
+      "cc": [
+        "CC07"
+      ],
+      "cp": [
+        "CP01"
+      ],
+      "cz": [
+        "CZ03"
+      ],
+      "path": [
+        "CP01",
+        "CC07",
+        "PI02",
+        "PC04"
+      ]
+    },
+    {
+      "id": "FC05",
+      "title": "Install security updates",
+      "desc": "Install Home Assistant OS updates from Settings, or ha os update on the command line.",
+      "rfu": "",
+      "core": "ancillary",
+      "use": "intended",
+      "cu": [
+        "CU05",
+        "CU07"
+      ],
+      "pc": [
+        "PC03",
+        "PC04"
+      ],
+      "pi": [
+        "PI01"
+      ],
+      "cc": [
+        "CC05",
+        "CC01"
+      ],
+      "cp": [
+        "CP01"
+      ],
+      "cz": [
+        "CZ01",
+        "CZ02"
+      ],
+      "path": [
+        "CC05",
+        "CC01",
+        "PI01",
+        "PC04"
+      ]
+    },
+    {
+      "id": "FC06",
+      "title": "Factory reset",
+      "desc": "Clear the data partition and reinstall (HA OS 13.1 or later, or with an SD card).",
+      "rfu": "None beyond the function description.",
+      "core": "ancillary",
+      "use": "intended",
+      "cu": [
+        "CU05",
+        "CU08"
+      ],
+      "pc": [
+        "PC03",
+        "PC04"
+      ],
+      "pi": [
+        "PI01",
+        "PI04"
+      ],
+      "cc": [
+        "CC05"
+      ],
+      "cp": [
+        "CP01"
+      ],
+      "cz": [
+        "CZ02"
+      ],
+      "path": [
+        "CC05",
+        "PI01",
+        "PC03"
+      ]
+    }
+  ],
+  "RI": [
+    {
+      "id": "CR01",
+      "title": "Untrusted account holder",
+      "desc": "An account is given to someone who should not have full control.",
+      "damage": "Any logged-in user can change the system; privilege escalation by users is out of scope.",
+      "fc": [
+        "FC02"
+      ],
+      "cu": [
+        "CU01"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR02",
+      "title": "Web interface exposed to the internet",
+      "desc": "Port 8123 is forwarded from the internet.",
+      "damage": "Attackers can attempt to log in or exploit the interface.",
+      "fc": [
+        "FC01",
+        "FC02"
+      ],
+      "cu": [
+        "CU02"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR03",
+      "title": "Malicious integration",
+      "desc": "A third-party integration, app or plugin is installed from an untrusted source.",
+      "damage": "The smart home and its data are controlled by the attacker.",
+      "fc": [
+        "FC01"
+      ],
+      "cu": [
+        "CU03"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR04",
+      "title": "No off-device backup",
+      "desc": "Backups are kept only on the hub.",
+      "damage": "A failed update, reset or device loss destroys the configuration.",
+      "fc": [
+        "FC03",
+        "FC05",
+        "FC06"
+      ],
+      "cu": [
+        "CU05"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR05",
+      "title": "Unattended physical access",
+      "desc": "Untrusted people can reach the hub.",
+      "damage": "The owner password can be reset and the system taken over.",
+      "fc": [
+        "FC04"
+      ],
+      "cu": [
+        "CU06"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR06",
+      "title": "Updates not installed",
+      "desc": "Offered updates are ignored.",
+      "damage": "Known vulnerabilities stay unfixed.",
+      "fc": [
+        "FC05"
+      ],
+      "cu": [
+        "CU07"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR07",
+      "title": "Reset without internet",
+      "desc": "A factory reset is started without internet.",
+      "damage": "The reset fails and leaves the device unusable until recovered.",
+      "fc": [
+        "FC06"
+      ],
+      "cu": [
+        "CU08"
+      ],
+      "path": []
+    }
+  ]
+}

@@ -1,0 +1,770 @@
+{
+  "product": {
+    "name": "OpenWrt One",
+    "model": "OpenWrt 25.12.6",
+    "version": "illustrative example v0.1, 8 Nov 2026, template v0.39",
+    "family": ""
+  },
+  "layout": {},
+  "fig": {},
+  "PC": [
+    {
+      "id": "PC01",
+      "title": "MediaTek MT7981BA SoC (Filogic 820, 2 cores, 1.3 GHz)",
+      "desc": ""
+    },
+    {
+      "id": "PC02",
+      "title": "MediaTek MT7976CN Wi-Fi 6 radio",
+      "desc": ""
+    },
+    {
+      "id": "PC03",
+      "title": "1 GB DDR4 RAM",
+      "desc": ""
+    },
+    {
+      "id": "PC04",
+      "title": "256 MiB SPI NAND (normal boot: bootloader, kernel, root file system)",
+      "desc": ""
+    },
+    {
+      "id": "PC05",
+      "title": "16 MiB SPI NOR (recovery system, write-protect jumper)",
+      "desc": ""
+    },
+    {
+      "id": "PC06",
+      "title": "OpenWrt firmware with the LuCI web interface",
+      "desc": ""
+    }
+  ],
+  "PI": [
+    {
+      "id": "PI01",
+      "title": "2.5 Gbit Ethernet (WAN by default; PoE powered device, 802.3af/at)",
+      "desc": ""
+    },
+    {
+      "id": "PI02",
+      "title": "1 Gbit Ethernet (LAN by default)",
+      "desc": ""
+    },
+    {
+      "id": "PI03",
+      "title": "Wi-Fi 2.4 GHz and 5 GHz",
+      "desc": ""
+    },
+    {
+      "id": "PI04",
+      "title": "USB 2.0 Type-A host",
+      "desc": ""
+    },
+    {
+      "id": "PI05",
+      "title": "USB-C serial console",
+      "desc": ""
+    },
+    {
+      "id": "PI06",
+      "title": "USB-C power (PD, 15 V 2 A)",
+      "desc": ""
+    },
+    {
+      "id": "PI07",
+      "title": "M.2 2242/2230 slot (NVMe, PCIe gen 2 x1)",
+      "desc": ""
+    },
+    {
+      "id": "PI08",
+      "title": "NAND/NOR boot switch",
+      "desc": ""
+    },
+    {
+      "id": "PI09",
+      "title": "Front button and rear Reset button",
+      "desc": ""
+    },
+    {
+      "id": "PI10",
+      "title": "JTAG",
+      "desc": ""
+    },
+    {
+      "id": "PI11",
+      "title": "mikroBUS expansion header",
+      "desc": ""
+    }
+  ],
+  "LI": [
+    {
+      "proto": "HTTP / TCP",
+      "url": "",
+      "pi": "PI02",
+      "port": "80",
+      "dir": "both",
+      "enabled": "yes",
+      "fc": [
+        "FC03"
+      ]
+    },
+    {
+      "proto": "SSH / TCP",
+      "url": "",
+      "pi": "PI02",
+      "port": "22",
+      "dir": "both",
+      "enabled": "yes",
+      "fc": [
+        "FC03"
+      ]
+    },
+    {
+      "proto": "Wi-Fi",
+      "url": "",
+      "pi": "PI03",
+      "port": "/",
+      "dir": "both",
+      "enabled": "after configuration",
+      "fc": [
+        "FC02"
+      ]
+    },
+    {
+      "proto": "Serial console, 115200 8N1",
+      "url": "",
+      "pi": "PI05",
+      "port": "/",
+      "dir": "both",
+      "enabled": "yes",
+      "fc": [
+        "FC04"
+      ]
+    },
+    {
+      "proto": "USB mass storage read by...",
+      "url": "",
+      "pi": "PI04",
+      "port": "/",
+      "dir": "both",
+      "enabled": "on button press at power-on",
+      "fc": [
+        "FC04",
+        "FC05"
+      ]
+    },
+    {
+      "proto": "TFTP client",
+      "url": "",
+      "pi": "PI02",
+      "port": "69",
+      "dir": "both",
+      "enabled": "boot menu only",
+      "fc": [
+        "FC04"
+      ]
+    },
+    {
+      "proto": "Request to the Attended...",
+      "url": "",
+      "pi": "PI01",
+      "port": "/",
+      "dir": "both",
+      "enabled": "user-initiated",
+      "fc": [
+        "FC05"
+      ]
+    }
+  ],
+  "SP": [
+    {
+      "id": "SP01",
+      "annex": [
+        "2f",
+        "2h",
+        "2k"
+      ],
+      "title": "Write-protected recovery system",
+      "desc": "A stripped-down recovery system lives in SPI NOR, protected by the NOR WP jumper in its factory default position. With the boot switch on NOR, it re-flashes the whole NAND from a USB drive, even if the NAND bootloader or Trusted Firmware-A is broken.",
+      "on": [
+        "PC05"
+      ]
+    },
+    {
+      "id": "SP02",
+      "annex": [
+        "2c"
+      ],
+      "title": "Security fixes backported to supported releases",
+      "desc": "The OpenWrt project backports security fixes for its core components to supported releases. Package fixes reach users in about two days through the build bots; kernel and kernel-module fixes need a new minor release.",
+      "on": [
+        "PRODUCT"
+      ]
+    },
+    {
+      "id": "SP03",
+      "annex": [
+        "2j",
+        "2k"
+      ],
+      "title": "Compiler hardening by default",
+      "desc": "Packages are built with format-security checks, stack protector (regular), FORTIFY_SOURCE=1, full RELRO and PIE for network-exposed binaries; the kernel has seccomp enabled. SELinux is not enabled.",
+      "on": [
+        "PC06"
+      ]
+    },
+    {
+      "id": "SP04",
+      "annex": [
+        "2f"
+      ],
+      "title": "Open source with reproducibility checks",
+      "desc": "The firmware source is public and copyleft-compliant from the start. The reproducible-builds project checks that OpenWrt master builds reproducibly.",
+      "on": [
+        "PC06"
+      ]
+    }
+  ],
+  "CC": [
+    {
+      "id": "CC01",
+      "title": "Upstream network",
+      "desc": "The modem or ISP network connected to the 2.5 Gbit WAN port.",
+      "via": [
+        "PI01"
+      ]
+    },
+    {
+      "id": "CC02",
+      "title": "Wired LAN devices",
+      "desc": "Computers and devices connected to the 1 Gbit LAN port or a switch behind it.",
+      "via": [
+        "PI02"
+      ]
+    },
+    {
+      "id": "CC03",
+      "title": "Wi-Fi clients",
+      "desc": "Devices connecting over Wi-Fi.",
+      "via": [
+        "PI03"
+      ]
+    },
+    {
+      "id": "CC04",
+      "title": "Administration computer",
+      "desc": "A computer with a browser (LuCI) or SSH client used to configure the router.",
+      "via": [
+        "PI02"
+      ]
+    },
+    {
+      "id": "CC05",
+      "title": "OpenWrt download and build servers",
+      "desc": "Release download pages, the Firmware Selector and the Attended Sysupgrade server.",
+      "via": [
+        "PI01"
+      ]
+    },
+    {
+      "id": "CC06",
+      "title": "USB drive",
+      "desc": "A FAT32 drive holding a sysupgrade or recovery image.",
+      "via": [
+        "PI04"
+      ]
+    },
+    {
+      "id": "CC07",
+      "title": "Recovery host",
+      "desc": "A computer with a serial terminal and, for NOR re-flashing, a TFTP server at 192.168.11.23.",
+      "via": [
+        "PI05",
+        "PI02"
+      ]
+    }
+  ],
+  "CP": [
+    {
+      "id": "CP01",
+      "title": "Owner / administrator",
+      "desc": "The person who sets up and maintains the router.",
+      "skill": "instructed",
+      "via": [
+        "PI09"
+      ]
+    },
+    {
+      "id": "CP02",
+      "title": "Network users",
+      "desc": "People whose devices use the network.",
+      "skill": "ordinary",
+      "via": []
+    },
+    {
+      "id": "CP03",
+      "title": "Recovery technician",
+      "desc": "A person re-flashing NAND or NOR using the recovery procedures.",
+      "skill": "skilled",
+      "via": [
+        "PI08",
+        "PI09",
+        "PI05"
+      ]
+    }
+  ],
+  "CZ": [
+    {
+      "id": "CZ01",
+      "title": "Home network",
+      "desc": "LAN and Wi-Fi under the owner's control",
+      "type": "communication",
+      "access": "controlled",
+      "members": [
+        "CC02",
+        "CC03",
+        "CC04",
+        "CP01",
+        "CP02"
+      ]
+    },
+    {
+      "id": "CZ02",
+      "title": "Internet",
+      "desc": "Everything on the WAN side",
+      "type": "communication",
+      "access": "public",
+      "members": [
+        "CC01",
+        "CC05"
+      ]
+    },
+    {
+      "id": "CZ03",
+      "title": "Physical location",
+      "desc": "The room where the router is installed",
+      "type": "physical",
+      "access": "controlled",
+      "members": [
+        "CC06",
+        "CC07",
+        "CP03"
+      ]
+    }
+  ],
+  "CU": [
+    {
+      "id": "CU01",
+      "annex": [
+        "2b",
+        "2d"
+      ],
+      "title": "Set a strong root password before use",
+      "desc": "Set it in LuCI (System > Administration > Router Password) or with passwd, before connecting other devices or enabling Wi-Fi.",
+      "on": [
+        "CP01"
+      ]
+    },
+    {
+      "id": "CU02",
+      "annex": [
+        "2d",
+        "2j"
+      ],
+      "title": "Confirm the WAN and LAN ports",
+      "desc": "Connect the upstream network to the 2.5 Gbit port and check in LuCI that it is the WAN interface before going online.",
+      "on": [
+        "CC01"
+      ]
+    },
+    {
+      "id": "CU03",
+      "annex": [
+        "2c"
+      ],
+      "title": "Run a supported release",
+      "desc": "Use a release with Supported or Security Maintenance status (25.12 as of 8 November 2026) and upgrade before it reaches End of Life.",
+      "on": [
+        "PRODUCT"
+      ]
+    },
+    {
+      "id": "CU04",
+      "annex": [
+        "2d",
+        "2e"
+      ],
+      "title": "Set the country code and use WPA2 or WPA3",
+      "desc": "Set the Wi-Fi country code first, then protect every SSID with WPA2 or WPA3.",
+      "on": [
+        "CC03"
+      ]
+    },
+    {
+      "id": "CU05",
+      "annex": [
+        "2d",
+        "2j"
+      ],
+      "title": "No administration from the internet",
+      "desc": "Keep LuCI and SSH reachable from the home network only.",
+      "on": [
+        "CZ02"
+      ]
+    },
+    {
+      "id": "CU06",
+      "annex": [
+        "2d"
+      ],
+      "title": "Limit password guessing",
+      "desc": "LuCI has no built-in brute-force protection. Restrict who can reach it, or install a tool such as fail2ban.",
+      "on": [
+        "CZ01"
+      ]
+    },
+    {
+      "id": "CU07",
+      "annex": [
+        "2d",
+        "2f"
+      ],
+      "title": "Control physical access",
+      "desc": "The serial console has no password prompt unless one is enabled, and the buttons and boot switch allow re-flashing. Keep the device where only trusted people can reach it.",
+      "on": [
+        "CZ03"
+      ]
+    },
+    {
+      "id": "CU08",
+      "annex": [
+        "2c",
+        "2f"
+      ],
+      "title": "Use only official images",
+      "desc": "Obtain images only from the OpenWrt download pages, the Firmware Selector or Attended Sysupgrade.",
+      "on": [
+        "CC05"
+      ]
+    },
+    {
+      "id": "CU09",
+      "annex": [
+        "2f",
+        "2k"
+      ],
+      "title": "Keep the NOR write protection",
+      "desc": "Leave the NOR WP jumper in its factory position; when re-flashing NOR, unlock it from the boot menu, then lock it again (menu item 7) and remove the jumper.",
+      "on": [
+        "PC05"
+      ]
+    }
+  ],
+  "FC": [
+    {
+      "id": "FC01",
+      "title": "Route and filter traffic",
+      "desc": "Forward traffic between the WAN port, the LAN port and Wi-Fi.",
+      "rfu": "Use with the LAN and WAN ports swapped; one user reported this out of the box.",
+      "core": "core",
+      "use": "intended",
+      "cu": [
+        "CU02",
+        "CU03"
+      ],
+      "pc": [
+        "PC01",
+        "PC06"
+      ],
+      "pi": [
+        "PI01",
+        "PI02",
+        "PI03"
+      ],
+      "cc": [
+        "CC01",
+        "CC02",
+        "CC03"
+      ],
+      "cp": [
+        "CP02"
+      ],
+      "cz": [
+        "CZ01",
+        "CZ02"
+      ],
+      "path": [
+        "CC01",
+        "PI01",
+        "PC01",
+        "PI02",
+        "CC02"
+      ]
+    },
+    {
+      "id": "FC02",
+      "title": "Provide Wi-Fi access",
+      "desc": "Dual-band Wi-Fi 6 access point.",
+      "rfu": "Operation without setting the country code.",
+      "core": "core",
+      "use": "intended",
+      "cu": [
+        "CU04"
+      ],
+      "pc": [
+        "PC02",
+        "PC06"
+      ],
+      "pi": [
+        "PI03"
+      ],
+      "cc": [
+        "CC03"
+      ],
+      "cp": [
+        "CP02"
+      ],
+      "cz": [
+        "CZ01"
+      ],
+      "path": [
+        "CC03",
+        "PI03",
+        "PC02"
+      ]
+    },
+    {
+      "id": "FC03",
+      "title": "Administer the router",
+      "desc": "Configuration through LuCI at http://192.168.1.1 or SSH as root.",
+      "rfu": "Administration from outside the home network.",
+      "core": "ancillary",
+      "use": "intended",
+      "cu": [
+        "CU01",
+        "CU05",
+        "CU06"
+      ],
+      "pc": [
+        "PC06"
+      ],
+      "pi": [
+        "PI02"
+      ],
+      "cc": [
+        "CC04"
+      ],
+      "cp": [
+        "CP01"
+      ],
+      "cz": [
+        "CZ01"
+      ],
+      "path": [
+        "CP01",
+        "CC04",
+        "PI02",
+        "PC06"
+      ]
+    },
+    {
+      "id": "FC04",
+      "title": "Recover the firmware",
+      "desc": "NAND initramfs recovery (front button), NOR full recovery (boot switch on NOR, USB drive), and NOR re-flashing over UART and TFTP.",
+      "rfu": "None beyond the function description.",
+      "core": "ancillary",
+      "use": "intended",
+      "cu": [
+        "CU07",
+        "CU09"
+      ],
+      "pc": [
+        "PC04",
+        "PC05"
+      ],
+      "pi": [
+        "PI02",
+        "PI04",
+        "PI05",
+        "PI08",
+        "PI09"
+      ],
+      "cc": [
+        "CC06",
+        "CC07"
+      ],
+      "cp": [
+        "CP03"
+      ],
+      "cz": [
+        "CZ03"
+      ],
+      "path": [
+        "CP03",
+        "CC06",
+        "PI04",
+        "PC05",
+        "PC04"
+      ]
+    },
+    {
+      "id": "FC05",
+      "title": "Install security updates",
+      "desc": "User-initiated upgrade through LuCI Attended Sysupgrade, owut on the command line, the web Firmware Selector, or a USB drive read by the bootloader.",
+      "rfu": "Installing SNAPSHOT builds instead of a release.",
+      "core": "ancillary",
+      "use": "intended",
+      "cu": [
+        "CU03",
+        "CU08"
+      ],
+      "pc": [
+        "PC04",
+        "PC06"
+      ],
+      "pi": [
+        "PI01",
+        "PI02",
+        "PI04"
+      ],
+      "cc": [
+        "CC05",
+        "CC04",
+        "CC06"
+      ],
+      "cp": [
+        "CP01"
+      ],
+      "cz": [
+        "CZ01",
+        "CZ02"
+      ],
+      "path": [
+        "CC05",
+        "PI01",
+        "PC06",
+        "PC04"
+      ]
+    }
+  ],
+  "RI": [
+    {
+      "id": "CR01",
+      "title": "No root password",
+      "desc": "The owner never sets a root password.",
+      "damage": "Anyone on the LAN or Wi-Fi can log in as root through LuCI or SSH and take full control.",
+      "fc": [
+        "FC03"
+      ],
+      "cu": [
+        "CU01"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR02",
+      "title": "Ports swapped",
+      "desc": "The upstream network is plugged into the LAN port.",
+      "damage": "The administration interfaces face the upstream network.",
+      "fc": [
+        "FC01"
+      ],
+      "cu": [
+        "CU02"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR03",
+      "title": "End-of-life release",
+      "desc": "The router stays on a release past End of Life (24.10 reached it in September 2026).",
+      "damage": "New vulnerabilities, even severe ones, are no longer fixed.",
+      "fc": [
+        "FC01",
+        "FC05"
+      ],
+      "cu": [
+        "CU03"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR04",
+      "title": "Open or misconfigured Wi-Fi",
+      "desc": "An SSID runs without WPA2 or WPA3, or without the correct country code.",
+      "damage": "Strangers can join the network; operation may break radio rules.",
+      "fc": [
+        "FC02"
+      ],
+      "cu": [
+        "CU04"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR05",
+      "title": "Administration exposed to the internet",
+      "desc": "LuCI or SSH is opened to the WAN side.",
+      "damage": "Attackers on the internet can attempt to log in or exploit the interface.",
+      "fc": [
+        "FC03"
+      ],
+      "cu": [
+        "CU05"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR06",
+      "title": "Password guessing",
+      "desc": "LuCI is reachable by many devices and nothing limits login attempts.",
+      "damage": "A weak password can be guessed.",
+      "fc": [
+        "FC03"
+      ],
+      "cu": [
+        "CU06"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR07",
+      "title": "Unattended physical access",
+      "desc": "Untrusted people can reach the device.",
+      "damage": "Console access or re-flashing gives full control.",
+      "fc": [
+        "FC04"
+      ],
+      "cu": [
+        "CU07"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR08",
+      "title": "Image from an unofficial source",
+      "desc": "A firmware image is taken from a forum, a mirror or a seller.",
+      "damage": "Malicious firmware is installed.",
+      "fc": [
+        "FC05"
+      ],
+      "cu": [
+        "CU08"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR09",
+      "title": "NOR left unlocked",
+      "desc": "NOR is not locked again after re-flashing.",
+      "damage": "The recovery system can be overwritten, so the failsafe no longer protects the device.",
+      "fc": [
+        "FC04"
+      ],
+      "cu": [
+        "CU09"
+      ],
+      "path": []
+    }
+  ]
+}

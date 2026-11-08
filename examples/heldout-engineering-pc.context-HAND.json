@@ -1,0 +1,619 @@
+{
+ "product": {
+  "name": "Engineering PC „easy engineer“",
+  "model": "ee-2026-XT",
+  "version": "example v0.40, 26 Oct 2026 (working group), template v0.39"
+ },
+ "PC": [
+  {
+   "id": "PC01",
+   "title": "CPU",
+   "desc": ""
+  },
+  {
+   "id": "PC02",
+   "title": "Storage",
+   "desc": ""
+  }
+ ],
+ "PI": [
+  {
+   "id": "PI01",
+   "title": "Ethernet (ETH1)",
+   "desc": ""
+  },
+  {
+   "id": "PI02",
+   "title": "Ethernet (ETH2)",
+   "desc": ""
+  },
+  {
+   "id": "PI03",
+   "title": "USB",
+   "desc": ""
+  },
+  {
+   "id": "PI04",
+   "title": "Keyboard",
+   "desc": ""
+  }
+ ],
+ "LI": [
+  {
+   "proto": "HTTPS / TCP",
+   "url": "",
+   "pi": "PI01",
+   "port": "443",
+   "dir": "both",
+   "enabled": "yes",
+   "fc": [
+    "FC03"
+   ]
+  },
+  {
+   "proto": "Modbus via IP / TCP",
+   "url": "",
+   "pi": "PI02",
+   "port": "502",
+   "dir": "both",
+   "enabled": "yes",
+   "fc": [
+    "FC01"
+   ]
+  },
+  {
+   "proto": "serial (USB)",
+   "url": "",
+   "pi": "PI03",
+   "port": "/",
+   "dir": "both",
+   "enabled": "no",
+   "fc": [
+    "FC01",
+    "FC04"
+   ]
+  },
+  {
+   "proto": "human-machine interaction",
+   "url": "",
+   "pi": "PI04",
+   "port": "/",
+   "dir": "in",
+   "enabled": "yes",
+   "fc": [
+    "FC01",
+    "FC02"
+   ]
+  }
+ ],
+ "SP": [
+  {
+   "id": "SP01",
+   "annex": [
+    "2d",
+    "2e"
+   ],
+   "title": "Password protection for PLC programs",
+   "desc": "The Engineering software has a feature to password protect PLC program files. Strong passwords are enforced (password complexity requirements can be set by role “admin”).",
+   "on": [
+    "PRODUCT"
+   ]
+  },
+  {
+   "id": "SP02",
+   "annex": [
+    "2f"
+   ],
+   "title": "Malware protection",
+   "desc": "The Engineering PC by default has Windows Defender enabled for malware protection.",
+   "on": [
+    "PRODUCT"
+   ]
+  },
+  {
+   "id": "SP03",
+   "annex": [
+    "2f",
+    "2i",
+    "2k",
+    "2l"
+   ],
+   "title": "User notification in case of PLC program file change",
+   "desc": "The engineering software regularly checks the stored PLC program files and notifies users as soon as a file change occurs that hasn’t been initiated by the user itself.",
+   "on": [
+    "PC02"
+   ]
+  },
+  {
+   "id": "SP04",
+   "annex": [
+    "2b",
+    "2j"
+   ],
+   "title": "Disabling of unused USB ports",
+   "desc": "Any unused USB ports are disabled by default. They can temporarily be enabled e.g. for security updates via USB (see chapter 3.4.1 Function FC04 Install security updates).",
+   "on": [
+    "PI03"
+   ]
+  }
+ ],
+ "FC": [
+  {
+   "id": "FC01",
+   "title": "Program a PLC",
+   "desc": "Creation and modification of PLC programs on the engineering PC and transfer of these programs to the PLC.",
+   "rfu": "Transfer of the PLC programs to the PLC using the USB port.",
+   "core": "core",
+   "use": "intended",
+   "pc": [
+    "PC01",
+    "PC02"
+   ],
+   "pi": [
+    "PI04",
+    "PI02"
+   ],
+   "cc": [
+    "CC02",
+    "CC01"
+   ],
+   "cp": [
+    "CP01"
+   ],
+   "cz": [
+    "CZ01"
+   ],
+   "cu": [
+    "CU01",
+    "CU02",
+    "CU03"
+   ],
+   "path": [
+    "CP01",
+    "PI04",
+    "PC01",
+    "PC02",
+    "PI02",
+    "CC02",
+    "CC01"
+   ]
+  },
+  {
+   "id": "FC02",
+   "title": "Simulate PLC code",
+   "desc": "PLC programs can be simulated on the Engineering PC for testing purposes before transferring them to the PLC.",
+   "rfu": "None beyond the function description.",
+   "core": "core",
+   "use": "intended",
+   "pc": [
+    "PC01",
+    "PC02"
+   ],
+   "pi": [
+    "PI04"
+   ],
+   "cc": [],
+   "cp": [
+    "CP01"
+   ],
+   "cz": [
+    "CZ01"
+   ],
+   "cu": [
+    "CU03"
+   ],
+   "path": [
+    "CP01",
+    "PI04",
+    "PC01"
+   ]
+  },
+  {
+   "id": "FC03",
+   "title": "Troubleshoot from remote",
+   "desc": "Access and administrate the Engineering PC remotely for troubleshooting purposes. The available diagnostic capabilities support the identification of faults and irregularities in system behaviour, but not the change of PLC programs.",
+   "rfu": "None beyond the function description.",
+   "core": "ancillary",
+   "use": "intended",
+   "pc": [
+    "PC01"
+   ],
+   "pi": [
+    "PI01"
+   ],
+   "cc": [
+    "CC04",
+    "CC05"
+   ],
+   "cp": [
+    "CP02"
+   ],
+   "cz": [],
+   "cu": [
+    "CU04"
+   ],
+   "path": [
+    "CP02",
+    "CC05",
+    "CC04",
+    "PI01",
+    "PC01"
+   ]
+  },
+  {
+   "id": "FC04",
+   "title": "Install security updates",
+   "desc": "Installation of security updates by downloading them from the manufacturer’s webserver (CC06 Manufacturer update server) to a PC (CC03 Maintenance PC) and then connecting the Maintenance PC to the Engineering PC via USB for transfer and installation of the updates.",
+   "rfu": "",
+   "core": "ancillary",
+   "use": "intended",
+   "pc": [
+    "PC01",
+    "PC02"
+   ],
+   "pi": [
+    "PI03"
+   ],
+   "cc": [
+    "CC03",
+    "CC06"
+   ],
+   "cp": [
+    "CP03"
+   ],
+   "cz": [],
+   "cu": [
+    "CU05",
+    "CU06",
+    "CU07",
+    "CU08"
+   ],
+   "path": [
+    "CP03",
+    "CC03",
+    "PI03",
+    "PC01",
+    "PC02"
+   ]
+  }
+ ],
+ "CC": [
+  {
+   "id": "CC01",
+   "title": "PLC",
+   "desc": "The Programmable Logic Controller (PLC) that can be programmed using the Engineering PC.",
+   "via": [
+    "PI02"
+   ]
+  },
+  {
+   "id": "CC02",
+   "title": "Network",
+   "desc": "A network connecting the Engineering PC to the PLC(s) to be programmed.",
+   "via": [
+    "PI02"
+   ]
+  },
+  {
+   "id": "CC03",
+   "title": "Maintenance PC",
+   "desc": "A laptop or PC used by maintenance staff.",
+   "via": [
+    "PI03"
+   ]
+  },
+  {
+   "id": "CC04",
+   "title": "VPN termination",
+   "desc": "A device to terminate a VPN connection.",
+   "via": [
+    "PI01"
+   ]
+  },
+  {
+   "id": "CC05",
+   "title": "Manufacturer PC",
+   "desc": "A laptop or PC used by manufacturer staff.",
+   "via": []
+  },
+  {
+   "id": "CC06",
+   "title": "Manufacturer update server",
+   "desc": "The webserver the manufacturer uses to provide security updates.",
+   "via": []
+  }
+ ],
+ "CP": [
+  {
+   "id": "CP01",
+   "title": "Engineer",
+   "desc": "The person who uses the Engineering PC to program PLCs.",
+   "skill": "skilled",
+   "via": [
+    "PI04"
+   ]
+  },
+  {
+   "id": "CP02",
+   "title": "Manufacturer staff",
+   "desc": "The person(s) responsible for troubleshooting the Engineering PC (manufacturer support).",
+   "skill": "skilled",
+   "via": []
+  },
+  {
+   "id": "CP03",
+   "title": "Maintenance staff",
+   "desc": "The person(s) responsible for the installation of security updates on the Engineering PC.",
+   "skill": "instructed",
+   "via": []
+  }
+ ],
+ "CZ": [
+  {
+   "id": "CZ01",
+   "title": "product user zone",
+   "desc": "Components and persons internal to the product user’s organization",
+   "type": "physical + communication",
+   "access": "controlled",
+   "members": [
+    "CC01",
+    "CC02",
+    "CC03",
+    "CC04",
+    "CP01",
+    "CP03"
+   ]
+  },
+  {
+   "id": "CZ02",
+   "title": "manufacturer zone",
+   "desc": "Components and persons external to the product user’s organization (internal to the manufacturer’s organization)",
+   "type": "physical + communication",
+   "access": "limited",
+   "members": [
+    "CC05",
+    "CC06",
+    "CP02"
+   ]
+  }
+ ],
+ "CU": [
+  {
+   "id": "CU01",
+   "annex": [
+    "2d",
+    "2i",
+    "2j",
+    "2k"
+   ],
+   "title": "No internet connection",
+   "desc": "The Engineering PC operates exclusively within a closed network segment with dedicated communication channels.",
+   "on": [
+    "CC02"
+   ]
+  },
+  {
+   "id": "CU02",
+   "annex": [
+    "2f",
+    "2i",
+    "2k",
+    "2l"
+   ],
+   "title": "Regular PLC code integrity checks",
+   "desc": "Regular integrity checks of the PLC code must be performed to ensure that only verified and unchanged code is executed on the PLC. This requirement lies outside the product boundary and must be fulfilled by the operator as part of the system environment.",
+   "on": [
+    "CC01"
+   ]
+  },
+  {
+   "id": "CU03",
+   "annex": [
+    "2d",
+    "2e",
+    "2j"
+   ],
+   "title": "Physical access control",
+   "desc": "There must be physical access control in place for the organization’s premises, the Engineering PC and the PLC.",
+   "on": [
+    "CZ01",
+    "CC01",
+    "PRODUCT"
+   ]
+  },
+  {
+   "id": "CU04",
+   "annex": [
+    "2d"
+   ],
+   "title": "VPN access manually enabled per use",
+   "desc": "The VPN connection is disabled by default and only gets manually enabled when there is a maintenance case requiring remote access.",
+   "on": [
+    "CC04"
+   ]
+  },
+  {
+   "id": "CU05",
+   "annex": [
+    "2i",
+    "2j",
+    "2k"
+   ],
+   "title": "No local admin accounts",
+   "desc": "Administrative rights are assigned exclusively through the central identity management system. Only centrally managed and authenticated user accounts are permitted to access the system.",
+   "on": [
+    "CC03"
+   ]
+  },
+  {
+   "id": "CU06",
+   "annex": [
+    "2d",
+    "2j"
+   ],
+   "title": "Temporary / restricted internet access",
+   "desc": "The Maintenance PC is only temporarily connected to the internet and the accessible URLs are restricted.",
+   "on": [
+    "CC03"
+   ]
+  },
+  {
+   "id": "CU07",
+   "annex": [
+    "2c",
+    "2j"
+   ],
+   "title": "Restrict internet access to manufacturer URL",
+   "desc": "The Maintenance PC is technically restricted to only download files from the manufacturer URL.",
+   "on": [
+    "CC03"
+   ]
+  },
+  {
+   "id": "CU08",
+   "annex": [
+    "2c",
+    "2f",
+    "2k"
+   ],
+   "title": "Integrity check of downloaded file",
+   "desc": "After downloading a security update file from the manufacturer website, maintenance staff checks the provided hash to assure the integrity of the provided security update file.",
+   "on": [
+    "CP03"
+   ]
+  }
+ ],
+ "RI": [
+  {
+   "id": "CR01",
+   "title": "No PLC code integrity checks",
+   "desc": "The user never verifies the integrity of the PLC code on the PLC.",
+   "damage": "If manipulations of PLC code happen, they are not detected and can cause harm to the controlled process.",
+   "fc": [
+    "FC01"
+   ],
+   "cu": [
+    "CU02"
+   ],
+   "path": []
+  },
+  {
+   "id": "CR02",
+   "title": "Physically unprotected perimeter",
+   "desc": "The organization’s perimeter is physically accessible without restriction.",
+   "damage": "The product can be accessed, manipulated, sabotaged, or destroyed by unauthorized persons in a way that disrupts its core functions.",
+   "fc": [
+    "FC01",
+    "FC02"
+   ],
+   "cu": [
+    "CU03"
+   ],
+   "path": []
+  },
+  {
+   "id": "CR03",
+   "title": "Physically unprotected product",
+   "desc": "The Engineering PC is physically accessible for all employees.",
+   "damage": "The product can be used by unauthorized and / or unskilled persons in a way that disrupts core functions.",
+   "fc": [
+    "FC01",
+    "FC02"
+   ],
+   "cu": [
+    "CU03"
+   ],
+   "path": []
+  },
+  {
+   "id": "CR04",
+   "title": "Connection of the PLC to the public internet",
+   "desc": "The PLC or the PLC network are connected to the public internet.",
+   "damage": "Files can be downloaded to the PLC from the public internet. In the worst case, the PLC is accessible from the public internet.",
+   "fc": [
+    "FC01"
+   ],
+   "cu": [
+    "CU01"
+   ],
+   "path": []
+  },
+  {
+   "id": "CR05",
+   "title": "Permanently open VPN connection",
+   "desc": "The VPN connection permanently remains enabled for use, even if there is no open maintenance case.",
+   "damage": "Remote access can be misused for malicious activities.",
+   "fc": [
+    "FC03"
+   ],
+   "cu": [
+    "CU04"
+   ],
+   "path": [
+    "CC05",
+    "CC04",
+    "PI01",
+    "PC01"
+   ]
+  },
+  {
+   "id": "CR06",
+   "title": "Local admin account enabled on the product",
+   "desc": "The user creates a local admin account.",
+   "damage": "In case of an unauthorized access or malware installation, the impact on the product can be more severe because privileged resources can be accessed.",
+   "fc": [
+    "FC04"
+   ],
+   "cu": [
+    "CU05"
+   ],
+   "path": []
+  },
+  {
+   "id": "CR07",
+   "title": "Product is connected to the internet",
+   "desc": "The temporary internet connection to the Maintenance PC is not disabled when downloaded updates onto the Engineering PC or the PLC network is connected to the internet.",
+   "damage": "Files containing malware might be installed on the product or remote access to the product may be possible.",
+   "fc": [
+    "FC04"
+   ],
+   "cu": [
+    "CU06"
+   ],
+   "path": []
+  },
+  {
+   "id": "CR08",
+   "title": "Download of security updates from untrusted source",
+   "desc": "Software updates are downloaded from other sources than the URL provided.",
+   "damage": "Files containing malware might be installed on the product.",
+   "fc": [
+    "FC04"
+   ],
+   "cu": [
+    "CU07"
+   ],
+   "path": [
+    "CC06",
+    "CC03",
+    "PI03",
+    "PC02"
+   ]
+  },
+  {
+   "id": "CR09",
+   "title": "Failure to check security update integrity",
+   "desc": "Maintenance staff does not check the provided hash to assure the integrity of the provided security update file.",
+   "damage": "Files containing malware might be installed on the product.",
+   "fc": [
+    "FC04"
+   ],
+   "cu": [
+    "CU08"
+   ],
+   "path": []
+  }
+ ],
+ "layout": {},
+ "fig": {}
+}

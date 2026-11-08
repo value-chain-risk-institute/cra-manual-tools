@@ -5,8 +5,8 @@ Cyber Resilience Act (CRA) requires of every product with digital elements:
 
 | Tool | CRA artifact | Live | Source |
 |---|---|---|---|
-| **CRA Manual Builder** | Annex II — Information & instructions to the user | [valuechainrisk.org/cra-manual-builder](https://valuechainrisk.org/cra-manual-builder/) | [`/cra-manual-builder`](./cra-manual-builder) |
-| **TARA Builder** | Annex VII — product cybersecurity risk assessment | [valuechainrisk.org/tara](https://valuechainrisk.org/tara/) | [`/tara`](./tara) |
+| **CRA Manual Builder** | Annex II: Information & instructions to the user | [valuechainrisk.org/cra-manual-builder](https://valuechainrisk.org/cra-manual-builder/) | [`/cra-manual-builder`](./cra-manual-builder) |
+| **TARA Builder** | Annex VII: product cybersecurity risk assessment | [valuechainrisk.org/tara](https://valuechainrisk.org/tara/) | [`/tara`](./tara) |
 | **Context & Conditions of Use Builder, user-view preview** | The same tool plus a non-technical “user view” layer, in two renderings (A picture, B cards), for the working group to compare. Adds a fictitious consumer example with an ordinary-skill user. | [valuechainrisk.org/cyber-manual/context/next](https://valuechainrisk.org/cyber-manual/context/next/) | [`/cyber-manual/context/next`](./cyber-manual/context/next) |
 | **Context & Conditions of Use Builder** | Cyber Manual ch. 2.2–2.5 (functions, context components, conditions of use, risks) + the diagrams | [valuechainrisk.org/cyber-manual/context](https://valuechainrisk.org/cyber-manual/context/) | [`/cyber-manual/context`](./cyber-manual/context) |
 
@@ -36,7 +36,7 @@ owns the template, the scenario libraries, and the worked examples.**
   It shows how full the manual is: a count of empty fields per section and
   overall, which is a mechanical count and not a judgement of what is written. The template and
   boilerplate are the working group's work; this repository does not republish
-  them — it links to them and generates against them.
+  them; it links to them and generates against them.
 - The **Context & Conditions of Use Builder** (added 2026-09-10) answers the
   working group's hardest question, how much context and how many conditions
   to write, by treating it as a chain rather than a judgment: a context
@@ -81,9 +81,13 @@ owns the template, the scenario libraries, and the worked examples.**
   makes no conformance claim; the Manual Builder marks what is manufacturer
   responsibility versus user condition-of-use.
 
+## Examples
+
+[`/examples`](./examples) holds three illustrative Cyber Manuals for real products (OpenWrt One, KeePassXC, Home Assistant Green), built from public documentation only, with their fact sheets, diagrams and rendered PDFs. None is the manufacturer's manual, and none claims CRA conformity. It also holds `derive_links.py`, the reference version of the context builder's "Derive from a manual" rules, and the held-out test that measures them.
+
 ## Contributing
 
-Issues and pull requests welcome — especially from the working group. Good first
+Issues and pull requests welcome, especially from the working group. Good first
 contributions: scenario libraries for the TARA class matrix, worked examples,
 sector-specific interface lists, corrections to the Annex I crosswalk, and
 translations. Nitpicks are a feature here, not a burden: these are compliance

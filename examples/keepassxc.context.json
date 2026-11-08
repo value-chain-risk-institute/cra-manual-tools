@@ -1,0 +1,687 @@
+{
+  "product": {
+    "name": "KeePassXC",
+    "model": "2.8.0",
+    "version": "illustrative example v0.1, 8 Nov 2026, template v0.39",
+    "family": ""
+  },
+  "layout": {},
+  "fig": {},
+  "PC": [
+    {
+      "id": "PC01",
+      "title": "KeePassXC desktop application",
+      "desc": ""
+    },
+    {
+      "id": "PC02",
+      "title": "keepassxc-cli command-line tool",
+      "desc": ""
+    },
+    {
+      "id": "PC03",
+      "title": "Browser integration (native messaging host)",
+      "desc": ""
+    }
+  ],
+  "PI": [
+    {
+      "id": "PI01",
+      "title": "Keyboard, display and clipboard (through the host operating system)",
+      "desc": ""
+    },
+    {
+      "id": "PI02",
+      "title": "File system (database, key files, attachments)",
+      "desc": ""
+    },
+    {
+      "id": "PI03",
+      "title": "USB (hardware keys, through the host operating system)",
+      "desc": ""
+    }
+  ],
+  "LI": [
+    {
+      "proto": "Native messaging with the...",
+      "url": "",
+      "pi": "PI01",
+      "port": "/",
+      "dir": "both",
+      "enabled": "no (off until enabled)",
+      "fc": [
+        "FC02"
+      ]
+    },
+    {
+      "proto": "Synthetic keystrokes",
+      "url": "",
+      "pi": "PI01",
+      "port": "/",
+      "dir": "both",
+      "enabled": "on user action",
+      "fc": [
+        "FC03"
+      ]
+    },
+    {
+      "proto": "Secret Service over D-Bus",
+      "url": "",
+      "pi": "",
+      "port": "/",
+      "dir": "both",
+      "enabled": "no (off until enabled)",
+      "fc": [
+        "FC01"
+      ]
+    },
+    {
+      "proto": "SSH agent",
+      "url": "",
+      "pi": "",
+      "port": "/",
+      "dir": "both",
+      "enabled": "no (setup required)",
+      "fc": [
+        "FC01"
+      ]
+    },
+    {
+      "proto": "HTTPS favicon download",
+      "url": "",
+      "pi": "",
+      "port": "443",
+      "dir": "both",
+      "enabled": "opt-in",
+      "fc": [
+        "FC01"
+      ]
+    },
+    {
+      "proto": "Hardware key...",
+      "url": "",
+      "pi": "PI03",
+      "port": "/",
+      "dir": "both",
+      "enabled": "if configured",
+      "fc": [
+        "FC01",
+        "FC04"
+      ]
+    }
+  ],
+  "SP": [
+    {
+      "id": "SP01",
+      "annex": [
+        "2e",
+        "2f"
+      ],
+      "title": "Database encryption",
+      "desc": "The database is encrypted with AES-256 or Twofish and is encrypted at all times on disk.",
+      "on": [
+        "PRODUCT"
+      ]
+    },
+    {
+      "id": "SP02",
+      "annex": [
+        "2d",
+        "2e"
+      ],
+      "title": "Key derivation against guessing",
+      "desc": "With KDBX 4, the Argon2 key derivation function (recommended) transforms the composite master key, making dictionary attacks slower.",
+      "on": [
+        "PRODUCT"
+      ]
+    },
+    {
+      "id": "SP03",
+      "annex": [
+        "2d"
+      ],
+      "title": "Additional unlock factors",
+      "desc": "A key file and hardware-key challenge-response (YubiKey, OnlyKey) can be added to the master password.",
+      "on": [
+        "PC01"
+      ]
+    },
+    {
+      "id": "SP04",
+      "annex": [
+        "2e"
+      ],
+      "title": "Protected attributes",
+      "desc": "Attributes marked Protect are hidden by default and shown only on Reveal.",
+      "on": [
+        "PC01"
+      ]
+    },
+    {
+      "id": "SP05",
+      "annex": [
+        "2j"
+      ],
+      "title": "No network access by default",
+      "desc": "Network access is opt-in (favicon downloads); a build without networking code is possible.",
+      "on": [
+        "PRODUCT"
+      ]
+    },
+    {
+      "id": "SP06",
+      "annex": [
+        "2c",
+        "2f"
+      ],
+      "title": "Signed releases",
+      "desc": "Every package ships with a PGP signature and a SHA-256 digest. The Windows MSI carries an Authenticode signature (DroidMonkey Apps, LLC); macOS builds are signed with the project's Apple Developer ID and checked at launch.",
+      "on": [
+        "PRODUCT"
+      ]
+    }
+  ],
+  "CC": [
+    {
+      "id": "CC01",
+      "title": "Host computer and operating system",
+      "desc": "The Windows, macOS or Linux computer KeePassXC runs on.",
+      "via": [
+        "PI01",
+        "PI02"
+      ]
+    },
+    {
+      "id": "CC02",
+      "title": "Database storage location",
+      "desc": "Local disk, a synced folder or a remote location holding the database file.",
+      "via": [
+        "PI02"
+      ]
+    },
+    {
+      "id": "CC03",
+      "title": "Web browser with KeePassXC-Browser",
+      "desc": "A browser with the extension installed from its official store.",
+      "via": [
+        "PI01"
+      ]
+    },
+    {
+      "id": "CC04",
+      "title": "Hardware key",
+      "desc": "A YubiKey or OnlyKey configured for challenge-response.",
+      "via": [
+        "PI03"
+      ]
+    },
+    {
+      "id": "CC05",
+      "title": "Distribution channels",
+      "desc": "keepassxc.org, Microsoft Store, winget, Chocolatey, Homebrew, Flathub, Snap and distribution packages.",
+      "via": []
+    },
+    {
+      "id": "CC06",
+      "title": "Other applications",
+      "desc": "Programs that receive Auto-Type keystrokes or Secret Service and SSH agent requests.",
+      "via": [
+        "PI01"
+      ]
+    }
+  ],
+  "CP": [
+    {
+      "id": "CP01",
+      "title": "User",
+      "desc": "The person who keeps passwords in the database.",
+      "skill": "ordinary",
+      "via": [
+        "PI01"
+      ]
+    },
+    {
+      "id": "CP02",
+      "title": "Administrator",
+      "desc": "A person enforcing settings through Windows Group Policy.",
+      "skill": "skilled",
+      "via": []
+    }
+  ],
+  "CZ": [
+    {
+      "id": "CZ01",
+      "title": "User's computer",
+      "desc": "The host computer and its user account",
+      "type": "physical + communication",
+      "access": "controlled",
+      "members": [
+        "CC01",
+        "CC03",
+        "CC04",
+        "CC06",
+        "CP01"
+      ]
+    },
+    {
+      "id": "CZ02",
+      "title": "Storage and sync services",
+      "desc": "Places outside the computer where the database is stored or synced",
+      "type": "communication",
+      "access": "limited",
+      "members": [
+        "CC02"
+      ]
+    }
+  ],
+  "CU": [
+    {
+      "id": "CU01",
+      "annex": [
+        "2d"
+      ],
+      "title": "Strong master password",
+      "desc": "Use a strong master password; add a key file or hardware key for more protection.",
+      "on": [
+        "CP01"
+      ]
+    },
+    {
+      "id": "CU02",
+      "annex": [
+        "2h"
+      ],
+      "title": "Keep backups",
+      "desc": "Back up the database, key files and hardware-key secrets (the user guide explains creating a YubiKey backup).",
+      "on": [
+        "CC02"
+      ]
+    },
+    {
+      "id": "CU03",
+      "annex": [
+        "2d",
+        "2e",
+        "2i"
+      ],
+      "title": "Use a computer you trust",
+      "desc": "Run KeePassXC only on a computer that is kept updated and free of malware.",
+      "on": [
+        "CC01"
+      ]
+    },
+    {
+      "id": "CU04",
+      "annex": [
+        "2d",
+        "2j"
+      ],
+      "title": "Official extension only",
+      "desc": "Install KeePassXC-Browser only from the official browser stores and connect only your own browsers.",
+      "on": [
+        "CC03"
+      ]
+    },
+    {
+      "id": "CU05",
+      "annex": [
+        "2e"
+      ],
+      "title": "Check the target window",
+      "desc": "Before Auto-Type, make sure the intended window has focus.",
+      "on": [
+        "CP01"
+      ]
+    },
+    {
+      "id": "CU06",
+      "annex": [
+        "2d"
+      ],
+      "title": "Quick Unlock only on a personal account",
+      "desc": "Disable Quick Unlock if other people can use the same computer account or biometrics.",
+      "on": [
+        "CZ01"
+      ]
+    },
+    {
+      "id": "CU07",
+      "annex": [
+        "2e",
+        "2f"
+      ],
+      "title": "Trusted storage and sharing",
+      "desc": "Store or sync the database only in locations you control or trust, and share groups only with intended people.",
+      "on": [
+        "CZ02"
+      ]
+    },
+    {
+      "id": "CU08",
+      "annex": [
+        "2c",
+        "2f"
+      ],
+      "title": "Official, verified downloads",
+      "desc": "Install from keepassxc.org or an official channel. On Windows, check that the verified publisher is DroidMonkey Apps, LLC; for other sources, verify the PGP signature.",
+      "on": [
+        "CC05"
+      ]
+    }
+  ],
+  "FC": [
+    {
+      "id": "FC01",
+      "title": "Store and retrieve credentials",
+      "desc": "Create, edit, search and copy entries in an encrypted KDBX database.",
+      "rfu": "Keeping the only copy of the database on one device.",
+      "core": "core",
+      "use": "intended",
+      "cu": [
+        "CU01",
+        "CU02",
+        "CU03"
+      ],
+      "pc": [
+        "PC01",
+        "PC02"
+      ],
+      "pi": [
+        "PI01",
+        "PI02"
+      ],
+      "cc": [
+        "CC01",
+        "CC02"
+      ],
+      "cp": [
+        "CP01"
+      ],
+      "cz": [
+        "CZ01",
+        "CZ02"
+      ],
+      "path": [
+        "CP01",
+        "PI01",
+        "PC01",
+        "PI02",
+        "CC02"
+      ]
+    },
+    {
+      "id": "FC02",
+      "title": "Fill credentials in the browser",
+      "desc": "Browser integration with KeePassXC-Browser, including passkeys.",
+      "rfu": "None beyond the function description.",
+      "core": "ancillary",
+      "use": "intended",
+      "cu": [
+        "CU04"
+      ],
+      "pc": [
+        "PC01",
+        "PC03"
+      ],
+      "pi": [
+        "PI01"
+      ],
+      "cc": [
+        "CC03"
+      ],
+      "cp": [
+        "CP01"
+      ],
+      "cz": [
+        "CZ01"
+      ],
+      "path": [
+        "CC03",
+        "PC03",
+        "PC01"
+      ]
+    },
+    {
+      "id": "FC03",
+      "title": "Auto-Type into other applications",
+      "desc": "Type the username and password into the previously selected window.",
+      "rfu": "Auto-Type into the wrong window.",
+      "core": "ancillary",
+      "use": "intended",
+      "cu": [
+        "CU05"
+      ],
+      "pc": [
+        "PC01"
+      ],
+      "pi": [
+        "PI01"
+      ],
+      "cc": [
+        "CC06"
+      ],
+      "cp": [
+        "CP01"
+      ],
+      "cz": [
+        "CZ01"
+      ],
+      "path": [
+        "PC01",
+        "PI01",
+        "CC06"
+      ]
+    },
+    {
+      "id": "FC04",
+      "title": "Unlock the database",
+      "desc": "Unlock with the master password and optional key file or hardware key, or with Quick Unlock (biometrics).",
+      "rfu": "Quick Unlock on a computer account other people use.",
+      "core": "core",
+      "use": "intended",
+      "cu": [
+        "CU01",
+        "CU06"
+      ],
+      "pc": [
+        "PC01"
+      ],
+      "pi": [
+        "PI01",
+        "PI03"
+      ],
+      "cc": [
+        "CC01",
+        "CC04"
+      ],
+      "cp": [
+        "CP01"
+      ],
+      "cz": [
+        "CZ01"
+      ],
+      "path": [
+        "CP01",
+        "PI01",
+        "PC01",
+        "PI03",
+        "CC04"
+      ]
+    },
+    {
+      "id": "FC05",
+      "title": "Share and sync databases",
+      "desc": "KeeShare shared groups and remote database synchronisation.",
+      "rfu": "None beyond the function description.",
+      "core": "ancillary",
+      "use": "intended",
+      "cu": [
+        "CU02",
+        "CU07"
+      ],
+      "pc": [
+        "PC01"
+      ],
+      "pi": [
+        "PI02"
+      ],
+      "cc": [
+        "CC02"
+      ],
+      "cp": [
+        "CP01"
+      ],
+      "cz": [
+        "CZ02"
+      ],
+      "path": [
+        "PC01",
+        "PI02",
+        "CC02"
+      ]
+    },
+    {
+      "id": "FC06",
+      "title": "Install security updates",
+      "desc": "Install the newest signed release from the channel used for installation.",
+      "rfu": "",
+      "core": "ancillary",
+      "use": "intended",
+      "cu": [
+        "CU08"
+      ],
+      "pc": [
+        "PC01",
+        "PC02",
+        "PC03"
+      ],
+      "pi": [
+        "PI02"
+      ],
+      "cc": [
+        "CC05",
+        "CC01"
+      ],
+      "cp": [
+        "CP01"
+      ],
+      "cz": [
+        "CZ01"
+      ],
+      "path": [
+        "CC05",
+        "CC01",
+        "PI02",
+        "PC01"
+      ]
+    }
+  ],
+  "RI": [
+    {
+      "id": "CR01",
+      "title": "Weak master password",
+      "desc": "A short or reused master password without another factor.",
+      "damage": "Anyone who obtains the database file can guess the password offline.",
+      "fc": [
+        "FC01",
+        "FC04"
+      ],
+      "cu": [
+        "CU01"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR02",
+      "title": "No backup",
+      "desc": "The only copy of the database, key file or hardware-key secret is lost.",
+      "damage": "All stored credentials become unrecoverable.",
+      "fc": [
+        "FC01",
+        "FC05"
+      ],
+      "cu": [
+        "CU02"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR03",
+      "title": "Compromised computer",
+      "desc": "Malware runs on the host computer.",
+      "damage": "Credentials can be captured while the database is unlocked.",
+      "fc": [
+        "FC01"
+      ],
+      "cu": [
+        "CU03"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR04",
+      "title": "Unofficial browser extension",
+      "desc": "An extension from another source is connected.",
+      "damage": "Credentials are handed to an attacker-controlled extension.",
+      "fc": [
+        "FC02"
+      ],
+      "cu": [
+        "CU04"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR05",
+      "title": "Auto-Type into the wrong window",
+      "desc": "The focused window is not the intended one.",
+      "damage": "The password is typed into a chat, a document or a hostile page.",
+      "fc": [
+        "FC03"
+      ],
+      "cu": [
+        "CU05"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR06",
+      "title": "Quick Unlock on a shared account",
+      "desc": "Quick Unlock stays enabled on a computer account others use.",
+      "damage": "Another person can unlock the database.",
+      "fc": [
+        "FC04"
+      ],
+      "cu": [
+        "CU06"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR07",
+      "title": "Untrusted storage or sharing",
+      "desc": "The database is kept or shared in a location others control.",
+      "damage": "The encrypted file is exposed to offline attack or tampering.",
+      "fc": [
+        "FC05"
+      ],
+      "cu": [
+        "CU07"
+      ],
+      "path": []
+    },
+    {
+      "id": "CR08",
+      "title": "Tampered installer",
+      "desc": "KeePassXC is installed from an unofficial source without verification.",
+      "damage": "A modified program can steal every credential.",
+      "fc": [
+        "FC06"
+      ],
+      "cu": [
+        "CU08"
+      ],
+      "path": []
+    }
+  ]
+}
