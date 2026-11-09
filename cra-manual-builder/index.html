@@ -101,6 +101,8 @@ textarea{resize:vertical;min-height:52px;line-height:1.45}
 .row .rm{position:absolute;top:7px;right:7px;background:none;border:none;color:var(--muted);cursor:pointer;padding:2px;border-radius:5px;line-height:0}
 .row .rm:hover{color:#c0392b}
 .row .rid{font:600 11px/1 var(--mono);color:var(--muted);margin-bottom:7px;display:inline-block}
+.row.removed{opacity:.85;border-style:dashed}
+#doc tr.removed td{color:var(--muted)}#doc .removed-note{font-style:italic}
 .add{align-self:flex-start;background:none;border:1px dashed var(--line);color:var(--muted);border-radius:8px;padding:6px 11px;cursor:pointer;font-size:12.5px}
 .add:hover{border-color:var(--accent);color:var(--accent)}
 .body select{width:100%;background:var(--field);border:1px dashed var(--line);border-radius:8px;padding:7px 10px;font-size:12.5px;color:var(--accent);cursor:pointer}
@@ -556,12 +558,12 @@ function varPicker(it){
 }
 function famChecks(){ /* contradictions only a family manual can have */
   const f=family(),out=[];if(f.length<2)return out;
-  VLISTS.forEach(k=>M[k].forEach((x,i)=>(x.vars||[]).forEach(v=>{if(!f.includes(v))out.push(`${x.id} names “${v}”, which is not in the product family list; it is treated as applying to every member until you tick its members again.`);})));
-  M.ri.forEach((r,i)=>f.forEach(m=>{if(!appliesTo(r,m))return;const id=r.id;
+  VLISTS.forEach(k=>M[k].filter(x=>!x.removed).forEach((x,i)=>(x.vars||[]).forEach(v=>{if(!f.includes(v))out.push(`${x.id} names “${v}”, which is not in the product family list; it is treated as applying to every member until you tick its members again.`);})));
+  M.ri.filter(x=>!x.removed).forEach((r,i)=>f.forEach(m=>{if(!appliesTo(r,m))return;const id=r.id;
     const fns=fcList(r.fc).map(fcById).filter(Boolean);
     if(fns.length&&!fns.some(fn=>appliesTo(fn,m)))out.push(`${id} applies to ${m}, but none of its functions (${fcList(r.fc).join(", ")}) does, so it appears nowhere in the ${m} edition.`);
     (r.cu||"").match(/CU\d+/g)?.forEach(cid=>{const c=cuById(cid);if(c&&!appliesTo(c,m))out.push(`${id} applies to ${m}, but its violated condition of use ${cid} does not.`);});}));
-  M.cu.forEach((c,i)=>f.forEach(m=>{if(!appliesTo(c,m))return;const id=c.id;const fns=M.fc.filter(fn=>((fn.cus||"").match(/CU\d+/g)||[]).includes(id));
+  M.cu.filter(x=>!x.removed).forEach((c,i)=>f.forEach(m=>{if(!appliesTo(c,m))return;const id=c.id;const fns=M.fc.filter(fn=>((fn.cus||"").match(/CU\d+/g)||[]).includes(id));
     if(fns.length&&!fns.some(fn=>appliesTo(fn,m)))out.push(`${id} applies to ${m}, but every function it is attached to (${fns.map(fn=>idOf("FC",M.fc,fn)).join(", ")}) is left out for ${m}.`);}));
   return out;
 }
@@ -585,11 +587,29 @@ function diaField(label,get,set){
   row.append(i,pick); f.append(row,el("div",{class:"hint"},"Optional. The Context & Conditions of Use Builder draws these from your lists; export the SVG or PNG from there and drop it here.")); return f;
 }
 function repeat(container,list,factory,addLabel,mk){
-  const rows=el("div",{class:"rows"}); list.forEach((item,i)=>{const r=factory(item,i),vp=varPicker(item);if(vp)r.append(vp);rows.append(r);});
+  const rows=el("div",{class:"rows"}); list.forEach((item,i)=>{if(item.removed){rows.append(tombRow(list,item,i));return;}const r=factory(item,i),vp=varPicker(item);if(vp)r.append(vp);rows.append(r);});
   const add=el("button",{class:"add"},"+ "+addLabel); add.addEventListener("click",()=>{list.push(mk());buildForm();render();});
   container.append(rows,add);
 }
-function rmBtn(list,i){const b=el("button",{class:"rm",title:"Remove","aria-label":"Remove"});b.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>';b.addEventListener("click",()=>{list.splice(i,1);buildForm();render();});return b;}
+/* Removing (Joshua, 9 Nov 2026): a row with content is not deleted but marked removed with the date, and the manual keeps a
+   "removed as of" line in its place. The numbering stays continuous, references to the ID still resolve, and the ID is never
+   reused, so readers of an older edition can still find what CU02 was. A row with nothing typed in it is simply deleted. */
+const DEFAULTS=["id","vars","kind","skill","type","access","enabled","source"];
+const isBlank=x=>!Object.entries(x).some(([k,v])=>!DEFAULTS.includes(k)&&typeof v==="string"&&v.trim());
+const today=()=>new Date().toLocaleDateString("sv-SE");
+const longDate=d=>{const t=new Date(d+"T12:00:00");return isNaN(t)?String(d):t.toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});};
+const was=x=>x.title||x.proto||"";
+function removeRow(list,i){const x=list[i];if(isBlank(x))list.splice(i,1);else x.removed=today();buildForm();render();}
+function tombRow(list,it,i){
+  const r=el("div",{class:"row removed"});r.append(el("span",{class:"rid"},it.id));
+  r.append(el("div",{class:"hint"},`Removed as of ${longDate(it.removed)}. Was: ${was(it)||"(untitled)"}. The manual keeps this line, so ${it.id} stays taken and older references to it still resolve.`));
+  r.append(field("Superseded by [optional]",it.supersededBy,v=>it.supersededBy=v,{ph:it.id.slice(0,2)+"09"}));
+  const bar=el("div",{style:"display:flex;gap:8px;flex-wrap:wrap"});
+  const rs=el("button",{class:"add"},"Restore");rs.addEventListener("click",()=>{delete it.removed;delete it.supersededBy;buildForm();render();});
+  const del=el("button",{class:"add",title:"Only for a row that no published edition of the manual contained"},"Delete for good");
+  del.addEventListener("click",()=>{if(!confirm(`Delete ${it.id} for good? Do this only if no published edition of the manual contained it. ${it.id} will still not be given to another row.`))return;list.splice(i,1);buildForm();render();});
+  bar.append(rs,del);r.append(bar);return r;}
+function rmBtn(list,i){const b=el("button",{class:"rm",title:"Remove (leaves a “removed as of” line, so the ID stays taken)","aria-label":"Remove"});b.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>';b.addEventListener("click",()=>removeRow(list,i));return b;}
 function seg(item,key,opts){const s=el("div",{class:"seg"});opts.forEach(k=>{const b=el("button",{class:item[key]===k?"on":""},k);b.addEventListener("click",()=>{item[key]=k;buildForm();render();});s.append(b);});return s;}
 function sec(ix,title,openState,build){
   const d=el("details",{class:"sec"}); if(openState)d.setAttribute("open","");
@@ -689,7 +709,7 @@ function buildForm(){
       r.append(field("Description (reasonably foreseeable misuse or circumstance leading to risk)",it.desc,v=>it.desc=v,{ta:true}));
       const fw=el("div",{class:"f"}); fw.append(el("label",{},"Function(s) this circumstance belongs to: it appears in each of their 3.3 / 3.4 subchapters"));
       const box=el("div",{style:"display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px"}); const cur=new Set(fcList(it.fc));
-      M.fc.forEach(f=>{const id=f.id;const lb=el("label",{style:"display:inline-flex;gap:5px;align-items:center;margin:0;cursor:pointer;color:var(--ink)"});const cb=el("input",{type:"checkbox"});cb.checked=cur.has(id);cb.addEventListener("change",()=>{const s=new Set(fcList(it.fc));if(cb.checked)s.add(id);else s.delete(id);it.fc=[...s].sort().join(", ");render();});lb.append(cb,id+" "+(f.title||""));box.append(lb);});
+      M.fc.filter(f=>!f.removed||cur.has(f.id)).forEach(f=>{const id=f.id;const lb=el("label",{style:"display:inline-flex;gap:5px;align-items:center;margin:0;cursor:pointer;color:var(--ink)"});const cb=el("input",{type:"checkbox"});cb.checked=cur.has(id);cb.addEventListener("change",()=>{const s=new Set(fcList(it.fc));if(cb.checked)s.add(id);else s.delete(id);it.fc=[...s].sort().join(", ");render();});lb.append(cb,id+" "+(f.title||""));box.append(lb);});
       if(!M.fc.length)box.append(el("span",{class:"hint"},"Add functions in 3.3 first."));
       fw.append(box); r.append(fw);
       const g=el("div",{class:"grid2"});g.append(field("Violated condition of use (CUxx)",it.cu,v=>it.cu=v,{ph:"CU04"}),field("Potential risk",it.risk,v=>it.risk=v,{ph:"What could happen, from the user's perspective"}));r.append(g);if(it.source)r.append(srcHint(it));return r;},"Add circumstance",()=>({title:"",desc:"",fc:"",cu:"",risk:""}));
@@ -746,12 +766,14 @@ function refChips(refs){if(!refs)return"";return refs.split(",").map(r=>r.trim()
 const idOf=(p,list,it)=>it.id;
 const cuById=id=>M.cu.find(c=>c.id===String(id).trim());
 const fcById=id=>M.fc.find(f=>f.id===String(id).trim());
+const tombText=it=>`<span class="removed-note">Removed as of ${esc(longDate(it.removed))}${it.supersededBy?", superseded by "+esc(it.supersededBy):""}.</span>${was(it)?` Was: ${esc(was(it))}.`:""}`;
+const tombTr=(it,span=8)=>`<tr class="removed"><td class="id">${esc(it.id)}</td><td colspan="${span}">${tombText(it)}</td></tr>`;
 const srcHint=it=>el("div",{class:"hint"},"From "+it.source.ids.join(", ")+" ("+(it.source.tool==="vcri-tara"?"the TARA Builder":it.source.tool)+"). Merging that TARA again leaves this row as you edit it.");
 const dia=(src,ph)=>src?`<img class="dia" src="${esc(src)}" alt="">${src.startsWith(EXROOT)?`<div class="credit-dia">Diagram: Cyber Manual Movement Engineering PC example ${src.includes("/v039/")?"v0.40 (diagrams v0.06)":"v0.27"}, Sarah Fluchs, CC BY 4.0.</div>`:""}`:`<p class="empty">${ph}</p>`;
 function crosswalk1(){
   return REQ1.map(([ref,name,lead])=>{
-    const sps=M.sp.filter(show).filter(p=>(p.refs||"").split(",").map(x=>x.trim()).includes(ref)).map(p=>`<span style="color:#2f7d5b;font-family:var(--mono);font-weight:600">${idOf("SP",M.sp,p)}</span>: ${esc(p.title)}`);
-    const cus=M.cu.filter(show).filter(c=>(c.refs||"").split(",").map(x=>x.trim()).includes(ref)).map(c=>`<span style="color:#a9660f;font-family:var(--mono);font-weight:600">${idOf("CU",M.cu,c)}</span>: ${esc(c.title)}`);
+    const sps=M.sp.filter(x=>show(x)&&!x.removed).filter(p=>(p.refs||"").split(",").map(x=>x.trim()).includes(ref)).map(p=>`<span style="color:#2f7d5b;font-family:var(--mono);font-weight:600">${idOf("SP",M.sp,p)}</span>: ${esc(p.title)}`);
+    const cus=M.cu.filter(x=>show(x)&&!x.removed).filter(c=>(c.refs||"").split(",").map(x=>x.trim()).includes(ref)).map(c=>`<span style="color:#a9660f;font-family:var(--mono);font-weight:600">${idOf("CU",M.cu,c)}</span>: ${esc(c.title)}`);
     const fixed=lead&&!/<ENTER/.test(lead)?esc(lead):"";
     const extra=M.er1[ref]?nl(M.er1[ref]):fixed;
     const cells=[extra,...sps,...cus].filter(Boolean);
@@ -763,21 +785,22 @@ function crosswalk2(){
 }
 function cuLabel(s){ /* "CU02" becomes "CU02 Regular PLC code integrity checks", as in the EXAMPLE; free text stays as typed */
   if(!s||!s.trim())return '<span class="empty">CU to be added</span>';
-  if(/^\s*(CU\d+[\s,;]*)+$/.test(s))return s.match(/CU\d+/g).map(id=>{const c=cuById(id);return esc(id)+(c&&c.title?" "+esc(c.title):"");}).join("<br>");
+  if(/^\s*(CU\d+[\s,;]*)+$/.test(s))return s.match(/CU\d+/g).map(id=>{const c=cuById(id);return esc(id)+(c&&c.removed?" (removed)":c&&c.title?" "+esc(c.title):"");}).join("<br>");
   return esc(s);
 }
 function cuTable(ids){
-  const rows=ids.filter(id=>{const c=cuById(id);return !c||show(c);}).map(id=>{const c=cuById(id);return c?`<tr class="cuxx"><td class="id">${esc(id)}</td><td>${or(c.affected,"not yet specified")}</td><td><b>${or(c.title,"condition")}</b>${vt(c)} ${refChips(c.refs)}<br>${or(c.desc,"description")}</td></tr>`:`<tr><td class="id">${esc(id)}</td><td colspan="2" class="empty">not found in the conditions of use list</td></tr>`;});
+  const rows=ids.filter(id=>{const c=cuById(id);return !c||show(c);}).map(id=>{const c=cuById(id);return c&&c.removed?tombTr(c,2):c?`<tr class="cuxx"><td class="id">${esc(id)}</td><td>${or(c.affected,"not yet specified")}</td><td><b>${or(c.title,"condition")}</b>${vt(c)} ${refChips(c.refs)}<br>${or(c.desc,"description")}</td></tr>`:`<tr><td class="id">${esc(id)}</td><td colspan="2" class="empty">not found in the conditions of use list</td></tr>`;});
   return `<table><tr><th>ID</th><th>Affects<br>(component CC / person CP / zone CZ)</th><th>Title &amp; Description</th></tr>${rows.length?rows.join(""):'<tr><td colspan="3" class="empty">Attach conditions of use (CUxx) to this function in the form (3.3)</td></tr>'}</table>`;
 }
 function crTable(list){
   const hdr=`<tr><th>ID</th><th>Title and Description<br>(reasonably foreseeable misuse or circumstance leading to risk)</th><th>Violated Condition of Use (CU)</th><th>Potential risk</th></tr>`;
   if(!list.length)return `<table>${hdr}<tr><td colspan="4" class="empty">No circumstances recorded for this function.</td></tr></table>`;
-  return `<table>${hdr}${list.map(r=>`<tr><td class="id">${r.id}</td><td><b>${or(r.title,"title")}</b>${vt(r)}<br>${or(r.desc,"description")}</td><td>${cuLabel(r.cu)}</td><td>${or(r.risk,"not yet specified")}</td></tr>`).join("")}</table>`;
+  return `<table>${hdr}${list.map(r=>r.removed?tombTr(r,3):`<tr><td class="id">${r.id}</td><td><b>${or(r.title,"title")}</b>${vt(r)}<br>${or(r.desc,"description")}</td><td>${cuLabel(r.cu)}</td><td>${or(r.risk,"not yet specified")}</td></tr>`).join("")}</table>`;
 }
 /* one function subchapter, the template's 3.3.n / 3.4.1 block: Function (FC) table, secure use diagram, CU table, CR table */
 function fnBlock(num,f){
   const id=idOf("FC",M.fc,f);
+  if(f.removed)return `<h4>${num} Function ${id} (removed)</h4><p>${tombText(f)}</p>`;   /* the stub keeps the other functions' chapter numbers */
   const cuIds=[...new Set((f.cus||"").match(/CU\d+/g)||[])];
   const crs=M.ri.filter(r=>fcList(r.fc).includes(id)&&show(r));
   const rfuRow=(!isUpd(f)||(f.rfu||"").trim())?`<tr><td>Reasonably foreseeable use [optional]</td><td>${or(f.rfu,"not yet specified")}</td></tr>`:"";
@@ -790,14 +813,23 @@ function fnBlock(num,f){
 }
 function looseBlock(num){ /* builder extension: nothing silently disappears when it is not attached to a function */
   const fcIds=M.fc.map(f=>f.id);
-  const loneCR=M.ri.filter(r=>show(r)&&!fcList(r.fc).some(id=>fcIds.includes(id)));
+  const loneCR=M.ri.filter(r=>show(r)&&!r.removed&&!fcList(r.fc).some(id=>fcIds.includes(id)));
   const attached=new Set(M.fc.flatMap(f=>(f.cus||"").match(/CU\d+/g)||[]));
-  const loneCU=M.cu.filter(c=>!attached.has(c.id)&&show(c)).map(c=>c.id);
+  const loneCU=M.cu.filter(c=>!c.removed&&!attached.has(c.id)&&show(c)).map(c=>c.id);
   if(!loneCR.length&&!loneCU.length)return "";
   return `<h4>${num} Not yet attached to a function</h4><div class="refnote">Builder note, not part of the template: the template lists conditions of use and circumstances leading to risk only per function. Attach these to a function in the form, or remove them, before you publish.</div>${loneCU.length?`<h5>Conditions of use (CU)</h5>${cuTable(loneCU)}`:""}${loneCR.length?`<h5>Circumstances potentially leading to significant cybersecurity risk (CR)</h5>${crTable(loneCR)}`:""}`;
 }
+/* removed CUs and CRs that no function shows any more (for example after the Context builder dropped the link): listed once,
+   so a reference from an earlier edition still finds what the ID was */
+function removedBlock(num){
+  const shown=new Set();
+  M.fc.filter(f=>!f.removed&&show(f)).forEach(f=>{((f.cus||"").match(/CU\d+/g)||[]).forEach(id=>shown.add(id));M.ri.filter(r=>fcList(r.fc).includes(f.id)).forEach(r=>shown.add(r.id));});
+  const gone=[...M.cu,...M.ri].filter(x=>x.removed&&show(x)&&!shown.has(x.id));
+  if(!gone.length)return "";
+  return `<h4>${num} Removed conditions of use and circumstances</h4><p>Kept so that references in earlier editions of this manual still resolve.</p><table><tr><th>ID</th><th>Status</th></tr>${gone.map(x=>tombTr(x,1)).join("")}</table>`;
+}
 function toc(useFns,updFns){
-  const fnT=(n,f)=>[`${n} Function ${idOf("FC",M.fc,f)} ${f.title||"<TITLE>"}`,2];
+  const fnT=(n,f)=>[`${n} Function ${idOf("FC",M.fc,f)} ${f.removed?"(removed)":f.title||"<TITLE>"}`,2];
   const t=[["1 Introduction",0],["1.1 Quick reference",1],["1.2 Document information",1],...(M.opts.definitions!==false?[["1.3 Definitions",1]]:[]),...(lines(M.references).length?[["1.4 References [optional]",1]]:[]),
     ["2 Product properties and context",0],["2.1 Product (P)",1],["2.2 Security Properties (SP)",1],["2.3 Context (C)",1],
     ["3 How to use the product securely",0],["3.1 Intended Purpose and reasonably foreseeable use (IPRFU)",1],["3.2 Secure commissioning and setup",1],["3.3 Secure use: Conditions of Use (CU) and Circumstances leading to Risk (CR) per product Function (FC)",1],...useFns.map((f,i)=>fnT("3.3."+(i+1),f)),
@@ -810,8 +842,8 @@ function render(){
   assignIds(M,false);
   const d=$("#doc");
   syncView();
-  const rows=(list,cols,empty)=>list.some(show)?list.map((it,i)=>show(it)?`<tr>${cols(it,i)}</tr>`:"").join(""):`<tr><td colspan="9" class="empty">${empty}</td></tr>`;
-  const list=(arr,f)=>{const v=arr.map((x,i)=>[x,i]).filter(([x])=>show(x));return v.length?v.map(([x,i])=>f(x,i)).join(", "):'<span class="empty">not yet specified</span>';};
+  const rows=(list,cols,empty)=>list.some(show)?list.map((it,i)=>show(it)?(it.removed?tombTr(it):`<tr>${cols(it,i)}</tr>`):"").join(""):`<tr><td colspan="9" class="empty">${empty}</td></tr>`;
+  const list=(arr,f)=>{const v=arr.map((x,i)=>[x,i]).filter(([x])=>show(x)&&!x.removed);return v.length?v.map(([x,i])=>f(x,i)).join(", "):'<span class="empty">not yet specified</span>';};
   const useFns=M.fc.filter(f=>!isUpd(f)&&show(f)), updFns=M.fc.filter(f=>isUpd(f)&&show(f));
   const fam=family(),fchk=famChecks();
   const disNum="3.4."+(Math.max(updFns.length,1)+1);
@@ -880,7 +912,7 @@ function render(){
 
   <h3>3.3 Secure use: Conditions of Use (CU) and Circumstances leading to Risk (CR) per product Function (FC)</h3>
   ${useFns.length?useFns.map((f,i)=>fnBlock("3.3."+(i+1),f)).join(""):'<p class="empty">Every function from the form (other than the update functions) appears here as its own subchapter: the function, its secure use diagram, its conditions of use and its circumstances leading to risk.</p>'}
-  ${looseBlock("3.3."+(useFns.length+1))}
+  ${(()=>{const lb=looseBlock("3.3."+(useFns.length+1));return lb+removedBlock("3.3."+(useFns.length+(lb?2:1)));})()}
 
   <h3>3.4 Secure installation of security updates</h3>
   ${M.updates.note?`<p>${nl(M.updates.note)}</p>`:""}
@@ -967,33 +999,34 @@ function importSbom(json){
    checking. The shape before v1 was final (9 Nov: ts, and fc and cu as text) still merges. */
 function mergeTara(t){
   assignIds(M,false);
-  const before={ri:M.ri.length,cu:M.cu.length,sp:M.sp.length},kept=[];
+  const before={ri:M.ri.length,cu:M.cu.length,sp:M.sp.length},kept=[],gone=[];
   const v10=/^vcri\.tara-to-manual\/v1\.\d+/.test(t.schema||"");
   const srcOf=r=>r&&r.source&&Array.isArray(r.source.ids)&&r.source.ids.length?{tool:String(r.source.tool||"unknown"),ids:r.source.ids.map(String)}:(r&&r.ts?{tool:"vcri-tara",ids:[String(r.ts)]}:null);
   const keyOf=s=>s.tool+"|"+[...s.ids].sort().join(",");
   const existing=(list,r,s)=>s?list.find(x=>x.source&&keyOf(x.source)===keyOf(s)):list.find(x=>x.title===r.title);
-  const fcIdsOf=r=>(Array.isArray(r.fcIds)?r.fcIds:fcList(r.fc)).filter(fcById);
+  const fcIdsOf=r=>(Array.isArray(r.fcIds)?r.fcIds:fcList(r.fc)).filter(id=>{const f=fcById(id);return f&&!f.removed;});
   const annexOf=r=>Array.isArray(r.annex)?r.annex.join(","):(r.refs||"");
   const add=(list,row,s)=>{if(s)row.source=s;delete row.ts;list.push(row);assignIds(M,false);return row;};
   const refMap={};
   (t.cu||[]).forEach(c=>{const s=srcOf(c);let row=existing(M.cu,c,s);   /* conditions first, so circumstances can point at them */
-    if(row)kept.push(row.id);
+    if(row)(row.removed?gone:kept).push(row.id);
     else{row=add(M.cu,{affected:c.affected||"",title:c.title||"",desc:c.desc||"",refs:annexOf(c)},s);
       fcIdsOf(c).forEach(fid=>{const f=fcById(fid);const cur=(f.cus||"").match(/CU\d+/g)||[];if(!cur.includes(row.id))f.cus=cur.length?f.cus+", "+row.id:row.id;});}
     if(c.ref)refMap[c.ref]=row.id;});
-  (t.ri||[]).forEach(r=>{const s=srcOf(r);const old=existing(M.ri,r,s);if(old){kept.push(old.id);return;}
+  (t.ri||[]).forEach(r=>{const s=srcOf(r);const old=existing(M.ri,r,s);if(old){(old.removed?gone:kept).push(old.id);return;}
     if(!v10){add(M.ri,normRi(r),s);return;}
     const cus=[...new Set([...(r.cuIds||[]),...(r.cuRefs||[]).map(x=>refMap[x]).filter(Boolean)])];
     add(M.ri,{title:r.title||"",desc:r.desc||"",fc:fcIdsOf(r).join(", "),cu:cus.join(", "),risk:r.risk||""},s);});
-  (t.sp||[]).forEach(p=>{const s=srcOf(p);const old=existing(M.sp,p,s);if(old){kept.push(old.id);return;}
+  (t.sp||[]).forEach(p=>{const s=srcOf(p);const old=existing(M.sp,p,s);if(old){(old.removed?gone:kept).push(old.id);return;}
     add(M.sp,{comp:p.comp||"",title:p.title||"",desc:p.desc||"",refs:annexOf(p)},s);});
   const sent=[...(t.ri||[]),...(t.cu||[]),...(t.sp||[])].map(srcOf).filter(Boolean);
   const tools=new Set(sent.map(s=>s.tool)),now=new Set(sent.flatMap(s=>s.ids.map(id=>s.tool+"|"+id)));
-  const stale=[...M.cu,...M.ri,...M.sp].filter(x=>x.source&&tools.has(x.source.tool)&&!x.source.ids.some(id=>now.has(x.source.tool+"|"+id))).map(x=>x.id);
+  const stale=[...M.cu,...M.ri,...M.sp].filter(x=>!x.removed&&x.source&&tools.has(x.source.tool)&&!x.source.ids.some(id=>now.has(x.source.tool+"|"+id))).map(x=>x.id);
   buildForm();render();
   const who=t.generator&&t.generator.tool?t.generator.tool:"the TARA Builder";
   alert(`Merged from ${who}${t.product?" for "+t.product:""}: ${M.ri.length-before.ri} circumstances (CR) into 3.3 under their functions, ${M.cu.length-before.cu} condition-of-use candidates into the CU list, ${M.sp.length-before.sp} security-property candidates into 2.2.`+
     (kept.length?`\n\nAlready in the manual from an earlier merge, left as they are: ${[...new Set(kept)].join(", ")}.`:"")+
+    (gone.length?`\n\nRemoved from the manual earlier, so not added again: ${[...new Set(gone)].join(", ")}.`:"")+
     (stale.length?`\n\nThese came from that TARA, but their scenarios are no longer in what it sent: ${stale.join(", ")}. Check whether they still apply.`:"")+
     `\n\nEdit the drafted titles; nothing already in the manual was changed.`);
 }
@@ -1031,7 +1064,10 @@ function applyContext(d){
   const msg=`Bring in from the Context builder${d.product?" (“"+d.product+"”)":""}:\n${n("pc")} components, ${n("pi")} interfaces, ${n("pp")} protocols, ${n("sp")} security properties, ${n("cc")} context components, ${n("cp")} persons, ${n("cz")} zones, ${n("fc")} functions, ${n("cu")} conditions of use, ${n("ri")} circumstances, ${Object.keys(d.dia||{}).length+(d.fc||[]).filter(f=>f.dia).length} diagrams.\n\nThis replaces those lists and diagrams here. Introduction, commissioning, updates, decommissioning, contacts and chapter 5 stay as they are. You can undo until you save.`;
   if(!confirm(msg))return;
   UNDO=snapshot();
-  for(const k of VLISTS)M[k]=JSON.parse(JSON.stringify(d[k]||[]));
+  const tombs={};for(const k of VLISTS)tombs[k]=(M[k]||[]).filter(x=>x.removed);
+  for(const k of VLISTS){M[k]=JSON.parse(JSON.stringify(d[k]||[]));   /* removed rows stay, in ID order: the Context builder never sees them */
+    const have=new Set(M[k].map(x=>x.id));
+    for(const t of tombs[k]){if(have.has(t.id))continue;const n=idNum(PFX[k],t.id),at=M[k].findIndex(x=>idNum(PFX[k],x.id)>n);M[k].splice(at<0?M[k].length:at,0,t);}}
   assignIds(M,true);   /* the Context builder's IDs where it sends them; otherwise the order they arrive in */
   for(const k of ["product","sp","context"])if(d.dia&&d.dia[k])M.dia[k]=d.dia[k];
   if(!M.product.name&&d.product)M.product.name=d.product;

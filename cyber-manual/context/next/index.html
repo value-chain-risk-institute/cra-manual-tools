@@ -316,7 +316,7 @@ let M=blank();
 const ANNEX1=[['2b','Secure by default configuration'],['2c','Secure update mechanism'],['2d','Protection from unauthorized access'],['2e','Confidentiality protection'],['2f','Integrity protection'],['2g','Data minimisation'],['2h','Availability protection'],['2i','Minimisation of negative impact on other services'],['2j','Attack surface limitation'],['2k','Impact reduction'],['2l','Recording and monitoring'],['2m','Secure data removal / transfer']];
 function blank(){return {product:{name:'',model:'',version:'',family:''},PC:[],PI:[],LI:[],SP:[],FC:[],CC:[],CP:[],CZ:[],CU:[],RI:[],layout:{},fig:{}};}
 const ID_PREFIX={RI:'CR'}; /* the group renamed risks to circumstances leading to risk (CR), example v0.28, 21 Sep 2026; the internal kind stays RI so saved files keep working */
-function nextId(kind){const n=1+Math.max(0,...M[kind].map(x=>+((String(x.id||'').match(/(\d+)$/)||[0,0])[1])));return (ID_PREFIX[kind]||kind)+String(n).padStart(2,'0');}
+function nextId(kind){const n=Math.max((M.idFloor||{})[ID_PREFIX[kind]||kind]||1,1+Math.max(0,...M[kind].map(x=>+((String(x.id||'').match(/(\d+)$/)||[0,0])[1]))));return (ID_PREFIX[kind]||kind)+String(n).padStart(2,'0');}
 function add(kind,init={}){
   const b={id:nextId(kind),title:'',desc:''};
   if(kind==='SP')Object.assign(b,{on:[],annex:[]});
@@ -1012,11 +1012,11 @@ function dMentions(text,title){const kw=dKeywords(title);if(!kw.length)return fa
 function isManual(o){return !!(o&&o.tpl&&Array.isArray(o.fc)&&Array.isArray(o.pc)&&!o.FC);}
 function deriveFromManual(m){
   const pad=n=>String(n).padStart(2,'0');
-  const E={};for(const[k,src]of [['PC','pc'],['PI','pi'],['SP','sp'],['CC','cc'],['CP','cp'],['CZ','cz'],['CU','cu'],['FC','fc']])E[k]=(m[src]||[]).map((x,i)=>[x.id&&new RegExp('^'+k+'\\d+$').test(x.id)?x.id:k+pad(i+1),x]);   /* stored IDs since vcri.cybermanual/v1.0 */
+  const E={};for(const[k,src]of [['PC','pc'],['PI','pi'],['SP','sp'],['CC','cc'],['CP','cp'],['CZ','cz'],['CU','cu'],['FC','fc']])E[k]=(m[src]||[]).filter(x=>!x.removed).map((x,i)=>[x.id&&new RegExp('^'+k+'\\d+$').test(x.id)?x.id:k+pad(i+1),x]);   /* stored IDs since vcri.cybermanual/v1.0 */
   const how={};const put=(kind,i,field,t,rule)=>{const h=how[kind+'|'+i+'|'+field]||(how[kind+'|'+i+'|'+field]={});if(!(t in h))h[t]=rule;};
   const get=(kind,i,field)=>Object.keys(how[kind+'|'+i+'|'+field]||{});
   const LI=[];
-  for(const row of (m.pp||[])){const pis=dNamed(row.pi,['PI']),fcs=dNamed(row.fc,['FC']);   /* R1 */
+  for(const row of (m.pp||[]).filter(x=>!x.removed)){const pis=dNamed(row.pi,['PI']),fcs=dNamed(row.fc,['FC']);   /* R1 */
     LI.push({proto:row.proto||'',url:'',pi:pis[0]||'',port:row.port||'',dir:'both',enabled:row.enabled||'',fc:fcs});
     for(const f of fcs)for(const p of pis)put('FC',f,'pi',p,'R1');}
   for(const[i,cu]of E.CU){const tg=dNamed(cu.affected,['CC','CP','CZ','PC','PI']);if(/product boundary/i.test(cu.affected||''))tg.push(PRODUCT);for(const t of tg)put('CU',i,'on',t,'R3');}
@@ -1046,9 +1046,10 @@ function deriveFromManual(m){
   c.CU=E.CU.map(([id,x])=>({id,annex:refs(x.refs),title:x.title||'',desc:x.desc||'',on:get('CU',id,'on')}));
   c.FC=E.FC.map(([id,x])=>{const f={id,title:x.title||'',desc:x.desc||'',rfu:x.rfu||'',core:x.kind==='ancillary'?'ancillary':'core',use:'intended'};
     for(const k of ['pc','pi','cc','cp','cz','cu'])f[k]=get('FC',id,k);f.path=[...f.cp,...f.cc,...f.pi,...f.pc];return f;});   /* R8 */
-  c.RI=(m.ri||[]).map((x,i)=>{const id=/^CR\d+$/.test(x.id||'')?x.id:'CR'+pad(i+1),fc=dNamed(x.fc,['FC']),cu=dNamed(x.cu,['CU']);fc.forEach(t=>put('RI',id,'fc',t,'R6'));cu.forEach(t=>put('RI',id,'cu',t,'R6'));
+  c.RI=(m.ri||[]).filter(x=>!x.removed).map((x,i)=>{const id=/^CR\d+$/.test(x.id||'')?x.id:'CR'+pad(i+1),fc=dNamed(x.fc,['FC']),cu=dNamed(x.cu,['CU']);fc.forEach(t=>put('RI',id,'fc',t,'R6'));cu.forEach(t=>put('RI',id,'cu',t,'R6'));
     return {id,title:x.title||'',desc:x.desc||'',damage:x.risk||'',fc,cu,path:[]};});
   const rules={};for(const[key,h]of Object.entries(how))for(const[t,r]of Object.entries(h))rules[key+'|'+t]=r;
+  c.idFloor=Object.assign({},m.nextId||{});   /* the manual's next numbers: removed rows keep theirs, so new items start above */
   c.derived={from:p.name||'manual',date:new Date().toISOString().slice(0,10),rules};
   return c;
 }

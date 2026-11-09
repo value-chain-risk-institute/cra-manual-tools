@@ -610,15 +610,16 @@ function seedFromManual(m){
     if(!m||!m.product||!Array.isArray(m.fc)){alert("That is not a Cyber Manual Builder export.");return;}
     if(!m.tpl){alert("This manual was saved by the v0.25 builder. Open it in the current Cyber Manual Builder (it migrates on import), export it again, then import it here.");return;}
     const v=/^vcri\.cybermanual\/v(\d+)/.exec(m.schema||"");if(v&&+v[1]>1){alert("This manual uses a newer file format ("+m.schema+") than this tool reads.");return;}
+    const live=a=>(a||[]).filter(x=>!x.removed);   /* rows the manual marks removed are not offered */
     const idOr=(x,p,i)=>x&&x.id?x.id:padId(p,i);   /* stored IDs since vcri.cybermanual/v1.0; older files are numbered by position */
-    S.product={name:m.product.name||"",ver:m.product.tmv||"",purpose:[m.product.additional,(m.cc||[]).length?"Context: "+(m.cc||[]).map((c,i)=>idOr(c,"CC",i)+" "+c.title).join(", "):"",(m.cz||[]).length?"Zones: "+(m.cz||[]).map((z,i)=>idOr(z,"CZ",i)+" "+z.title).join(", "):""].filter(Boolean).join(" ")};
-    const ifs=[...(m.pi||[]).map((p,i)=>idOr(p,"PI",i)+" "+p.title),...(m.pp||[]).map((p,i)=>idOr(p,"PP",i)+" "+p.proto+(p.pi?" via "+p.pi:""))].filter(x=>x.trim());
+    S.product={name:m.product.name||"",ver:m.product.tmv||"",purpose:[m.product.additional,live(m.cc).length?"Context: "+live(m.cc).map((c,i)=>idOr(c,"CC",i)+" "+c.title).join(", "):"",live(m.cz).length?"Zones: "+live(m.cz).map((z,i)=>idOr(z,"CZ",i)+" "+z.title).join(", "):""].filter(Boolean).join(" ")};
+    const ifs=[...live(m.pi).map((p,i)=>idOr(p,"PI",i)+" "+p.title),...live(m.pp).map((p,i)=>idOr(p,"PP",i)+" "+p.proto+(p.pi?" via "+p.pi:""))].filter(x=>x.trim());
     S.nextId={A:1,IF:1,TS:1};
     S.interfaces=ifs.length?ifs.map(name=>({id:"",name,inScope:true,custom:!RUBRIC.interfaces_default.includes(name)})):blank().interfaces;
-    S.assets=(m.pc||[]).map(c=>({name:c.title,damage:""}));
-    S.cm={fc:(m.fc||[]).map((f,i)=>({id:idOr(f,"FC",i),title:f.title,cus:f.cus||""})),cu:(m.cu||[]).map((c,i)=>({id:idOr(c,"CU",i),title:c.title,affected:c.affected})),sp:(m.sp||[]).map((x,i)=>({id:idOr(x,"SP",i),title:x.title})),tpl:m.tpl,schema:m.schema||""};
+    S.assets=live(m.pc).map(c=>({name:c.title,damage:""}));
+    S.cm={fc:live(m.fc).map((f,i)=>({id:idOr(f,"FC",i),title:f.title,cus:f.cus||""})),cu:live(m.cu).map((c,i)=>({id:idOr(c,"CU",i),title:c.title,affected:c.affected})),sp:live(m.sp).map((x,i)=>({id:idOr(x,"SP",i),title:x.title})),tpl:m.tpl,schema:m.schema||""};
     S.scenarios=[]; migrate(); render(); save();
-    document.getElementById("cmlink").innerHTML=`Seeded from the manual for <b>${esc(m.product.name||"(unnamed)")}</b> (template v${esc(m.tpl)}${m.schema?"":"; this manual has no stored IDs yet, so they are taken from its order. Save it again in the Manual Builder to fix them"}): ${ifs.length} interfaces, ${(m.pc||[]).length} components, ${(m.fc||[]).length} functions, ${(m.cu||[]).length} conditions of use. Generate scenarios next.`;
+    document.getElementById("cmlink").innerHTML=`Seeded from the manual for <b>${esc(m.product.name||"(unnamed)")}</b> (template v${esc(m.tpl)}${m.schema?"":"; this manual has no stored IDs yet, so they are taken from its order. Save it again in the Manual Builder to fix them"}): ${ifs.length} interfaces, ${live(m.pc).length} components, ${live(m.fc).length} functions, ${live(m.cu).length} conditions of use. Generate scenarios next.`;
   }
 }
 /* ---------- the chain between the three tools (08 Nov 2026) ----------

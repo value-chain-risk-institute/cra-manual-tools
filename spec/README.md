@@ -155,7 +155,8 @@ The TARA Builder writes them this way: an accepted scenario with bearer `user` b
 
 - Rows are added, and nothing already in the manual is changed. The builder gives each new row its CRxx, CUxx or SPxx ID, attaches each condition-of-use candidate to the functions in its `fcIds`, and fills each CR's violated conditions of use from `cuIds` plus the IDs its `cuRefs` received.
 - Each new row keeps its `source`. When the same TARA is merged again, a row whose source is already in the manual is not added a second time, and the manual's row stays as the user edited it.
-- Rows in the manual whose source tool is in the file, but whose source IDs no longer appear in it, are listed for the user to check. They are not deleted.
+- A row the user removed from the manual is not added back by a later merge of the same source; the builder says so.
+- Rows in the manual whose source tool is in the file, but whose source IDs no longer appear in it, are listed for the user to check. They are not removed.
 
 ## 3. `vcri.cybermanual/v1.0`: the manual file
 
@@ -166,7 +167,9 @@ The file has two version fields, which change independently:
 - `schema`, the file format: `"vcri.cybermanual/v1.0"`.
 - `tpl`, the Cyber Manual Movement template version the content follows: currently `"0.39"`.
 
-The ten lists `pc`, `pi`, `pp`, `sp`, `cc`, `cp`, `cz`, `fc`, `cu` and `ri` hold one object per row, and every row has a stored `id` with its list's prefix (`PC`, `PI`, `PP`, `SP`, `CC`, `CP`, `CZ`, `FC`, `CU`, and `CR` for `ri`). The ID is the one printed in the manual. It is given once and never reused: deleting CU02 leaves CU01, CU03, and a reference to CU03 elsewhere in the manual still means the same row. `nextId` holds the next number for each prefix, for example `{"CU": 9, "CR": 10}`.
+The ten lists `pc`, `pi`, `pp`, `sp`, `cc`, `cp`, `cz`, `fc`, `cu` and `ri` hold one object per row, and every row has a stored `id` with its list's prefix (`PC`, `PI`, `PP`, `SP`, `CC`, `CP`, `CZ`, `FC`, `CU`, and `CR` for `ri`). The ID is the one printed in the manual. It is given once and never reused, and `nextId` holds the next number for each prefix, for example `{"CU": 9, "CR": 10}`.
+
+Rows are not deleted. Removing a row marks it with `removed` (the date, `"2026-11-09"`) and, optionally, `supersededBy` (the ID or IDs that replace it). The row keeps its ID and its old title, and the manual prints a line in its place: "CU02: Removed as of 9 November 2026, superseded by CU09. Was: Regular PLC code integrity checks." So the numbering stays continuous, a reference to CU02 in an earlier edition still finds an answer, and no other row ever gets CU02. Tools that offer rows to choose from leave removed rows out, but must keep them when they write the file. (The Manual Builder deletes a row outright only if nothing was ever typed into it, or if the user chooses "Delete for good" for a row no published edition contained. Even then, the number is not given out again.)
 
 | Path | Meaning |
 |---|---|
@@ -191,7 +194,7 @@ Thanks to Jürgen Messerer's review:
 3. Scenarios name functions and conditions of use as ID lists (`fcIds`, `cuIds`), and the export uses `fcIds` arrays instead of a comma-separated `fc`.
 4. Rows in the export have a local `ref`, and a CR points at condition-of-use candidates in the same file through `cuRefs`.
 5. The export's `ri` holds only circumstances the user can influence, as the GUIDANCE defines them, and the TARA Builder now writes it that way.
-6. The manual file has its own format version, `schema`, next to the template version `tpl`, and stored IDs on every row.
+6. The manual file has its own format version, `schema`, next to the template version `tpl`, and stored IDs on every row. Removing a row leaves a dated "removed" line, so IDs stay continuous and old references resolve.
 7. Versions have a minor number (`v1.0`), and every file may name its `generator`.
 
 Also taken in: scenarios may name the assets they harm (`assetIds`); `ts` became `source: {tool, ids}`; merging the same TARA again no longer duplicates rows and flags rows whose source is gone; and no rating field goes into the export.
