@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/value-chain-risk-institute/cra-manual-tools/tree/main/spec/vcri.tara-to-manual.v1.schema.json",
+  "title": "vcri.tara-to-manual/v1: TARA results in the Cyber Manual's shape",
+  "description": "Joshua Marpet and Cairn Viktor, The Value Chain Risk Institute, 2026. CC BY 4.0. See README.md.",
+  "type": "object",
+  "required": [
+    "schema",
+    "ri",
+    "cu",
+    "sp"
+  ],
+  "properties": {
+    "schema": {
+      "const": "vcri.tara-to-manual/v1"
+    },
+    "tpl": {
+      "type": "string"
+    },
+    "generated": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "product": {
+      "type": "string"
+    },
+    "ri": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "ts": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "desc": {
+            "type": "string"
+          },
+          "fc": {
+            "type": "string"
+          },
+          "cu": {
+            "type": "string"
+          },
+          "risk": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "cu": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "ts": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "desc": {
+            "type": "string"
+          },
+          "affected": {
+            "type": "string"
+          },
+          "refs": {
+            "type": "string"
+          },
+          "fc": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "sp": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "ts": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "desc": {
+            "type": "string"
+          },
+          "comp": {
+            "type": "string"
+          },
+          "refs": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

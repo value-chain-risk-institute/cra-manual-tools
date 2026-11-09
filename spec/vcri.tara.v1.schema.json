@@ -1,0 +1,259 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/value-chain-risk-institute/cra-manual-tools/tree/main/spec/vcri.tara.v1.schema.json",
+  "title": "vcri.tara/v1: a TARA Builder file",
+  "description": "Joshua Marpet and Cairn Viktor, The Value Chain Risk Institute, 2026. CC BY 4.0. See README.md.",
+  "type": "object",
+  "required": [
+    "schema",
+    "data"
+  ],
+  "properties": {
+    "schema": {
+      "const": "vcri.tara/v1"
+    },
+    "spec": {
+      "type": "string"
+    },
+    "rubric": {
+      "type": "string"
+    },
+    "generated": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "product",
+        "interfaces",
+        "ifIds",
+        "assets",
+        "scenarios",
+        "nextId"
+      ],
+      "properties": {
+        "product": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "ver": {
+              "type": "string"
+            },
+            "purpose": {
+              "type": "string"
+            }
+          }
+        },
+        "interfaces": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "custIf": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ifIds": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^IF[0-9]{2,}$"
+          }
+        },
+        "assets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "name"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^A[0-9]{2,}$"
+              },
+              "name": {
+                "type": "string"
+              },
+              "damage": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "scenarios": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "cls",
+              "iface",
+              "text",
+              "accepted"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^TS[0-9]{2,}$"
+              },
+              "legacyId": {
+                "type": "string"
+              },
+              "key": {
+                "type": "string"
+              },
+              "cls": {
+                "enum": [
+                  "AUTH",
+                  "INTEG",
+                  "CONF",
+                  "AVAIL",
+                  "AUTHZ",
+                  "FRESH",
+                  "PROV",
+                  "PHYS"
+                ]
+              },
+              "clsName": {
+                "type": "string"
+              },
+              "iface": {
+                "type": "string"
+              },
+              "ifaceId": {
+                "type": "string",
+                "pattern": "^IF[0-9]{2,}$"
+              },
+              "text": {
+                "type": "string"
+              },
+              "accepted": {
+                "type": "boolean"
+              },
+              "feas": {
+                "type": "object",
+                "properties": {
+                  "time": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 4
+                  },
+                  "expertise": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 4
+                  },
+                  "knowledge": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 4
+                  },
+                  "window": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 4
+                  },
+                  "equipment": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 4
+                  }
+                }
+              },
+              "imp": {
+                "type": "object",
+                "properties": {
+                  "safety": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 3
+                  },
+                  "operational": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 3
+                  },
+                  "financial": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 3
+                  },
+                  "privacy": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 3
+                  }
+                }
+              },
+              "treatment": {
+                "enum": [
+                  "",
+                  "Reduce (add control)",
+                  "Retain (accept residual)",
+                  "Avoid (remove function)",
+                  "Transfer (contract/insurance)"
+                ]
+              },
+              "bearer": {
+                "enum": [
+                  "",
+                  "Manufacturer → security property",
+                  "User → condition of use"
+                ]
+              },
+              "annex": {
+                "type": "string",
+                "pattern": "^(|2[b-m])$"
+              },
+              "fc": {
+                "type": "string"
+              },
+              "cu": {
+                "type": "string"
+              },
+              "damage": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "nextId": {
+          "type": "object",
+          "required": [
+            "A",
+            "IF",
+            "TS"
+          ],
+          "properties": {
+            "A": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "IF": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "TS": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "cm": {
+          "type": [
+            "object",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

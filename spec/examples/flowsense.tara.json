@@ -1,0 +1,132 @@
+{
+  "schema": "vcri.tara/v1",
+  "spec": "https://github.com/value-chain-risk-institute/cra-manual-tools/tree/main/spec",
+  "rubric": "tara-rubric/0.1",
+  "generated": "2026-11-09T00:00:00.000Z",
+  "data": {
+    "product": {
+      "name": "FlowSense PLC Gateway 200",
+      "ver": "HW rev C · FW 3.2",
+      "purpose": "Industrial protocol gateway bridging field sensors to a plant SCADA network; deployed inside a segmented OT network, remote firmware updates over TLS."
+    },
+    "interfaces": [
+      "Ethernet/IP",
+      "USB",
+      "Cloud/API",
+      "Serial/UART"
+    ],
+    "custIf": [],
+    "assets": [
+      {
+        "name": "PLC control logic",
+        "damage": "unsafe or out-of-range actuator command",
+        "id": "A01"
+      },
+      {
+        "name": "Firmware image",
+        "damage": "persistent implant / loss of trust in the device",
+        "id": "A02"
+      }
+    ],
+    "scenarios": [
+      {
+        "id": "TS16",
+        "key": "PHYS|USB",
+        "cls": "PHYS",
+        "clsName": "Physical assumption violated",
+        "iface": "USB",
+        "ifaceId": "IF02",
+        "text": "Physical or side-channel access at USB defeats a protection the product assumes the environment provides.",
+        "accepted": true,
+        "feas": {
+          "time": 0,
+          "expertise": 1,
+          "knowledge": 1,
+          "window": 3,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 2,
+          "operational": 2,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "Reduce (add control)",
+        "bearer": "User → condition of use",
+        "annex": "2j",
+        "fc": "FC01 Program a PLC",
+        "cu": "CU01 Restrict physical access",
+        "damage": "Malware brought in over USB reaches the plant network."
+      },
+      {
+        "id": "TS23",
+        "key": "PROV|Cloud/API",
+        "cls": "PROV",
+        "clsName": "Provenance assumption violated",
+        "iface": "Cloud/API",
+        "ifaceId": "IF03",
+        "text": "A component, update, or peer delivered via Cloud/API is not from the source the product assumes (supply-chain / substitution).",
+        "accepted": true,
+        "feas": {
+          "time": 1,
+          "expertise": 2,
+          "knowledge": 1,
+          "window": 0,
+          "equipment": 0
+        },
+        "imp": {
+          "safety": 3,
+          "operational": 3,
+          "financial": 2,
+          "privacy": 0
+        },
+        "treatment": "Reduce (add control)",
+        "bearer": "Manufacturer → security property",
+        "annex": "2c",
+        "fc": "FC04 Install security updates",
+        "cu": "",
+        "damage": "A manipulated update takes over the gateway and sends unsafe commands to the PLC."
+      },
+      {
+        "id": "TS01",
+        "key": "AUTH|Ethernet/IP",
+        "cls": "AUTH",
+        "clsName": "Identity assumption violated",
+        "iface": "Ethernet/IP",
+        "ifaceId": "IF01",
+        "text": "An actor reaches Ethernet/IP without being the identity the product assumes, bypassing or forging authentication.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2d",
+        "fc": "",
+        "cu": "",
+        "damage": ""
+      }
+    ],
+    "ifIds": {
+      "Ethernet/IP": "IF01",
+      "USB": "IF02",
+      "Cloud/API": "IF03",
+      "Serial/UART": "IF04"
+    },
+    "nextId": {
+      "A": 3,
+      "IF": 5,
+      "TS": 33
+    }
+  }
+}

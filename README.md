@@ -88,6 +88,10 @@ owns the template, the scenario libraries, and the worked examples.**
 
 [`/examples`](./examples) holds three illustrative Cyber Manuals for real products (OpenWrt One, KeePassXC, Home Assistant Green), built from public documentation only, with their fact sheets, diagrams and rendered PDFs. None is the manufacturer's manual, and none claims CRA conformity. It also holds `derive_links.py`, the reference version of the context builder's "Derive from a manual" rules, and the held-out test that measures them.
 
+## File formats
+
+[`/spec`](./spec) describes the files the three tools read and write, so other tools can exchange work with them: the TARA file (`vcri.tara/v1`, with stable IDs for assets, interfaces and threat scenarios), the TARA's results in the manual's shape (`vcri.tara-to-manual/v1`), and the parts of the manual file the tools read. Each format is versioned, with JSON Schemas and sample files. The specification is CC BY 4.0: any tool, under any licence, may implement it with credit.
+
 ## Contributing
 
 Issues and pull requests welcome, especially from the working group. Good first
