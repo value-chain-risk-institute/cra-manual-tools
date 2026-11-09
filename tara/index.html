@@ -70,6 +70,23 @@ details{margin:6px 0} summary{cursor:pointer;font-size:12.5px;color:var(--accent
 .muted{color:var(--muted)}
 @media(max-width:720px){.grid2,.ladder{grid-template-columns:1fr}}
 @media print{header,.noprint{display:none}body{background:#fff}.panel{box-shadow:none;border-color:#ccc;break-inside:avoid}}
+
+/* 9 Nov 2026: one top bar for all three CRA tools (File, Connect, then the everyday actions) */
+details.menu{position:relative;display:inline-block}
+details.menu>summary{list-style:none;cursor:pointer}
+details.menu>summary::-webkit-details-marker{display:none}
+details.menu>summary::after{content:"\25BE";margin-left:4px;font-size:.85em;opacity:.7}
+details.menu[open]>summary{border-color:var(--accent)}
+details.menu .mlist{position:absolute;top:calc(100% + 4px);left:0;z-index:40;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:6px;min-width:250px;max-width:calc(100vw - 32px);box-shadow:0 10px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;gap:2px}
+details.menu .mlist>button,details.menu .mlist>a,details.menu .mlist>label{display:flex;align-items:center;gap:6px;width:100%;justify-content:flex-start;text-align:left;background:transparent;border:1px solid transparent;border-radius:7px;padding:7px 10px;font-size:13px;color:inherit;text-decoration:none;white-space:normal;cursor:pointer;box-sizing:border-box}
+details.menu .mlist>button:hover,details.menu .mlist>a:hover{background:var(--field);border-color:var(--line)}
+details.menu .mlist .mhint{font-size:11.5px;color:var(--muted);padding:6px 10px 2px;text-transform:uppercase;letter-spacing:.04em}
+details.menu .mlist svg{width:15px;height:15px;flex:none}
+.starthint{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 16px 0;padding:8px 12px;border:1px dashed var(--line);border-radius:8px;font-size:13px;color:var(--muted)}
+.starthint button{font-size:13px}
+details.menu>summary.mini{display:inline-block;font-family:var(--ui);font-size:12px;border:1px solid var(--line);background:var(--field);color:var(--ink);border-radius:7px;padding:3px 8px}
+details.menu>summary.mini:hover{border-color:var(--accent)}
+@media print{details.menu,.starthint{display:none!important}}
 </style>
 </head>
 <body>
@@ -132,20 +149,29 @@ details{margin:6px 0} summary{cursor:pointer;font-size:12.5px;color:var(--accent
     <span class="tag">CRA Annex VII · v0.3 · loops with the Cyber Manual Builder (template v0.39)</span>
     <span class="privacy"><span class="dot"></span>All local. Nothing is transmitted.</span>
     <span class="sp"></span>
+    <span style="display:inline-flex;gap:6px;align-items:center;flex-wrap:nowrap">
+    <details class="menu"><summary class="mini">File</summary><div class="mlist">
+    <button class="mini" id="btnExample" onclick="seedExample()">Load the example</button>
+    <button class="mini" onclick="wipe()">New (clear this assessment)</button>
+    <button class="mini" onclick="document.getElementById('imp').click()">Open from a file…</button>
+    <button class="mini" onclick="exportJSON()">Save to a file</button>
+    </div></details>
+    <details class="menu"><summary class="mini">Connect</summary><div class="mlist">
+      <div class="mhint">Bring in</div>
+    <button class="mini" onclick="bringManual()" title="Seed this assessment from the manual last saved in the Cyber Manual Builder in this browser">From the Manual Builder</button>
+    <button class="mini" onclick="document.getElementById('impcm').click()" title="Seed this assessment from a Cyber Manual Builder export">From a manual file…</button>
+      <div class="mhint">Send</div>
+    <a class="mini" href="/cra-manual-builder/#bring=tara" title="Open the Cyber Manual Builder and merge these risks, conditions and properties into the manual there. Your work here is already saved.">Send to the Manual Builder →</a>
+    <button class="mini" onclick="exportForManual()" title="Risks, conditions of use and security properties in the template's shape">Save for the Manual Builder (file)</button>
+    </div></details>
+    <button class="mini primary" onclick="window.print()">Print / PDF</button>
     <button class="mini" onclick="toggleTheme()">Theme</button>
-    <button class="mini" onclick="seedExample()">Load example</button>
-    <button class="mini" onclick="exportJSON()">Export JSON</button>
-    <button class="mini" onclick="document.getElementById('imp').click()">Import</button>
+    </span>
     <input id="imp" type="file" accept="application/json" style="display:none" onchange="importJSON(event)">
-    <button class="mini" onclick="document.getElementById('impcm').click()" title="Seed this assessment from a Cyber Manual Builder export">Import Cyber Manual JSON</button>
     <input id="impcm" type="file" accept="application/json" style="display:none" onchange="importCyberManual(event)">
-    <button class="mini" onclick="bringManual()" title="Seed this assessment from the manual last saved in the Cyber Manual Builder in this browser">Bring in from the Manual Builder</button>
-    <a class="mini" href="/cra-manual-builder/#bring=tara" title="Open the Cyber Manual Builder and merge these risks, conditions and properties into the manual there. Your work here is already saved." style="text-decoration:none;display:inline-block;padding:3px 8px;font-size:12px;border:1px solid var(--line,#ccd);border-radius:6px;color:inherit;background:var(--panel,#fff)">Send to the Manual Builder →</a>
-    <button class="mini" onclick="exportForManual()" title="Risks, conditions of use and security properties in the template's shape">Export for the Cyber Manual</button>
-    <button class="mini" onclick="window.print()">Print / PDF</button>
-    <button class="mini" onclick="wipe()">Reset</button>
   </div>
 </header>
+<div class="starthint" id="startHint" data-ex="btnExample" hidden>New here? <button class="mini" type="button">Start with the example</button> or describe your product below.</div>
 <main>
 
 <div class="panel" style="border-left:4px solid var(--accent);background:var(--accent-soft)">
@@ -162,7 +188,7 @@ details{margin:6px 0} summary{cursor:pointer;font-size:12.5px;color:var(--accent
 
 <div class="panel">
   <h2>1 · Product model</h2>
-  <p class="hint">The product with digital elements under assessment. Use <b>Import Cyber Manual JSON</b> (top bar) to seed this from a Cyber Manual Builder export: interfaces from PI and PP, assets from PC, plus the manual's functions and conditions of use for reference. Or enter it directly.</p>
+  <p class="hint">The product with digital elements under assessment. Use <b>Connect, From a manual file</b> (top bar) to seed this from a Cyber Manual Builder export: interfaces from PI and PP, assets from PC, plus the manual's functions and conditions of use for reference. Or enter it directly.</p>
   <div id="cmlink" class="small" style="margin:0 0 8px"></div>
   <div class="grid2">
     <div><label>Product name</label><input type="text" id="pname" oninput="save()" placeholder="e.g. FlowSense PLC Gateway 200"></div>
@@ -507,7 +533,7 @@ function manualShaped(acc){
       h+=`</tbody></table>`;}
   }
   if(sp.length){h+=`<div class="small" style="margin:14px 0 2px"><b>2.2 Security-property candidates</b> (manufacturer-borne treatments)</div><table><thead><tr><th>Affected</th><th>Title</th><th>Description</th><th>Annex I</th></tr></thead><tbody>`+sp.map(c=>`<tr><td>${esc(c.comp)}</td><td>${esc(c.title)}</td><td>${esc(c.desc)}</td><td>${esc(c.refs)}</td></tr>`).join("")+`</tbody></table>`;}
-  h+=`<p class="small muted" style="margin-top:8px">Export for the Cyber Manual (top bar) writes these lists as a file the Cyber Manual Builder merges into an existing manual: each circumstance lands in its function's subchapter, and each condition-of-use candidate is attached to its function. IDs are assigned by the builder on import; the titles here are drafts to be edited there.</p></div>`;
+  h+=`<p class="small muted" style="margin-top:8px">Connect, Save for the Manual Builder (top bar) writes these lists as a file the Cyber Manual Builder merges into an existing manual: each circumstance lands in its function's subchapter, and each condition-of-use candidate is attached to its function. IDs are assigned by the builder on import; the titles here are drafts to be edited there.</p></div>`;
   return h;
 }
 function manualExport(){   /* the lists the Manual Builder merges, or null if nothing is accepted yet */
@@ -544,7 +570,7 @@ function seedFromManual(m){
    Same site, so the tools read each other's work in this browser; nothing is uploaded. Bring in reads the manual last saved in the
    Manual Builder. The Manual Builder asks for this tool's risks and conditions by opening it in a hidden frame with #export=manual. */
 function bringManual(){let m=null;try{m=JSON.parse(localStorage.getItem("vcri.cm.manual.v1")||"null");}catch(e){}
-  if(!m){alert("No manual is saved in the CRA Manual Builder in this browser yet. Open it, press Save there, then come back. (Or use Import Cyber Manual JSON with an exported file.)");return;}
+  if(!m){alert("No manual is saved in the CRA Manual Builder in this browser yet. Open it, press Save there, then come back. (Or use Connect, From a manual file.)");return;}
   if(S.scenarios.length&&!confirm("Seeding from the manual replaces the product, interfaces, assets and scenarios here. Continue?"))return;
   seedFromManual(m);}
 if(/export=manual/.test(location.hash)&&window.parent!==window){
@@ -560,5 +586,16 @@ if(/bring=manual/.test(location.hash)){history.replaceState(null,"",location.pat
 <style>.vcri-follow{max-width:960px;margin:2rem auto 1.5rem;padding:0 1.5rem;text-align:center;font-size:.85rem;line-height:2;opacity:.9}.vcri-follow a{white-space:nowrap}@media print{.vcri-follow,.vcri-share{display:none!important}}</style>
 <div class="vcri-follow">Follow The Value Chain Risk Institute: <a href="https://www.linkedin.com/company/valuechainrisk" rel="me noopener" target="_blank">LinkedIn</a> &middot; <a href="https://bsky.app/profile/valuechainrisk.org" rel="me noopener" target="_blank">Bluesky</a> &middot; <a href="https://infosec.exchange/@valuechainrisk" rel="me noopener" target="_blank">Mastodon</a> &middot; <a href="https://x.com/ValueChainRisk" rel="me noopener" target="_blank">X (@ValueChainRisk)</a> &middot; <a href="https://buttondown.com/vcri" rel="me noopener" target="_blank">Newsletter</a> &middot; <a href="https://github.com/value-chain-risk-institute" rel="me noopener" target="_blank">GitHub</a><br><a href="/tools/">All tools</a> &middot; <a href="/media/">Talks and videos</a> &middot; <a href="/brand/">Press kit</a></div>
 <!-- vcri-social:end -->
+
+<script>
+/* 9 Nov 2026: File / Connect menus close after a choice, on Escape, and when you click elsewhere; one open at a time */
+(()=>{const ms=[...document.querySelectorAll('details.menu')];
+ ms.forEach(d=>{d.addEventListener('toggle',()=>{if(!d.open)return;ms.forEach(o=>{if(o!==d)o.open=false;});const l=d.querySelector('.mlist');l.style.left='';l.style.right='';if(l.getBoundingClientRect().right>innerWidth-8){l.style.left='auto';l.style.right='0';}});
+   d.querySelector('.mlist').addEventListener('click',e=>{if(e.target.closest('button,a'))d.open=false;});});
+ document.addEventListener('click',e=>{ms.forEach(d=>{if(d.open&&!d.contains(e.target))d.open=false;});});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')ms.forEach(d=>d.open=false);});
+ const h=document.getElementById('startHint');let has=true;try{has=!!localStorage.getItem("vcri-tara");}catch(e){}
+ if(h&&!has){h.hidden=false;h.querySelector('button').addEventListener('click',()=>{h.hidden=true;document.getElementById(h.dataset.ex).click();});}})();
+</script>
 </body>
 </html>

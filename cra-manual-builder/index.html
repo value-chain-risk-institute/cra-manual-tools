@@ -179,6 +179,21 @@ footer{padding:14px 16px;color:var(--muted);font-size:11.5px;border-top:1px soli
 .doc img.dia{max-width:100%;height:auto;display:block;border:1px solid #e6e2d6;background:#fff;margin:6px 0 12px}
 .doc .credit-dia{font-family:var(--ui);font-size:10.5px;color:#7a7768;margin:-8px 0 12px}
 .doc ul.toc{list-style:none;padding:0;margin:0 0 8px;font-size:13px;line-height:1.7}
+
+/* 9 Nov 2026: one top bar for all three CRA tools (File, Connect, then the everyday actions) */
+details.menu{position:relative;display:inline-block}
+details.menu>summary{list-style:none;cursor:pointer}
+details.menu>summary::-webkit-details-marker{display:none}
+details.menu>summary::after{content:"\25BE";margin-left:4px;font-size:.85em;opacity:.7}
+details.menu[open]>summary{border-color:var(--accent)}
+details.menu .mlist{position:absolute;top:calc(100% + 4px);left:0;z-index:40;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:6px;min-width:250px;max-width:calc(100vw - 32px);box-shadow:0 10px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;gap:2px}
+details.menu .mlist>button,details.menu .mlist>a,details.menu .mlist>label{display:flex;align-items:center;gap:6px;width:100%;justify-content:flex-start;text-align:left;background:transparent;border:1px solid transparent;border-radius:7px;padding:7px 10px;font-size:13px;color:inherit;text-decoration:none;white-space:normal;cursor:pointer;box-sizing:border-box}
+details.menu .mlist>button:hover,details.menu .mlist>a:hover{background:var(--field);border-color:var(--line)}
+details.menu .mlist .mhint{font-size:11.5px;color:var(--muted);padding:6px 10px 2px;text-transform:uppercase;letter-spacing:.04em}
+details.menu .mlist svg{width:15px;height:15px;flex:none}
+.starthint{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 16px 0;padding:8px 12px;border:1px dashed var(--line);border-radius:8px;font-size:13px;color:var(--muted)}
+.starthint button{font-size:13px}
+@media print{details.menu,.starthint{display:none!important}}
 </style>
 </head>
 <body>
@@ -242,19 +257,26 @@ footer{padding:14px 16px;color:var(--muted);font-size:11.5px;border-top:1px soli
   </div>
   <div class="tools">
     <label class="btn" id="viewL" hidden title="Product family: print the manual for every member, or one member's edition with what does not apply to it left out">Manual for <select id="view" aria-label="Manual for which family member"></select></label>
-    <button class="btn" id="example"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>Load example</button>
-    <button class="btn" id="impSbom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Import SBOM</button>
+    <details class="menu"><summary class="btn">File</summary><div class="mlist">
+    <button class="btn" id="example"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>Load the example</button>
+    <button class="btn" id="impJson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 9l-2 3 2 3M16 9l2 3-2 3"/></svg>Open from a file…</button>
+    <button class="btn" id="expJson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5-5 5 5M12 5v10"/></svg>Save to a file</button>
+    <button class="btn" id="impSbom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Import an SBOM…</button>
+    </div></details>
+    <details class="menu"><summary class="btn">Connect</summary><div class="mlist">
+      <div class="mhint">Bring in, from this browser</div>
+      <button type="button" id="bringCtx" title="Lists and every diagram">From the context builder</button>
+      <button type="button" id="bringTara" title="Risks, conditions of use and security properties">From the TARA Builder</button>
+    </div></details>
     <button class="btn pri" id="save" title="Keep this manual in this browser (Ctrl+S or ⌘S). Nothing is uploaded.">Save</button>
     <span id="saveState" class="savestate" aria-live="polite"></span>
-    <label class="btn" title="Bring lists in from the other two tools in this browser. Nothing is uploaded.">Bring in <select id="bring" aria-label="Bring in from"><option value="">from…</option><option value="context" title="Lists and every diagram">Context builder</option><option value="tara" title="Risks, conditions of use and security properties">TARA Builder</option></select></label>
-    <button class="btn" id="impJson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 9l-2 3 2 3M16 9l2 3-2 3"/></svg>Import JSON</button>
-    <button class="btn" id="expJson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5-5 5 5M12 5v10"/></svg>Export JSON</button>
     <!-- Light output retired 2026-09-13: CMM template v0.23 (18 Aug 2026) merged the light manual into the Quick-reference front layer; one template now. -->
     <button class="btn pri" id="print"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>Print / PDF</button>
     <button class="btn" id="theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z"/></svg></button>
   </div>
 </header>
 
+<div class="starthint" id="startHint" data-ex="example" hidden>New here? <button class="btn" type="button">Start with the example</button> or just start filling in the sections below.</div>
 <div class="tabbar">
   <button id="tabEdit" class="on">Edit</button>
   <button id="tabPrev">Preview</button>
@@ -938,7 +960,7 @@ function saveState(){const st=$("#saveState");if(!st)return;const dirty=snapshot
   const u=$("#undo");if(u)u.onclick=()=>{M=JSON.parse(UNDO);UNDO=null;NOTE="";buildForm();render();};
   const f=$("#forget");if(f)f.onclick=()=>{if(!confirm("Remove the saved copy of this manual from this browser? What is on screen stays until you close the page."))return;try{localStorage.removeItem(SKEY);}catch(e){}SAVED=null;saveState();};}
 function saveNow(){try{const s=snapshot();localStorage.setItem(SKEY,s);SAVED=s;UNDO=null;NOTE="";saveState();}
-  catch(e){alert("This browser would not store the manual (it may be too large, for example with many embedded images, or storage may be blocked). Use Export JSON to keep a copy.");}}
+  catch(e){alert("This browser would not store the manual (it may be too large, for example with many embedded images, or storage may be blocked). Use File, Save to a file to keep a copy.");}}
 function restore(){try{const s=localStorage.getItem(SKEY);if(s){M=migrate(JSON.parse(s));SAVED=snapshot();}}catch(e){}}
 window.addEventListener("beforeunload",e=>{if(snapshot()!==SAVED&&(SAVED!==null||M.product.name)){e.preventDefault();e.returnValue="";}});
 document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"){e.preventDefault();saveNow();}});
@@ -968,13 +990,13 @@ function applyContext(d){
   NOTE="brought in from the Context builder";buildForm();render();}
 async function bringIn(tool){
   const st=$("#saveState");if(st)st.textContent="Asking "+TOOLS[tool].name+"…";
-  let d;try{d=await askTool(tool);}catch(e){alert("Could not reach "+TOOLS[tool].name+" in this browser. Open it once, then try again, or use its Export and Import JSON here.");saveState();return;}
+  let d;try{d=await askTool(tool);}catch(e){alert("Could not reach "+TOOLS[tool].name+" in this browser. Open it once, then try again, or save it to a file there and use File, Open from a file here.");saveState();return;}
   if(d.error){alert(d.error);saveState();return;}
   if(tool==="context")applyContext(d.data);
   else{UNDO=snapshot();mergeTara(d.data);NOTE="merged from the TARA Builder";}
   saveState();}
 $("#save").addEventListener("click",saveNow);
-$("#bring").addEventListener("change",e=>{const v=e.target.value;e.target.value="";if(v)bringIn(v);});
+$("#bringCtx").addEventListener("click",()=>bringIn("context"));$("#bringTara").addEventListener("click",()=>bringIn("tara"));
 
 /* ---------- wiring ---------- */
 $("#example").addEventListener("click",()=>{M=example();buildForm();render();});
@@ -1012,5 +1034,16 @@ restore();buildForm();render();
 <style>.vcri-follow{max-width:960px;margin:2rem auto 1.5rem;padding:0 1.5rem;text-align:center;font-size:.85rem;line-height:2;opacity:.9}.vcri-follow a{white-space:nowrap}@media print{.vcri-follow,.vcri-share{display:none!important}}</style>
 <div class="vcri-follow">Follow The Value Chain Risk Institute: <a href="https://www.linkedin.com/company/valuechainrisk" rel="me noopener" target="_blank">LinkedIn</a> &middot; <a href="https://bsky.app/profile/valuechainrisk.org" rel="me noopener" target="_blank">Bluesky</a> &middot; <a href="https://infosec.exchange/@valuechainrisk" rel="me noopener" target="_blank">Mastodon</a> &middot; <a href="https://x.com/ValueChainRisk" rel="me noopener" target="_blank">X (@ValueChainRisk)</a> &middot; <a href="https://buttondown.com/vcri" rel="me noopener" target="_blank">Newsletter</a> &middot; <a href="https://github.com/value-chain-risk-institute" rel="me noopener" target="_blank">GitHub</a><br><a href="/tools/">All tools</a> &middot; <a href="/media/">Talks and videos</a> &middot; <a href="/brand/">Press kit</a></div>
 <!-- vcri-social:end -->
+
+<script>
+/* 9 Nov 2026: File / Connect menus close after a choice, on Escape, and when you click elsewhere; one open at a time */
+(()=>{const ms=[...document.querySelectorAll('details.menu')];
+ ms.forEach(d=>{d.addEventListener('toggle',()=>{if(!d.open)return;ms.forEach(o=>{if(o!==d)o.open=false;});const l=d.querySelector('.mlist');l.style.left='';l.style.right='';if(l.getBoundingClientRect().right>innerWidth-8){l.style.left='auto';l.style.right='0';}});
+   d.querySelector('.mlist').addEventListener('click',e=>{if(e.target.closest('button,a'))d.open=false;});});
+ document.addEventListener('click',e=>{ms.forEach(d=>{if(d.open&&!d.contains(e.target))d.open=false;});});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')ms.forEach(d=>d.open=false);});
+ const h=document.getElementById('startHint');let has=true;try{has=!!localStorage.getItem("vcri.cm.manual.v1");}catch(e){}
+ if(h&&!has){h.hidden=false;h.querySelector('button').addEventListener('click',()=>{h.hidden=true;document.getElementById(h.dataset.ex).click();});}})();
+</script>
 </body>
 </html>

@@ -136,6 +136,22 @@ footer{padding:14px 16px;color:var(--muted);font-size:11.5px;border-top:1px soli
 .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:6px;font-size:12.5px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:20}
 .toast.on{opacity:1}
 @media print{header,.method,.checks,.figure .fhd,.figure .legend,.col.left,footer,.actions{display:none!important}.layout{display:block;padding:0}.doc{box-shadow:none;border-radius:0;padding:0}.figure{box-shadow:none;border:none}body{background:#fff}}
+
+/* 9 Nov 2026: one top bar for all three CRA tools (File, Connect, then the everyday actions) */
+details.menu{position:relative;display:inline-block}
+details.menu>summary{list-style:none;cursor:pointer}
+details.menu>summary::-webkit-details-marker{display:none}
+details.menu>summary::after{content:"\25BE";margin-left:4px;font-size:.85em;opacity:.7}
+details.menu[open]>summary{border-color:var(--accent)}
+details.menu .mlist{position:absolute;top:calc(100% + 4px);left:0;z-index:40;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:6px;min-width:250px;max-width:calc(100vw - 32px);box-shadow:0 10px 28px rgba(0,0,0,.2);display:flex;flex-direction:column;gap:2px}
+details.menu .mlist>button,details.menu .mlist>a,details.menu .mlist>label{display:flex;align-items:center;gap:6px;width:100%;justify-content:flex-start;text-align:left;background:transparent;border:1px solid transparent;border-radius:7px;padding:7px 10px;font-size:13px;color:inherit;text-decoration:none;white-space:normal;cursor:pointer;box-sizing:border-box}
+details.menu .mlist>button:hover,details.menu .mlist>a:hover{background:var(--field);border-color:var(--line)}
+details.menu .mlist .mhint{font-size:11.5px;color:var(--muted);padding:6px 10px 2px;text-transform:uppercase;letter-spacing:.04em}
+details.menu .mlist svg{width:15px;height:15px;flex:none}
+.starthint{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 16px 0;padding:8px 12px;border:1px dashed var(--line);border-radius:8px;font-size:13px;color:var(--muted)}
+.starthint button{font-size:13px}
+@media print{details.menu,.starthint{display:none!important}}
+@media (min-width:760px){header .actions{flex-wrap:nowrap;flex:none}}
 </style>
 </head>
 <body>
@@ -195,14 +211,18 @@ footer{padding:14px 16px;color:var(--muted);font-size:11.5px;border-top:1px soli
 <header>
   <div class="brand"><b>Context &amp; Conditions of Use Builder</b><span class="tag RI" style="font-size:10px">PREVIEW: user view</span><span>Cyber Manual · structure per template v0.39 and the working group’s Engineering PC example v0.40 (26 Oct 2026) · free · nothing is uploaded · saved separately from the main tool · <a href="/cyber-manual/context/">main tool, without the user view</a></span></div>
   <div class="actions">
-    <button class="btn" id="btnExample" title="Load the working group’s fictitious Engineering PC example">Load Engineering PC example</button>
+    <details class="menu"><summary class="btn">File</summary><div class="mlist">
+    <button class="btn" id="btnExample" title="Load the working group’s fictitious Engineering PC example">Load the Engineering PC example</button>
     <button class="btn" id="btnExample2" title="Load a fictitious consumer product with an ordinary-skill user (VCRI illustration, not the group’s example)">Load Heat Pump Controller example (consumer)</button>
     <button class="btn" id="btnNew">New</button>
-    <button class="btn" id="btnImport">Import JSON</button>
-    <button class="btn" id="btnFromManual" title="Bring in the manual last saved in the CRA Manual Builder in this browser, and derive the links from it">Bring in from the Manual Builder</button>
-    <button class="btn" id="btnDerive" title="Open a manual saved from the CRA Manual Builder (Export JSON). Lists are filled from it and the links derived by rule, each marked as suggested until you decide.">Derive from a manual</button>
-    <button class="btn" id="btnExport">Export JSON</button>
-    <button class="btn" id="btnSvg">Download diagram (SVG)</button>
+    <button class="btn" id="btnImport">Open from a file…</button>
+    <button class="btn" id="btnExport">Save to a file</button>
+    </div></details>
+    <details class="menu"><summary class="btn">Connect</summary><div class="mlist">
+      <div class="mhint">Bring in</div>
+    <button class="btn" id="btnFromManual" title="Bring in the manual last saved in the CRA Manual Builder in this browser, and derive the links from it">From the Manual Builder</button>
+    <button class="btn" id="btnDerive" title="Open a manual saved from the CRA Manual Builder (File, Save to a file). Lists are filled from it and the links derived by rule, each marked as suggested until you decide.">Derive from a manual file…</button>
+    </div></details>
     <button class="btn primary" id="btnPrint">Print / PDF</button>
     <input type="file" id="fileIn" accept="application/json" hidden>
     <input type="file" id="fileManual" accept="application/json,.json" hidden>
@@ -240,6 +260,7 @@ footer{padding:14px 16px;color:var(--muted);font-size:11.5px;border-top:1px soli
             <label><input type="checkbox" id="figLegend" checked> key</label>
             <label title="Figure number used in the caption, as numbered in your manual">Fig. <input type="text" id="figNum" placeholder="n"></label>
             <button class="btn" id="figArrange" aria-pressed="false" title="Drag boxes, or a whole zone, to tidy the drawing. Positions only: nothing in the lists changes.">Arrange</button>
+            <button class="btn" id="btnSvg">Download (SVG)</button>
             <button class="btn" id="figReset" title="Put every box back where the tool places it, on all diagram layers">Reset layout</button>
             <span id="uvCtl" style="display:none;gap:8px;align-items:center;flex-wrap:wrap;border-left:1px solid var(--line);padding-left:8px"><span class="lbl" style="font-size:10.5px;letter-spacing:.3px;text-transform:uppercase;color:var(--muted)">rendering</span><label><input type="radio" name="uvMode" value="A" checked> A picture</label><label><input type="radio" name="uvMode" value="B"> B cards</label></span>
           </div>
@@ -939,7 +960,7 @@ function renderDoc(){
   };
   let h=`<h2>${esc(M.product.name||'Product')}${M.product.model?' · '+esc(M.product.model):''}</h2><div class="ver">${esc(M.product.version||'')} · generated ${new Date().toISOString().slice(0,10)} · paste into the template</div>`;
   if(family().length>1)h+=`<div class="note">Product family: ${family().map(esc).join(', ')}. This manual covers every member. Items marked <span class="var">[… only]</span> apply only to the members named; unmarked items apply to all of them.</div>`;
-  h+=`<div class="note">Chapter numbers and column order follow the Cyber Manual template v0.39 and the working group’s Engineering PC example v0.40 (26 October 2026). The diagrams for 2.1.2, 2.2.1, 2.3.1 and each function’s secure use diagram (3.3.n, 3.4.1) are the figure above; pick the layer, then use Download diagram. Columns marked as derivation are this tool’s, not the template’s.</div>`;
+  h+=`<div class="note">Chapter numbers and column order follow the Cyber Manual template v0.39 and the working group’s Engineering PC example v0.40 (26 October 2026). The diagrams for 2.1.2, 2.2.1, 2.3.1 and each function’s secure use diagram (3.3.n, 3.4.1) are the figure above; pick the layer, then use Download (SVG) above it. Columns marked as derivation are this tool’s, not the template’s.</div>`;
   h+=`<h3>2.1.3 Product components (PC) list</h3><table><tr><th>ID</th><th>Title / Description</th></tr>`;for(const p of M.PC)h+=`<tr><td class="id">${esc(p.id)}</td><td><b>${esc(p.title)}</b>${varHTML(p)}${p.desc?'<br>'+esc(p.desc):''}</td></tr>`;h+=`</table>`;
   h+=`<h3>2.1.4 Product interfaces</h3><h4>Physical interfaces</h4><table><tr><th>ID</th><th>Title / Description</th></tr>`;for(const p of M.PI)h+=`<tr><td class="id">${esc(p.id)}</td><td><b>${esc(p.title)}</b>${varHTML(p)}${p.desc?'<br>'+esc(p.desc):''}</td></tr>`;h+=`</table>`;
   h+=`<h4>Protocols and services</h4><table><tr><th>ID</th><th>Protocol / Service / URL</th><th>Physical interface</th><th>Port</th><th>Function</th><th>Enabled by default</th><th>Direction [optional]</th></tr>`;M.LI.forEach((li,i)=>{h+=`<tr><td class="id">PP${String(i+1).padStart(2,'0')}</td><td>${esc(li.proto)}${varHTML(li)}${li.url?'<br>'+esc(li.url):''}</td><td>${li.pi?ref(li.pi):''}</td><td>${esc(li.port)}</td><td>${list(li.fc)}</td><td>${esc(li.enabled||'')}</td><td>${{in:'Incoming',out:'Outgoing',both:'Both'}[li.dir]||''}</td></tr>`;});h+=`</table>`;
@@ -1072,7 +1093,7 @@ function toManual(){
 function hasUndo(){try{return !!localStorage.getItem(KEY+'.undo');}catch(e){return false;}}
 function manualSaved(){try{const s=localStorage.getItem(MANUAL_KEY);return s?JSON.parse(s):null;}catch(e){return null;}}
 function bringManual(){const m=manualSaved();
-  if(!m||!isManual(Object.assign({tpl:m.tpl||'0.39'},m))){alert('No manual is saved in the CRA Manual Builder in this browser yet. Open it, press Save there, then come back. (Or use “Derive from a manual” with an exported file.)');return;}
+  if(!m||!isManual(Object.assign({tpl:m.tpl||'0.39'},m))){alert('No manual is saved in the CRA Manual Builder in this browser yet. Open it, press Save there, then come back. (Or use Connect, Derive from a manual file.)');return;}
   if(!M.FC.length||confirm(`Replace the work here with what can be derived from the manual “${m.product&&m.product.name||'unnamed'}” saved in the Manual Builder?\n\nThe Context builder owns the chain, so do this to start a model, not to update one you have drawn: links, zones and arrangement made here would be replaced. Your current model can be undone once.`)){
     try{localStorage.setItem(KEY+'.undo',JSON.stringify(M));}catch(e){}
     importManual(Object.assign({tpl:'0.39'},m));}}
@@ -1087,7 +1108,7 @@ $('#btnImport').onclick=()=>$('#fileIn').click();
 $('#btnFromManual').onclick=bringManual;
 $('#btnDerive').onclick=()=>$('#fileManual').click();
 $('#fileManual').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{let o;try{o=JSON.parse(r.result);}catch(err){o=null;}
-  if(!isManual(o)){alert('That file is not a manual saved from the CRA Manual Builder (Export JSON there).');return;}
+  if(!isManual(o)){alert('That file is not a manual saved from the CRA Manual Builder (File, Save to a file there).');return;}
   if(!M.FC.length||confirm('Replace current work with what can be derived from this manual?'))importManual(o);};r.readAsText(f);e.target.value='';};
 $('#fileIn').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(isManual(o)){if(!M.FC.length||confirm('That is a manual from the CRA Manual Builder. Replace current work with what can be derived from it?'))importManual(o);return;}if(!o||!o.FC)throw 0;M=normalize(o);save();render();toast('Imported');}catch(err){alert('That file is not a context JSON from this tool.');}};r.readAsText(f);e.target.value='';};
 /* the download carries the arranged positions; drag hooks are stripped so the file opens clean in Inkscape, Illustrator, Visio or draw.io */
@@ -1133,5 +1154,16 @@ applyHash();
 <style>.vcri-follow{max-width:960px;margin:2rem auto 1.5rem;padding:0 1.5rem;text-align:center;font-size:.85rem;line-height:2;opacity:.9}.vcri-follow a{white-space:nowrap}@media print{.vcri-follow,.vcri-share{display:none!important}}</style>
 <div class="vcri-follow">Follow The Value Chain Risk Institute: <a href="https://www.linkedin.com/company/valuechainrisk" rel="me noopener" target="_blank">LinkedIn</a> &middot; <a href="https://bsky.app/profile/valuechainrisk.org" rel="me noopener" target="_blank">Bluesky</a> &middot; <a href="https://infosec.exchange/@valuechainrisk" rel="me noopener" target="_blank">Mastodon</a> &middot; <a href="https://x.com/ValueChainRisk" rel="me noopener" target="_blank">X (@ValueChainRisk)</a> &middot; <a href="https://buttondown.com/vcri" rel="me noopener" target="_blank">Newsletter</a> &middot; <a href="https://github.com/value-chain-risk-institute" rel="me noopener" target="_blank">GitHub</a><br><a href="/tools/">All tools</a> &middot; <a href="/media/">Talks and videos</a> &middot; <a href="/brand/">Press kit</a></div>
 <!-- vcri-social:end -->
+
+<script>
+/* 9 Nov 2026: File / Connect menus close after a choice, on Escape, and when you click elsewhere; one open at a time */
+(()=>{const ms=[...document.querySelectorAll('details.menu')];
+ ms.forEach(d=>{d.addEventListener('toggle',()=>{if(!d.open)return;ms.forEach(o=>{if(o!==d)o.open=false;});const l=d.querySelector('.mlist');l.style.left='';l.style.right='';if(l.getBoundingClientRect().right>innerWidth-8){l.style.left='auto';l.style.right='0';}});
+   d.querySelector('.mlist').addEventListener('click',e=>{if(e.target.closest('button,a'))d.open=false;});});
+ document.addEventListener('click',e=>{ms.forEach(d=>{if(d.open&&!d.contains(e.target))d.open=false;});});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')ms.forEach(d=>d.open=false);});
+ const h=document.getElementById('startHint');let has=true;try{has=!!localStorage.getItem('vcri.cm.context.v3next');}catch(e){}
+ if(h&&!has){h.hidden=false;h.querySelector('button').addEventListener('click',()=>{h.hidden=true;document.getElementById(h.dataset.ex).click();});}})();
+</script>
 </body>
 </html>
