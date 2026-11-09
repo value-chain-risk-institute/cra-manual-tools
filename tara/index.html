@@ -49,6 +49,7 @@ textarea{min-height:52px;resize:vertical}
 .chips{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0}
 .chip{border:1px solid var(--line);border-radius:20px;padding:4px 11px;font-size:12.5px;cursor:pointer;background:var(--field);user-select:none}
 .chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+.idpick{display:flex;flex-wrap:wrap;gap:2px 14px;font-size:12.5px}.idpick label{display:inline-flex;gap:5px;align-items:center;margin:0;font-weight:400;cursor:pointer}
 .item{border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin:8px 0;background:var(--paper)}
 .item .top{display:flex;align-items:center;gap:8px}
 .item .top strong{font-size:13px}
@@ -296,22 +297,48 @@ const RUBRIC = {
 };
 
 // ---------- state ----------
+/* File format vcri.tara/v1.0 (9 Nov 2026; spec/ in the cra-manual-tools repository). Treatment and bearer are stored as codes,
+   with the English labels kept here, so tools with other UI languages can read them. Interfaces are objects {id,name,inScope,custom}:
+   a scenario points at its interface by ID, so renaming an interface keeps the link. Functions, conditions of use and assets a
+   scenario touches are ID lists (fcIds, cuIds, assetIds). */
+const GEN={tool:"VCRI TARA Builder",version:"2026-11-09",url:"https://valuechainrisk.org/tara/"};
+const TREAT=[["reduce","Reduce (add control)"],["retain","Retain (accept residual)"],["avoid","Avoid (remove function)"],["transfer","Transfer (contract/insurance)"]];
+const BEARER=[["manufacturer","Manufacturer → security property"],["user","User → condition of use"]];
+const label=(list,code)=>(list.find(x=>x[0]===code)||["",""])[1];
+const codeOf=(list,v)=>{v=String(v||"").trim().toLowerCase();if(!v)return"";const hit=list.find(([c,l])=>v===c||v===l.toLowerCase()||v.startsWith(c.slice(0,5)));return hit?hit[0]:"";};
+const idList=(v,p)=>[...new Set((Array.isArray(v)?v.join(","):String(v||"")).match(new RegExp("\\b"+p+"\\d+","g"))||[])];
 let S = load() || blank();
-function blank(){return{product:{name:"",ver:"",purpose:""},interfaces:[...RUBRIC.interfaces_default.slice(0,4)],custIf:[],ifIds:{},assets:[],scenarios:[],cm:null,nextId:{A:1,IF:1,TS:1}};}
-/* Stable IDs (vcri.tara/v1, 9 Nov 2026; see spec/ in the cra-manual-tools repository). Assets A01.., interfaces IF01..,
-   threat scenarios TS01... An ID is given once and never reused, even after its item is removed, so another tool
-   (TARAflow first) can refer to it across versions of the file. Older files get IDs the first time they are opened. */
+function blank(){const ifs=RUBRIC.interfaces_default.slice(0,4).map((name,i)=>({id:"IF"+String(i+1).padStart(2,"0"),name,inScope:true,custom:false}));
+  return{product:{name:"",ver:"",purpose:""},interfaces:ifs,assets:[],scenarios:[],cm:null,nextId:{A:1,IF:ifs.length+1,TS:1}};}
+/* Stable IDs: assets A01.., interfaces IF01.., threat scenarios TS01... An ID is given once and never reused, even after its item
+   is removed, so another tool (TARAflow first) can refer to it across versions of the file. Older files are upgraded on opening. */
 function nid(k){const n=S.nextId[k]++;return k+String(n).padStart(2,"0");}
 function migrate(){
-  if(!S.nextId){const hi=(k,ids)=>ids.reduce((m,x)=>{const r=String(x||"").match(new RegExp("^"+k+"(\\d+)$"));return r?Math.max(m,+r[1]+1):m;},1);
-    S.nextId={A:hi("A",(S.assets||[]).map(a=>a.id)),IF:hi("IF",Object.values(S.ifIds||{})),TS:hi("TS",(S.scenarios||[]).map(x=>x.id))};}
-  S.ifIds=S.ifIds||{};S.custIf=S.custIf||[];S.assets=S.assets||[];S.scenarios=S.scenarios||[];
-  S.interfaces.forEach(n=>{if(!S.ifIds[n])S.ifIds[n]=nid("IF");});
+  S.assets=S.assets||[];S.scenarios=S.scenarios||[];if(!Array.isArray(S.interfaces))S.interfaces=[];
+  const hi=(k,ids)=>ids.reduce((m,x)=>{const r=String(x||"").match(new RegExp("^"+k+"(\\d+)$"));return r?Math.max(m,+r[1]+1):m;},1);
+  if(S.ifIds||S.custIf||S.interfaces.some(x=>typeof x==="string")){   /* v0, and v1 before it was final: names, plus a name-to-ID map */
+    const ids=S.ifIds||{},on=new Set(S.interfaces.filter(x=>typeof x==="string")),cust=new Set(S.custIf||[]);
+    S.interfaces=[...new Set([...on,...cust,...Object.keys(ids),...S.scenarios.map(x=>x.iface).filter(Boolean)])]
+      .map(name=>({id:ids[name]||"",name,inScope:on.has(name),custom:cust.has(name)||!RUBRIC.interfaces_default.includes(name)}));
+    delete S.ifIds;delete S.custIf;}
+  const n=S.nextId||{};
+  S.nextId={A:Math.max(n.A||1,hi("A",S.assets.map(a=>a.id))),IF:Math.max(n.IF||1,hi("IF",S.interfaces.map(x=>x.id))),TS:Math.max(n.TS||1,hi("TS",S.scenarios.map(x=>x.id)))};
+  S.interfaces.forEach(x=>{if(!/^IF\d+$/.test(x.id||""))x.id=nid("IF");x.inScope=!!x.inScope;x.custom=!!x.custom;});
   S.assets.forEach(a=>{if(!/^A\d+$/.test(a.id||""))a.id=nid("A");});
-  S.scenarios.forEach(x=>{if(!/^TS\d+$/.test(x.id||"")){if(x.id)x.legacyId=x.id;x.id=nid("TS");}
-    if(!S.ifIds[x.iface])S.ifIds[x.iface]=nid("IF");x.ifaceId=S.ifIds[x.iface];});
+  S.scenarios.forEach(x=>{
+    if(!/^TS\d+$/.test(x.id||"")){if(x.id)x.legacyId=x.id;x.id=nid("TS");}
+    if(!S.interfaces.some(i=>i.id===x.ifaceId)){let i=S.interfaces.find(i=>i.name===x.iface);
+      if(!i){i={id:nid("IF"),name:x.iface||"(unnamed)",inScope:false,custom:true};S.interfaces.push(i);}x.ifaceId=i.id;}
+    delete x.iface;x.key=x.cls+"|"+x.ifaceId;
+    x.treatment=codeOf(TREAT,x.treatment);x.bearer=codeOf(BEARER,x.bearer);
+    if(!Array.isArray(x.fcIds))x.fcIds=idList(x.fc,"FC");
+    if(!Array.isArray(x.cuIds))x.cuIds=idList(x.cu,"CU");
+    if(!Array.isArray(x.assetIds))x.assetIds=[];
+    delete x.fc;delete x.cu;x.damage=x.damage||"";x.annex=x.annex||"";});
+  if(S.cm)["fc","cu","sp"].forEach(k=>{S.cm[k]=(S.cm[k]||[]).map((r,i)=>Object.assign({},r,{id:r.id||k.toUpperCase()+String(i+1).padStart(2,"0")}));});
 }
 migrate();
+const ifName=id=>{const i=S.interfaces.find(x=>x.id===id);return i?i.name:id;};
 function save(){collectProduct();localStorage.setItem("vcri-tara",JSON.stringify(S));}
 function load(){try{return JSON.parse(localStorage.getItem("vcri-tara"));}catch(e){return null;}}
 
@@ -328,16 +355,19 @@ function render(){
   renderIfaces();renderAssets();renderScenarios();renderRegister();renderSummary();renderRubricDocs();
 }
 function renderIfaces(){
-  const all=[...RUBRIC.interfaces_default,...S.custIf];
+  const all=[...RUBRIC.interfaces_default.map(name=>({name,x:S.interfaces.find(i=>i.name===name)})),
+    ...S.interfaces.filter(i=>!RUBRIC.interfaces_default.includes(i.name)).map(x=>({name:x.name,x}))];
   const c=document.getElementById("ifchips");c.innerHTML="";
-  all.forEach(name=>{
-    const on=S.interfaces.includes(name);
-    const el=document.createElement("span");el.className="chip"+(on?" on":"");el.textContent=name;if(S.ifIds[name])el.title=S.ifIds[name];
-    el.onclick=()=>{if(on){S.interfaces=S.interfaces.filter(x=>x!==name);}else{S.interfaces.push(name);if(!S.ifIds[name])S.ifIds[name]=nid("IF");}save();renderIfaces();};
+  all.forEach(({name,x})=>{
+    const on=!!(x&&x.inScope);
+    const el=document.createElement("span");el.className="chip"+(on?" on":"");el.textContent=name;if(x)el.title=x.id;
+    el.onclick=()=>{if(x)x.inScope=!x.inScope;else S.interfaces.push({id:nid("IF"),name,inScope:true,custom:false});save();renderIfaces();};
     c.appendChild(el);
   });
 }
-function addCustomIf(){const v=val("ifcustom").trim();if(!v)return;if(!S.custIf.includes(v))S.custIf.push(v);if(!S.interfaces.includes(v))S.interfaces.push(v);if(!S.ifIds[v])S.ifIds[v]=nid("IF");document.getElementById("ifcustom").value="";save();renderIfaces();}
+function addCustomIf(){const v=val("ifcustom").trim();if(!v)return;const x=S.interfaces.find(i=>i.name===v);
+  if(x)x.inScope=true;else S.interfaces.push({id:nid("IF"),name:v,inScope:true,custom:true});
+  document.getElementById("ifcustom").value="";save();renderIfaces();}
 
 function renderAssets(){
   const d=document.getElementById("assets");d.innerHTML="";
@@ -355,31 +385,32 @@ function addAsset(){S.assets.push({id:nid("A"),name:"",damage:""});save();render
 function generate(){
   const existing=new Set(S.scenarios.map(s=>s.key));
   let added=0;
-  S.interfaces.forEach(iface=>{
+  const inScope=S.interfaces.filter(i=>i.inScope);
+  inScope.forEach(i=>{
     RUBRIC.classes.forEach(cls=>{
-      const key=cls.id+"|"+iface;
+      const key=cls.id+"|"+i.id;
       if(existing.has(key))return;
       S.scenarios.push({
-        id:nid("TS"),key,cls:cls.id,clsName:cls.name,iface,ifaceId:S.ifIds[iface]||"",
-        text:cls.tpl.replace("{iface}",iface),
+        id:nid("TS"),key,cls:cls.id,clsName:cls.name,ifaceId:i.id,
+        text:cls.tpl.replace("{iface}",i.name),
         accepted:false,
         feas:{time:1,expertise:1,knowledge:0,window:1,equipment:1},
         imp:{safety:0,operational:1,financial:1,privacy:0},
-        treatment:"", bearer:"", annex:RUBRIC.classToAnnex[cls.id]||"", fc:"", cu:"", damage:""
+        treatment:"", bearer:"", annex:RUBRIC.classToAnnex[cls.id]||"", fcIds:[], cuIds:[], assetIds:[], damage:""
       });
       added++;
     });
   });
   save();renderScenarios();renderRegister();renderSummary();
-  document.getElementById("gennote").textContent=` ${added} new candidate(s) from ${S.interfaces.length} interface(s) × ${RUBRIC.classes.length} classes. Accept the ones that apply.`;
+  document.getElementById("gennote").textContent=` ${added} new candidate(s) from ${inScope.length} interface(s) × ${RUBRIC.classes.length} classes. Accept the ones that apply.`;
 }
 
 function renderScenarios(){
   const d=document.getElementById("scenarios");d.innerHTML="";
   if(!S.scenarios.length){d.innerHTML='<p class="small">No scenarios yet. Add interfaces above, then Generate.</p>';return;}
-  const byIface={};S.scenarios.forEach(s=>{(byIface[s.iface]=byIface[s.iface]||[]).push(s);});
+  const byIface={};S.scenarios.forEach(s=>{(byIface[s.ifaceId]=byIface[s.ifaceId]||[]).push(s);});
   Object.keys(byIface).forEach(iface=>{
-    const h=document.createElement("div");h.innerHTML=`<div class="small mfrtag" style="margin:10px 0 2px">▸ ${esc(iface)}</div>`;d.appendChild(h);
+    const h=document.createElement("div");h.innerHTML=`<div class="small mfrtag" style="margin:10px 0 2px">▸ ${esc(ifName(iface))} <span class="meta">${esc(iface)}</span></div>`;d.appendChild(h);
     byIface[iface].forEach(s=>{
       const idx=S.scenarios.indexOf(s);
       const el=document.createElement("div");el.className="item";
@@ -408,7 +439,7 @@ function renderRegister(){
   acc.forEach(s=>{
     const idx=S.scenarios.indexOf(s);
     const el=document.createElement("div");el.className="item";
-    el.innerHTML=`<div class="top"><span class="meta">${esc(s.id)}</span> <strong>${esc(s.clsName)}</strong> <span class="meta">· ${esc(s.iface)}</span>
+    el.innerHTML=`<div class="top"><span class="meta">${esc(s.id)}</span> <strong>${esc(s.clsName)}</strong> <span class="meta">· ${esc(ifName(s.ifaceId))}</span>
       <span class="right pill ${riskClass(riskOf(s))}">${riskOf(s)}</span></div>
       <div class="small" style="margin:2px 0 8px">${esc(s.text)}</div>
       <div class="grid2">
@@ -417,16 +448,17 @@ function renderRegister(){
       </div>
       <div class="grid2" style="margin-top:10px">
         <div><label>Treatment</label><select onchange="S.scenarios[${idx}].treatment=this.value;save();renderSummary()">
-          ${opt(["","Reduce (add control)","Retain (accept residual)","Avoid (remove function)","Transfer (contract/insurance)"],s.treatment)}</select></div>
+          ${codeOpt(TREAT,s.treatment)}</select></div>
         <div><label>Borne by</label><select onchange="S.scenarios[${idx}].bearer=this.value;save();renderSummary()">
-          ${opt(["","Manufacturer → security property","User → condition of use"],s.bearer)}</select></div>
+          ${codeOpt(BEARER,s.bearer)}</select></div>
       </div>
       <div style="margin-top:8px"><label>Justifies CRA Annex I requirement</label><select onchange="S.scenarios[${idx}].annex=this.value;save();renderSummary()">
         ${annexOpt(s.annex)}</select></div>
       <div class="grid2" style="margin-top:8px">
-        <div><label>Affected function (FCxx) in the manual</label>${fcInput(idx,s.fc)}</div>
-        <div><label>Violated condition of use (CUxx), if any</label>${cuInput(idx,s.cu)}</div>
+        <div><label>Affected function(s) (FC) in the manual</label>${idPicker(idx,"fcIds",cmList("fc"),"FC","FC01, FC03")}</div>
+        <div><label>Violated condition(s) of use (CU) already in the manual, if any</label>${idPicker(idx,"cuIds",cmList("cu"),"CU","CU04")}</div>
       </div>
+      <div style="margin-top:8px"><label>Asset(s) harmed [optional]</label>${idPicker(idx,"assetIds",S.assets.map(a=>({id:a.id,title:a.name})),"A",null)}</div>
       <div style="margin-top:8px"><label>Potential risk, from the user's perspective (the CR table's last column)</label><input type="text" value="${esc(s.damage||"")}" oninput="S.scenarios[${idx}].damage=this.value;save()" placeholder="${esc((S.assets[0]&&S.assets[0].damage)||'e.g. manipulation of PLC logic, damage to controlled equipment')}"></div>`;
     d.appendChild(el);
   });
@@ -438,7 +470,15 @@ function ladders(idx,kind,defs){
     return `<div class="small" style="margin-top:6px">${f.name}: <b>${esc(f.anchors[cur])}</b></div><div class="ladder">${cells}</div>`;
   }).join("");
 }
-function opt(arr,cur){return arr.map(o=>`<option ${o===cur?"selected":""}>${o}</option>`).join("");}
+function codeOpt(list,cur){return `<option value="">(not set)</option>`+list.map(([c,l])=>`<option value="${c}" ${c===cur?"selected":""}>${esc(l)}</option>`).join("");}
+/* ID lists: tick boxes when the manual (or the asset list) is known, otherwise typed IDs */
+function idPicker(idx,field,items,prefix,ph){
+  const cur=S.scenarios[idx][field]||[];
+  if(!items.length)return ph===null?`<div class="small muted">Add assets above to pick them here.</div>`:`<input type="text" value="${esc(cur.join(", "))}" oninput="S.scenarios[${idx}].${field}=idList(this.value,'${prefix}');save()" onchange="renderSummary()" placeholder="${ph}">`;
+  return `<div class="idpick">`+items.map(it=>`<label><input type="checkbox" ${cur.includes(it.id)?"checked":""} onchange="togId(${idx},'${field}','${it.id}',this.checked)"> ${esc(it.id)} ${esc(it.title||"")}</label>`).join("")+
+    cur.filter(id=>!items.some(it=>it.id===id)).map(id=>`<label class="muted" title="Not in the current list"><input type="checkbox" checked onchange="togId(${idx},'${field}','${id}',this.checked)"> ${esc(id)} (not found)</label>`).join("")+`</div>`;
+}
+function togId(idx,field,id,on){const s=S.scenarios[idx];const a=new Set(s[field]||[]);if(on)a.add(id);else a.delete(id);s[field]=[...a];save();renderSummary();}
 function annexOpt(cur){return ['<option value="">(none)</option>'].concat(RUBRIC.annexI.map(a=>`<option value="${a.id}" ${a.id===cur?"selected":""}>${a.id} · ${a.t}</option>`)).join("");}
 
 function renderSummary(){
@@ -449,19 +489,19 @@ function renderSummary(){
   let html=`<div style="margin-bottom:10px">`+["Critical","High","Medium","Low"].map(k=>`<span class="pill ${k.toLowerCase()}" style="margin-right:6px">${counts[k]} ${k}</span>`).join("")+`</div>`;
   html+=`<table><thead><tr><th>ID</th><th>Threat scenario</th><th>Interface</th><th>Feas.</th><th>Impact</th><th>Risk</th><th>Treatment</th><th>Bearer</th><th>Annex I</th></tr></thead><tbody>`;
   acc.forEach(s=>{
-    const bearer=s.bearer.startsWith("User")?`<span class="usrtag">User CoU</span>`:s.bearer.startsWith("Manuf")?`<span class="mfrtag">Mfr SP</span>`:'<span class="muted">none</span>';
+    const bearer=s.bearer==="user"?`<span class="usrtag">User CoU</span>`:s.bearer==="manufacturer"?`<span class="mfrtag">Mfr SP</span>`:'<span class="muted">none</span>';
     const ax=RUBRIC.annexI.find(a=>a.id===s.annex);
-    html+=`<tr><td>${esc(s.id)}</td><td>${esc(s.text)}</td><td>${esc(s.iface)}</td><td>${feasLevel(s)}</td><td>${impLevel(s)}</td>
-      <td><span class="pill ${riskClass(riskOf(s))}">${riskOf(s)}</span></td><td>${esc(s.treatment||"not set")}</td><td>${bearer}</td>
+    html+=`<tr><td>${esc(s.id)}</td><td>${esc(s.text)}</td><td>${esc(ifName(s.ifaceId))}</td><td>${feasLevel(s)}</td><td>${impLevel(s)}</td>
+      <td><span class="pill ${riskClass(riskOf(s))}">${riskOf(s)}</span></td><td>${esc(label(TREAT,s.treatment)||"not set")}</td><td>${bearer}</td>
       <td>${ax?ax.id:"none"}</td></tr>`;
   });
   html+=`</tbody></table>`;
   html+=manualShaped(acc);
   // condition-of-use feedback (Annex VII -> Annex II loop)
-  const cous=acc.filter(s=>s.bearer.startsWith("User")&&s.treatment);
+  const cous=acc.filter(s=>s.bearer==="user"&&s.treatment);
   if(cous.length){
     html+=`<div style="margin-top:14px"><div class="small usrtag">Condition-of-Use candidates for the Annex II manual (${cous.length}):</div><ul class="small">`;
-    cous.forEach(s=>{html+=`<li>Because of “${esc(s.clsName)}” on ${esc(s.iface)}: <b>${esc(s.treatment)}</b>. The operator must act.</li>`;});
+    cous.forEach(s=>{html+=`<li>Because of “${esc(s.clsName)}” on ${esc(ifName(s.ifaceId))}: <b>${esc(label(TREAT,s.treatment))}</b>. The operator must act.</li>`;});
     html+=`</ul></div>`;
   }
   d.innerHTML=html;
@@ -475,87 +515,86 @@ function renderRubricDocs(){
 }
 
 // ---------- io ----------
-function exportJSON(){collectProduct();const blob=new Blob([JSON.stringify({schema:"vcri.tara/v1",spec:"https://github.com/value-chain-risk-institute/cra-manual-tools/tree/main/spec",rubric:RUBRIC.version,generated:new Date().toISOString(),data:S},null,2)],{type:"application/json"});
+function exportJSON(){collectProduct();const blob=new Blob([JSON.stringify({schema:"vcri.tara/v1.0",spec:"https://github.com/value-chain-risk-institute/cra-manual-tools/tree/main/spec",generator:GEN,rubric:RUBRIC.version,generated:new Date().toISOString(),data:S},null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(S.product.name||"tara").replace(/\W+/g,"_")+"_tara.json";a.click();}
-function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);S=o.data||o;migrate();render();save();}catch(err){alert("Invalid JSON");}};r.readAsText(f);}
+function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);const v=/^vcri\.tara\/v(\d+)/.exec(o.schema||"");if(v&&+v[1]>1){alert("This file uses a newer version of the TARA format ("+o.schema+") than this tool reads.");return;}S=o.data||o;migrate();render();save();}catch(err){alert("Invalid JSON");}};r.readAsText(f);e.target.value="";}
 function wipe(){if(confirm("Clear this assessment?")){S=blank();render();save();}}
 function toggleTheme(){const r=document.documentElement;const cur=r.getAttribute("data-theme");r.setAttribute("data-theme",cur==="dark"?"light":cur==="light"?"dark":(matchMedia("(prefers-color-scheme:dark)").matches?"light":"dark"));}
 
 function seedExample(){
   S={product:{name:"FlowSense PLC Gateway 200",ver:"HW rev C · FW 3.2",purpose:"Industrial protocol gateway bridging field sensors to a plant SCADA network; deployed inside a segmented OT network, remote firmware updates over TLS."},
-     interfaces:["Ethernet/IP","USB","Cloud/API","Serial/UART"],custIf:[],
+     interfaces:[],
      assets:[{name:"PLC control logic",damage:"unsafe or out-of-range actuator command"},{name:"Firmware image",damage:"persistent implant / loss of trust in the device"}],
-     scenarios:[],ifIds:{},nextId:{A:1,IF:1,TS:1}};
+     scenarios:[],cm:null,nextId:{A:1,IF:1,TS:1}};
+  ["Ethernet/IP","USB","Cloud/API","Serial/UART"].forEach(name=>S.interfaces.push({id:nid("IF"),name,inScope:true,custom:false}));
   migrate();render();save();generate();   /* render first: save() reads the product fields from the page */
   // pre-accept + score two for a live demo
-  const pick=(cls,iface)=>S.scenarios.find(s=>s.cls===cls&&s.iface===iface);
-  const a=pick("PROV","Cloud/API");if(a){a.accepted=true;a.feas={time:1,expertise:2,knowledge:1,window:0,equipment:0};a.imp={safety:3,operational:3,financial:2,privacy:0};a.treatment="Reduce (add control)";a.bearer="Manufacturer → security property";a.annex="2c";}
-  const b=pick("PHYS","USB");if(b){b.accepted=true;b.feas={time:0,expertise:1,knowledge:1,window:3,equipment:1};b.imp={safety:2,operational:2,financial:1,privacy:0};b.treatment="Reduce (add control)";b.bearer="User → condition of use";b.annex="2j";}
+  const pick=(cls,name)=>S.scenarios.find(s=>s.cls===cls&&ifName(s.ifaceId)===name);
+  const a=pick("PROV","Cloud/API");if(a){a.accepted=true;a.feas={time:1,expertise:2,knowledge:1,window:0,equipment:0};a.imp={safety:3,operational:3,financial:2,privacy:0};a.treatment="reduce";a.bearer="manufacturer";a.annex="2c";a.assetIds=["A02"];}
+  const b=pick("PHYS","USB");if(b){b.accepted=true;b.feas={time:0,expertise:1,knowledge:1,window:3,equipment:1};b.imp={safety:2,operational:2,financial:1,privacy:0};b.treatment="reduce";b.bearer="user";b.annex="2j";b.assetIds=["A01","A02"];b.damage="A USB device plugged in by anyone with access to the cabinet could change the gateway's logic or firmware and disturb the plant.";}
   save();render();
 }
 
 const esc=s=>(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-// ---------- Cyber Manual (template v0.38) loop ----------
-// Template v0.38 puts each function's conditions of use (CU) and circumstances leading to risk (CR) together in one
-// chapter 3.3 subchapter (3.4.1 for the update function). The export schema is unchanged (vcri.tara-to-manual/v1);
-// v0.38 adds an optional fc on condition-of-use candidates, which older builders ignore.
+// ---------- Cyber Manual (template v0.39) loop ----------
+/* Export to the manual, vcri.tara-to-manual/v1.0 (9 Nov 2026). Circumstances leading to risk (CR) are only what the user can
+   influence (GUIDANCE v0.36, chapter CR): a violated condition of use, foreseeable misuse. So a CR row is written only for an
+   accepted scenario whose treatment the user carries; scenarios the manufacturer treats become security-property candidates.
+   Every row has a local ref and a source {tool, ids}; a CR points at existing manual CUs by ID (cuIds) and at CU candidates in
+   the same file by ref (cuRefs). No rating is exported: CRs carry no likelihood or impact. */
 const padId=(p,i)=>p+String(i+1).padStart(2,"0");
-const fcIdOf=v=>((v||"").match(/FC\d\d/)||[""])[0];
-function fcInput(idx,cur){
-  const fcs=(S.cm&&S.cm.fc)||[];
-  if(!fcs.length)return `<input type="text" value="${esc(cur||"")}" oninput="S.scenarios[${idx}].fc=this.value;save()" placeholder="FC01 Program a PLC">`;
-  return `<select onchange="S.scenarios[${idx}].fc=this.value;save();renderSummary()"><option value="">(none)</option>`+fcs.map((f,i)=>{const id=padId("FC",i);const v=id+" "+f.title;return `<option value="${esc(v)}" ${v===cur?"selected":""}>${esc(v)}</option>`;}).join("")+`</select>`;
-}
-function cuInput(idx,cur){
-  const cus=(S.cm&&S.cm.cu)||[];
-  if(!cus.length)return `<input type="text" value="${esc(cur||"")}" oninput="S.scenarios[${idx}].cu=this.value;save()" placeholder="CU04 No internet connection">`;
-  return `<select onchange="S.scenarios[${idx}].cu=this.value;save();renderSummary()"><option value="">(none)</option>`+cus.map((c,i)=>{const id=padId("CU",i);const v=id+" "+c.title;return `<option value="${esc(v)}" ${v===cur?"selected":""}>${esc(v)}</option>`;}).join("")+`</select>`;
-}
+const cmList=k=>((S.cm&&S.cm[k])||[]);
+const src=s=>({tool:"vcri-tara",ids:[s.id]});
+const shortCls=s=>s.clsName.replace(" assumption violated","");
+const needsCu=s=>s.bearer==="user"&&s.treatment&&!s.cuIds.length;   /* a new condition of use only where none in the manual covers it */
 function riRows(acc){
-  return acc.map((s,i)=>({id:padId("CR",i),ts:s.id,title:`${s.clsName} on ${s.iface}`,desc:s.text,fc:fcIdOf(s.fc),fcLabel:s.fc||"",cu:s.cu||"",risk:s.damage||"",level:riskOf(s)}));
+  return acc.filter(s=>s.bearer==="user").map(s=>({ref:"cr-"+s.id,source:src(s),title:`${s.clsName} on ${ifName(s.ifaceId)}`,desc:s.text,fcIds:s.fcIds.slice(),cuIds:s.cuIds.slice(),cuRefs:needsCu(s)?["cu-"+s.id]:[],risk:s.damage||""}));
 }
 function cuCandidates(acc){
-  return acc.filter(s=>(s.bearer||"").startsWith("User")&&s.treatment).map(s=>({ts:s.id,affected:"",title:`${s.treatment.replace(/\s*\(.*\)$/,"")}: ${s.clsName.replace(" assumption violated","")} on ${s.iface}`,desc:`The operator must act so that: ${s.text}`,refs:s.annex||"",fc:fcIdOf(s.fc),fcLabel:s.fc||""}));
+  return acc.filter(needsCu).map(s=>({ref:"cu-"+s.id,source:src(s),affected:"",title:`${label(TREAT,s.treatment).replace(/\s*\(.*\)$/,"")}: ${shortCls(s)} on ${ifName(s.ifaceId)}`,desc:`The operator must act so that: ${s.text}`,annex:s.annex?[s.annex]:[],fcIds:s.fcIds.slice()}));
 }
 function spCandidates(acc){
-  return acc.filter(s=>(s.bearer||"").startsWith("Manuf")&&s.treatment).map(s=>({ts:s.id,comp:s.iface,title:`${s.clsName.replace(" assumption violated","")} protection on ${s.iface}`,desc:`Product control addressing: ${s.text}`,refs:s.annex||""}));
+  return acc.filter(s=>s.bearer==="manufacturer"&&s.treatment).map(s=>({ref:"sp-"+s.id,source:src(s),comp:ifName(s.ifaceId),title:`${shortCls(s)} protection on ${ifName(s.ifaceId)}`,desc:`Product control addressing: ${s.text}`,annex:s.annex?[s.annex]:[]}));
 }
-/* group CR rows and CU candidates by the manual function they belong to, in the manual's function order */
+/* group CR rows and CU candidates by the manual function(s) they belong to, in the manual's function order */
 function fnGroups(ri,cu){
-  const cmf=(S.cm&&S.cm.fc)||[];
-  const order=[],label={};
-  cmf.forEach((f,i)=>{const id=padId("FC",i);order.push(id);label[id]=id+" "+f.title;});
-  [...ri,...cu].forEach(x=>{if(x.fc&&!order.includes(x.fc)){order.push(x.fc);label[x.fc]=x.fcLabel||x.fc;}});
-  const kinds=cmf.map((f,i)=>({id:padId("FC",i),upd:/security update/i.test(f.title||"")}));
-  const num=id=>{const k=kinds.find(x=>x.id===id);if(!k)return "";const same=kinds.filter(x=>x.upd===k.upd);return (k.upd?"3.4.":"3.3.")+(same.indexOf(k)+1);};
-  const g=order.map(id=>({id,label:label[id],num:num(id),ri:ri.filter(r=>r.fc===id),cu:cu.filter(c=>c.fc===id)})).filter(x=>x.ri.length||x.cu.length);
-  const none={id:"",label:"Not yet assigned to a function (set the affected function in the register)",num:"",ri:ri.filter(r=>!r.fc),cu:cu.filter(c=>!c.fc)};
+  const cmf=cmList("fc"),order=[],lab={};
+  cmf.forEach(f=>{order.push(f.id);lab[f.id]=f.id+" "+f.title;});
+  [...ri,...cu].forEach(x=>x.fcIds.forEach(id=>{if(!order.includes(id)){order.push(id);lab[id]=id;}}));
+  const upd=f=>/security update/i.test(f.title||"");
+  const num=id=>{const f=cmf.find(x=>x.id===id);if(!f)return "";const same=cmf.filter(x=>upd(x)===upd(f));return (upd(f)?"3.4.":"3.3.")+(same.indexOf(f)+1);};
+  const g=order.map(id=>({id,label:lab[id],num:num(id),ri:ri.filter(r=>r.fcIds.includes(id)),cu:cu.filter(c=>c.fcIds.includes(id))})).filter(x=>x.ri.length||x.cu.length);
+  const none={id:"",label:"Not yet assigned to a function (set the affected function in the register)",num:"",ri:ri.filter(r=>!r.fcIds.length),cu:cu.filter(c=>!c.fcIds.length)};
   if(none.ri.length||none.cu.length)g.push(none);
   return g;
 }
 function manualShaped(acc){
   const ri=riRows(acc), cu=cuCandidates(acc), sp=spCandidates(acc);
+  const cuText=r=>[...r.cuIds.map(id=>{const c=cmList("cu").find(x=>x.id===id);return esc(id+(c?" "+c.title:""));}),...r.cuRefs.map(ref=>{const c=cu.find(x=>x.ref===ref);return c?"new: "+esc(c.title):"";})].filter(Boolean).join("<br>");
   let h=`<div style="margin-top:18px"><div class="small mfrtag">In the Cyber Manual's shape (template v0.39)</div>`;
   h+=`<div class="small" style="margin:6px 0 2px"><b>3.3 Secure use: Conditions of Use (CU) and Circumstances leading to Risk (CR) per product Function (FC)</b>, one subchapter per function in the manual</div>`;
   for(const g of fnGroups(ri,cu)){
     h+=`<div class="small" style="margin:12px 0 2px"><b>${g.num?esc(g.num)+" ":""}${g.id?"Function ":""}${esc(g.label)}</b></div>`;
-    if(g.cu.length){h+=`<div class="small usrtag" style="margin:4px 0 0">Condition-of-use candidates (user-borne treatments)</div><table><thead><tr><th>Title</th><th>Description</th><th>Annex I</th></tr></thead><tbody>`+g.cu.map(c=>`<tr><td>${esc(c.title)}</td><td>${esc(c.desc)}</td><td>${esc(c.refs)}</td></tr>`).join("")+`</tbody></table>`;}
-    if(g.ri.length){h+=`<div class="small" style="margin:4px 0 0">Circumstances potentially leading to significant cybersecurity risk (CR)</div><table><thead><tr><th>ID</th><th>Title and Description</th><th>Violated Condition of Use (CU)</th><th>Potential risk</th><th>Assessed</th></tr></thead><tbody>`;
-      g.ri.forEach(r=>{h+=`<tr><td><b>${r.id}</b></td><td><b>${esc(r.title)}</b><br>${esc(r.desc)}</td><td>${esc(r.cu)||'<span class="muted">(none)</span>'}</td><td>${esc(r.risk)||'<span class="muted">enter in the register</span>'}</td><td><span class="pill ${riskClass(r.level)}">${r.level}</span></td></tr>`;});
+    if(g.cu.length){h+=`<div class="small usrtag" style="margin:4px 0 0">Condition-of-use candidates (user-borne treatments)</div><table><thead><tr><th>From</th><th>Title</th><th>Description</th><th>Annex I</th></tr></thead><tbody>`+g.cu.map(c=>`<tr><td>${esc(c.source.ids.join(", "))}</td><td>${esc(c.title)}</td><td>${esc(c.desc)}</td><td>${esc(c.annex.join(", "))}</td></tr>`).join("")+`</tbody></table>`;}
+    if(g.ri.length){h+=`<div class="small" style="margin:4px 0 0">Circumstances potentially leading to significant cybersecurity risk (CR)</div><table><thead><tr><th>From</th><th>Title and Description</th><th>Violated Condition of Use (CU)</th><th>Potential risk</th></tr></thead><tbody>`;
+      g.ri.forEach(r=>{h+=`<tr><td>${esc(r.source.ids.join(", "))}</td><td><b>${esc(r.title)}</b><br>${esc(r.desc)}</td><td>${cuText(r)||'<span class="muted">(none)</span>'}</td><td>${esc(r.risk)||'<span class="muted">enter in the register</span>'}</td></tr>`;});
       h+=`</tbody></table>`;}
   }
-  if(sp.length){h+=`<div class="small" style="margin:14px 0 2px"><b>2.2 Security-property candidates</b> (manufacturer-borne treatments)</div><table><thead><tr><th>Affected</th><th>Title</th><th>Description</th><th>Annex I</th></tr></thead><tbody>`+sp.map(c=>`<tr><td>${esc(c.comp)}</td><td>${esc(c.title)}</td><td>${esc(c.desc)}</td><td>${esc(c.refs)}</td></tr>`).join("")+`</tbody></table>`;}
-  h+=`<p class="small muted" style="margin-top:8px">Connect, Save for the Manual Builder (top bar) writes these lists as a file the Cyber Manual Builder merges into an existing manual: each circumstance lands in its function's subchapter, and each condition-of-use candidate is attached to its function. IDs are assigned by the builder on import; the titles here are drafts to be edited there.</p></div>`;
+  if(sp.length){h+=`<div class="small" style="margin:14px 0 2px"><b>2.2 Security-property candidates</b> (manufacturer-borne treatments)</div><table><thead><tr><th>From</th><th>Affected</th><th>Title</th><th>Description</th><th>Annex I</th></tr></thead><tbody>`+sp.map(c=>`<tr><td>${esc(c.source.ids.join(", "))}</td><td>${esc(c.comp)}</td><td>${esc(c.title)}</td><td>${esc(c.desc)}</td><td>${esc(c.annex.join(", "))}</td></tr>`).join("")+`</tbody></table>`;}
+  const nob=acc.filter(s=>!s.bearer).map(s=>s.id);
+  if(nob.length)h+=`<p class="small" style="margin-top:8px">${nob.length} accepted scenario${nob.length>1?"s have":" has"} no “Borne by” yet (${esc(nob.join(", "))}), so ${nob.length>1?"they appear":"it appears"} nowhere in the manual.</p>`;
+  h+=`<p class="small muted" style="margin-top:8px">Only scenarios the user carries become circumstances leading to risk: the GUIDANCE limits them to what the user can influence, and they carry no risk rating. Scenarios the manufacturer treats become security-property candidates. Connect, Save for the Manual Builder (top bar) writes these lists as a file the Cyber Manual Builder merges into an existing manual: each circumstance lands in its functions' subchapters, linked to its condition of use. IDs are assigned by the builder on import; merging the same TARA again adds only what is new. The titles here are drafts to be edited there.</p></div>`;
   return h;
 }
-function manualExport(){   /* the lists the Manual Builder merges, or null if nothing is accepted yet */
+function manualExport(){   /* the lists the Manual Builder merges, or null if there is nothing to merge yet */
   collectProduct();const acc=S.scenarios.filter(s=>s.accepted);
-  if(!acc.length)return null;
-  return {schema:"vcri.tara-to-manual/v1",tpl:"0.39",generated:new Date().toISOString(),product:S.product.name,ri:riRows(acc).map(r=>({ts:r.ts,title:r.title,desc:r.desc,fc:r.fc,cu:r.cu,risk:r.risk})),cu:cuCandidates(acc).map(c=>({ts:c.ts,affected:c.affected,title:c.title,desc:c.desc,refs:c.refs,fc:c.fc})),sp:spCandidates(acc)};
+  const out={schema:"vcri.tara-to-manual/v1.0",generator:GEN,tpl:"0.39",generated:new Date().toISOString(),product:S.product.name,ri:riRows(acc),cu:cuCandidates(acc),sp:spCandidates(acc)};
+  return out.ri.length||out.cu.length||out.sp.length?out:null;
 }
+const NOTHING="Nothing to send to the manual yet: accept at least one scenario, set its treatment and who bears it.";
 function exportForManual(){
-  const out=manualExport();if(!out){alert("Accept at least one scenario first.");return;}
+  const out=manualExport();if(!out){alert(NOTHING);return;}
   const blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(S.product.name||"tara").replace(/\W+/g,"_")+"_for-cyber-manual.json";a.click();
 }
@@ -570,13 +609,16 @@ function seedFromManual(m){
   {
     if(!m||!m.product||!Array.isArray(m.fc)){alert("That is not a Cyber Manual Builder export.");return;}
     if(!m.tpl){alert("This manual was saved by the v0.25 builder. Open it in the current Cyber Manual Builder (it migrates on import), export it again, then import it here.");return;}
-    S.product={name:m.product.name||"",ver:m.product.tmv||"",purpose:[m.product.additional,(m.cc||[]).length?"Context: "+(m.cc||[]).map((c,i)=>padId("CC",i)+" "+c.title).join(", "):"",(m.cz||[]).length?"Zones: "+(m.cz||[]).map((z,i)=>padId("CZ",i)+" "+z.title).join(", "):""].filter(Boolean).join(" ")};
-    const ifs=[...(m.pi||[]).map((p,i)=>padId("PI",i)+" "+p.title),...(m.pp||[]).map((p,i)=>padId("PP",i)+" "+p.proto+(p.pi?" via "+p.pi:""))].filter(x=>x.trim());
-    S.custIf=ifs.filter(x=>!RUBRIC.interfaces_default.includes(x)); S.interfaces=ifs.length?ifs:S.interfaces;
-    S.ifIds={};S.nextId={A:1,IF:1,TS:1};S.assets=(m.pc||[]).map(c=>({name:c.title,damage:""}));
-    S.cm={fc:(m.fc||[]).map(f=>({title:f.title,cus:f.cus||""})),cu:(m.cu||[]).map(c=>({title:c.title,affected:c.affected})),sp:(m.sp||[]).map(x=>({title:x.title})),tpl:m.tpl};
+    const v=/^vcri\.cybermanual\/v(\d+)/.exec(m.schema||"");if(v&&+v[1]>1){alert("This manual uses a newer file format ("+m.schema+") than this tool reads.");return;}
+    const idOr=(x,p,i)=>x&&x.id?x.id:padId(p,i);   /* stored IDs since vcri.cybermanual/v1.0; older files are numbered by position */
+    S.product={name:m.product.name||"",ver:m.product.tmv||"",purpose:[m.product.additional,(m.cc||[]).length?"Context: "+(m.cc||[]).map((c,i)=>idOr(c,"CC",i)+" "+c.title).join(", "):"",(m.cz||[]).length?"Zones: "+(m.cz||[]).map((z,i)=>idOr(z,"CZ",i)+" "+z.title).join(", "):""].filter(Boolean).join(" ")};
+    const ifs=[...(m.pi||[]).map((p,i)=>idOr(p,"PI",i)+" "+p.title),...(m.pp||[]).map((p,i)=>idOr(p,"PP",i)+" "+p.proto+(p.pi?" via "+p.pi:""))].filter(x=>x.trim());
+    S.nextId={A:1,IF:1,TS:1};
+    S.interfaces=ifs.length?ifs.map(name=>({id:"",name,inScope:true,custom:!RUBRIC.interfaces_default.includes(name)})):blank().interfaces;
+    S.assets=(m.pc||[]).map(c=>({name:c.title,damage:""}));
+    S.cm={fc:(m.fc||[]).map((f,i)=>({id:idOr(f,"FC",i),title:f.title,cus:f.cus||""})),cu:(m.cu||[]).map((c,i)=>({id:idOr(c,"CU",i),title:c.title,affected:c.affected})),sp:(m.sp||[]).map((x,i)=>({id:idOr(x,"SP",i),title:x.title})),tpl:m.tpl,schema:m.schema||""};
     S.scenarios=[]; migrate(); render(); save();
-    document.getElementById("cmlink").innerHTML=`Seeded from the manual for <b>${esc(m.product.name||"(unnamed)")}</b> (template v${esc(m.tpl)}${!["0.38","0.39"].includes(m.tpl)?"; this tool now groups by the template v0.39 chapter 3.3 function subchapters, and the function and CU IDs are the same":""}): ${ifs.length} interfaces, ${(m.pc||[]).length} components, ${(m.fc||[]).length} functions, ${(m.cu||[]).length} conditions of use. Generate scenarios next.`;
+    document.getElementById("cmlink").innerHTML=`Seeded from the manual for <b>${esc(m.product.name||"(unnamed)")}</b> (template v${esc(m.tpl)}${m.schema?"":"; this manual has no stored IDs yet, so they are taken from its order. Save it again in the Manual Builder to fix them"}): ${ifs.length} interfaces, ${(m.pc||[]).length} components, ${(m.fc||[]).length} functions, ${(m.cu||[]).length} conditions of use. Generate scenarios next.`;
   }
 }
 /* ---------- the chain between the three tools (08 Nov 2026) ----------
@@ -587,7 +629,7 @@ function bringManual(){let m=null;try{m=JSON.parse(localStorage.getItem("vcri.cm
   if(S.scenarios.length&&!confirm("Seeding from the manual replaces the product, interfaces, assets and scenarios here. Continue?"))return;
   seedFromManual(m);}
 if(/export=manual/.test(location.hash)&&window.parent!==window){
-  let out;try{render();const o=manualExport();   /* render first: the export reads the product fields from the page */out=o?{schema:"vcri.cmm-export/v1",from:"tara",data:o}:{schema:"vcri.cmm-export/v1",from:"tara",error:"The TARA Builder has no accepted scenarios in this browser yet. Accept at least one there first."};}
+  let out;try{render();const o=manualExport();   /* render first: the export reads the product fields from the page */out=o?{schema:"vcri.cmm-export/v1",from:"tara",data:o}:{schema:"vcri.cmm-export/v1",from:"tara",error:"The TARA Builder in this browser has "+NOTHING.charAt(0).toLowerCase()+NOTHING.slice(1)};}
   catch(e){out={schema:"vcri.cmm-export/v1",from:"tara",error:"The TARA Builder could not prepare its lists: "+e};}
   window.parent.postMessage(out,location.origin);
 }else{

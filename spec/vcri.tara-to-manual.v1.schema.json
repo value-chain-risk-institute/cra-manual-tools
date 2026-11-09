@@ -12,7 +12,27 @@
   ],
   "properties": {
     "schema": {
-      "const": "vcri.tara-to-manual/v1"
+      "type": "string",
+      "pattern": "^vcri\\.tara-to-manual/v1\\.\\d+$",
+      "description": "Format and version, \"vcri.tara-to-manual/v1.0\". Readers accept any 1.x."
+    },
+    "generator": {
+      "type": "object",
+      "properties": {
+        "tool": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tool",
+        "version"
+      ]
     },
     "tpl": {
       "type": "string"
@@ -28,12 +48,30 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "title"
-        ],
         "properties": {
-          "ts": {
-            "type": "string"
+          "ref": {
+            "type": "string",
+            "description": "Local reference, unique within this file."
+          },
+          "source": {
+            "type": "object",
+            "properties": {
+              "tool": {
+                "type": "string",
+                "description": "Who gave the IDs, e.g. \"vcri-tara\" or another tool's name."
+              },
+              "ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              }
+            },
+            "required": [
+              "tool",
+              "ids"
+            ]
           },
           "title": {
             "type": "string"
@@ -41,27 +79,71 @@
           "desc": {
             "type": "string"
           },
-          "fc": {
-            "type": "string"
+          "fcIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^FC\\d+$"
+            },
+            "uniqueItems": true
           },
-          "cu": {
-            "type": "string"
+          "cuIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^CU\\d+$"
+            },
+            "uniqueItems": true,
+            "description": "Conditions of use already in the manual."
+          },
+          "cuRefs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true,
+            "description": "refs of condition-of-use candidates in this file."
           },
           "risk": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "ref",
+          "title"
+        ]
       }
     },
     "cu": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "title"
-        ],
         "properties": {
-          "ts": {
+          "ref": {
+            "type": "string",
+            "description": "Local reference, unique within this file."
+          },
+          "source": {
+            "type": "object",
+            "properties": {
+              "tool": {
+                "type": "string",
+                "description": "Who gave the IDs, e.g. \"vcri-tara\" or another tool's name."
+              },
+              "ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              }
+            },
+            "required": [
+              "tool",
+              "ids"
+            ]
+          },
+          "affected": {
             "type": "string"
           },
           "title": {
@@ -70,27 +152,59 @@
           "desc": {
             "type": "string"
           },
-          "affected": {
-            "type": "string"
+          "annex": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^2[b-m]$"
+            },
+            "uniqueItems": true
           },
-          "refs": {
-            "type": "string"
-          },
-          "fc": {
-            "type": "string"
+          "fcIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^FC\\d+$"
+            },
+            "uniqueItems": true
           }
-        }
+        },
+        "required": [
+          "ref",
+          "title"
+        ]
       }
     },
     "sp": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "title"
-        ],
         "properties": {
-          "ts": {
+          "ref": {
+            "type": "string",
+            "description": "Local reference, unique within this file."
+          },
+          "source": {
+            "type": "object",
+            "properties": {
+              "tool": {
+                "type": "string",
+                "description": "Who gave the IDs, e.g. \"vcri-tara\" or another tool's name."
+              },
+              "ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              }
+            },
+            "required": [
+              "tool",
+              "ids"
+            ]
+          },
+          "comp": {
             "type": "string"
           },
           "title": {
@@ -99,13 +213,19 @@
           "desc": {
             "type": "string"
           },
-          "comp": {
-            "type": "string"
-          },
-          "refs": {
-            "type": "string"
+          "annex": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^2[b-m]$"
+            },
+            "uniqueItems": true
           }
-        }
+        },
+        "required": [
+          "ref",
+          "title"
+        ]
       }
     }
   }

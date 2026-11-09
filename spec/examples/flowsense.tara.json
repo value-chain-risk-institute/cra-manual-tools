@@ -1,8 +1,13 @@
 {
-  "schema": "vcri.tara/v1",
+  "schema": "vcri.tara/v1.0",
   "spec": "https://github.com/value-chain-risk-institute/cra-manual-tools/tree/main/spec",
+  "generator": {
+    "tool": "VCRI TARA Builder",
+    "version": "2026-11-09",
+    "url": "https://valuechainrisk.org/tara/"
+  },
   "rubric": "tara-rubric/0.1",
-  "generated": "2026-11-09T00:00:00.000Z",
+  "generated": "2026-11-09T12:00:00.000Z",
   "data": {
     "product": {
       "name": "FlowSense PLC Gateway 200",
@@ -10,12 +15,31 @@
       "purpose": "Industrial protocol gateway bridging field sensors to a plant SCADA network; deployed inside a segmented OT network, remote firmware updates over TLS."
     },
     "interfaces": [
-      "Ethernet/IP",
-      "USB",
-      "Cloud/API",
-      "Serial/UART"
+      {
+        "id": "IF01",
+        "name": "Ethernet/IP",
+        "inScope": true,
+        "custom": false
+      },
+      {
+        "id": "IF02",
+        "name": "USB",
+        "inScope": true,
+        "custom": false
+      },
+      {
+        "id": "IF03",
+        "name": "Cloud/API",
+        "inScope": true,
+        "custom": false
+      },
+      {
+        "id": "IF04",
+        "name": "Serial/UART",
+        "inScope": true,
+        "custom": false
+      }
     ],
-    "custIf": [],
     "assets": [
       {
         "name": "PLC control logic",
@@ -30,69 +54,10 @@
     ],
     "scenarios": [
       {
-        "id": "TS16",
-        "key": "PHYS|USB",
-        "cls": "PHYS",
-        "clsName": "Physical assumption violated",
-        "iface": "USB",
-        "ifaceId": "IF02",
-        "text": "Physical or side-channel access at USB defeats a protection the product assumes the environment provides.",
-        "accepted": true,
-        "feas": {
-          "time": 0,
-          "expertise": 1,
-          "knowledge": 1,
-          "window": 3,
-          "equipment": 1
-        },
-        "imp": {
-          "safety": 2,
-          "operational": 2,
-          "financial": 1,
-          "privacy": 0
-        },
-        "treatment": "Reduce (add control)",
-        "bearer": "User → condition of use",
-        "annex": "2j",
-        "fc": "FC01 Program a PLC",
-        "cu": "CU01 Restrict physical access",
-        "damage": "Malware brought in over USB reaches the plant network."
-      },
-      {
-        "id": "TS23",
-        "key": "PROV|Cloud/API",
-        "cls": "PROV",
-        "clsName": "Provenance assumption violated",
-        "iface": "Cloud/API",
-        "ifaceId": "IF03",
-        "text": "A component, update, or peer delivered via Cloud/API is not from the source the product assumes (supply-chain / substitution).",
-        "accepted": true,
-        "feas": {
-          "time": 1,
-          "expertise": 2,
-          "knowledge": 1,
-          "window": 0,
-          "equipment": 0
-        },
-        "imp": {
-          "safety": 3,
-          "operational": 3,
-          "financial": 2,
-          "privacy": 0
-        },
-        "treatment": "Reduce (add control)",
-        "bearer": "Manufacturer → security property",
-        "annex": "2c",
-        "fc": "FC04 Install security updates",
-        "cu": "",
-        "damage": "A manipulated update takes over the gateway and sends unsafe commands to the PLC."
-      },
-      {
         "id": "TS01",
-        "key": "AUTH|Ethernet/IP",
+        "key": "AUTH|IF01",
         "cls": "AUTH",
         "clsName": "Identity assumption violated",
-        "iface": "Ethernet/IP",
         "ifaceId": "IF01",
         "text": "An actor reaches Ethernet/IP without being the identity the product assumes, bypassing or forging authentication.",
         "accepted": false,
@@ -112,17 +77,917 @@
         "treatment": "",
         "bearer": "",
         "annex": "2d",
-        "fc": "",
-        "cu": "",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS02",
+        "key": "INTEG|IF01",
+        "cls": "INTEG",
+        "clsName": "Integrity assumption violated",
+        "ifaceId": "IF01",
+        "text": "Data or firmware crossing Ethernet/IP is altered in a way the product treats as trusted and unmodified.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2f",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS03",
+        "key": "CONF|IF01",
+        "cls": "CONF",
+        "clsName": "Confidentiality assumption violated",
+        "ifaceId": "IF01",
+        "text": "Information the product assumes is private is observed via Ethernet/IP (eavesdropping, readout, or leakage).",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2e",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS04",
+        "key": "AVAIL|IF01",
+        "cls": "AVAIL",
+        "clsName": "Availability assumption violated",
+        "ifaceId": "IF01",
+        "text": "Ethernet/IP is flooded, jammed, or exhausted so the product cannot perform its function when needed.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2h",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS05",
+        "key": "AUTHZ|IF01",
+        "cls": "AUTHZ",
+        "clsName": "Authorization assumption violated",
+        "ifaceId": "IF01",
+        "text": "An actor with some access to Ethernet/IP escalates beyond the privilege the product intends to grant.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2d",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS06",
+        "key": "FRESH|IF01",
+        "cls": "FRESH",
+        "clsName": "Freshness assumption violated",
+        "ifaceId": "IF01",
+        "text": "A valid Ethernet/IP message is captured and replayed, and the product acts on stale data as if current.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2f",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS07",
+        "key": "PROV|IF01",
+        "cls": "PROV",
+        "clsName": "Provenance assumption violated",
+        "ifaceId": "IF01",
+        "text": "A component, update, or peer delivered via Ethernet/IP is not from the source the product assumes (supply-chain / substitution).",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2c",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS08",
+        "key": "PHYS|IF01",
+        "cls": "PHYS",
+        "clsName": "Physical assumption violated",
+        "ifaceId": "IF01",
+        "text": "Physical or side-channel access at Ethernet/IP defeats a protection the product assumes the environment provides.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2j",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS09",
+        "key": "AUTH|IF02",
+        "cls": "AUTH",
+        "clsName": "Identity assumption violated",
+        "ifaceId": "IF02",
+        "text": "An actor reaches USB without being the identity the product assumes, bypassing or forging authentication.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2d",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS10",
+        "key": "INTEG|IF02",
+        "cls": "INTEG",
+        "clsName": "Integrity assumption violated",
+        "ifaceId": "IF02",
+        "text": "Data or firmware crossing USB is altered in a way the product treats as trusted and unmodified.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2f",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS11",
+        "key": "CONF|IF02",
+        "cls": "CONF",
+        "clsName": "Confidentiality assumption violated",
+        "ifaceId": "IF02",
+        "text": "Information the product assumes is private is observed via USB (eavesdropping, readout, or leakage).",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2e",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS12",
+        "key": "AVAIL|IF02",
+        "cls": "AVAIL",
+        "clsName": "Availability assumption violated",
+        "ifaceId": "IF02",
+        "text": "USB is flooded, jammed, or exhausted so the product cannot perform its function when needed.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2h",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS13",
+        "key": "AUTHZ|IF02",
+        "cls": "AUTHZ",
+        "clsName": "Authorization assumption violated",
+        "ifaceId": "IF02",
+        "text": "An actor with some access to USB escalates beyond the privilege the product intends to grant.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2d",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS14",
+        "key": "FRESH|IF02",
+        "cls": "FRESH",
+        "clsName": "Freshness assumption violated",
+        "ifaceId": "IF02",
+        "text": "A valid USB message is captured and replayed, and the product acts on stale data as if current.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2f",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS15",
+        "key": "PROV|IF02",
+        "cls": "PROV",
+        "clsName": "Provenance assumption violated",
+        "ifaceId": "IF02",
+        "text": "A component, update, or peer delivered via USB is not from the source the product assumes (supply-chain / substitution).",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2c",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS16",
+        "key": "PHYS|IF02",
+        "cls": "PHYS",
+        "clsName": "Physical assumption violated",
+        "ifaceId": "IF02",
+        "text": "Physical or side-channel access at USB defeats a protection the product assumes the environment provides.",
+        "accepted": true,
+        "feas": {
+          "time": 0,
+          "expertise": 1,
+          "knowledge": 1,
+          "window": 3,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 2,
+          "operational": 2,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "reduce",
+        "bearer": "user",
+        "annex": "2j",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [
+          "A01",
+          "A02"
+        ],
+        "damage": "A USB device plugged in by anyone with access to the cabinet could change the gateway's logic or firmware and disturb the plant."
+      },
+      {
+        "id": "TS17",
+        "key": "AUTH|IF03",
+        "cls": "AUTH",
+        "clsName": "Identity assumption violated",
+        "ifaceId": "IF03",
+        "text": "An actor reaches Cloud/API without being the identity the product assumes, bypassing or forging authentication.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2d",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS18",
+        "key": "INTEG|IF03",
+        "cls": "INTEG",
+        "clsName": "Integrity assumption violated",
+        "ifaceId": "IF03",
+        "text": "Data or firmware crossing Cloud/API is altered in a way the product treats as trusted and unmodified.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2f",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS19",
+        "key": "CONF|IF03",
+        "cls": "CONF",
+        "clsName": "Confidentiality assumption violated",
+        "ifaceId": "IF03",
+        "text": "Information the product assumes is private is observed via Cloud/API (eavesdropping, readout, or leakage).",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2e",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS20",
+        "key": "AVAIL|IF03",
+        "cls": "AVAIL",
+        "clsName": "Availability assumption violated",
+        "ifaceId": "IF03",
+        "text": "Cloud/API is flooded, jammed, or exhausted so the product cannot perform its function when needed.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2h",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS21",
+        "key": "AUTHZ|IF03",
+        "cls": "AUTHZ",
+        "clsName": "Authorization assumption violated",
+        "ifaceId": "IF03",
+        "text": "An actor with some access to Cloud/API escalates beyond the privilege the product intends to grant.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2d",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS22",
+        "key": "FRESH|IF03",
+        "cls": "FRESH",
+        "clsName": "Freshness assumption violated",
+        "ifaceId": "IF03",
+        "text": "A valid Cloud/API message is captured and replayed, and the product acts on stale data as if current.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2f",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS23",
+        "key": "PROV|IF03",
+        "cls": "PROV",
+        "clsName": "Provenance assumption violated",
+        "ifaceId": "IF03",
+        "text": "A component, update, or peer delivered via Cloud/API is not from the source the product assumes (supply-chain / substitution).",
+        "accepted": true,
+        "feas": {
+          "time": 1,
+          "expertise": 2,
+          "knowledge": 1,
+          "window": 0,
+          "equipment": 0
+        },
+        "imp": {
+          "safety": 3,
+          "operational": 3,
+          "financial": 2,
+          "privacy": 0
+        },
+        "treatment": "reduce",
+        "bearer": "manufacturer",
+        "annex": "2c",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [
+          "A02"
+        ],
+        "damage": ""
+      },
+      {
+        "id": "TS24",
+        "key": "PHYS|IF03",
+        "cls": "PHYS",
+        "clsName": "Physical assumption violated",
+        "ifaceId": "IF03",
+        "text": "Physical or side-channel access at Cloud/API defeats a protection the product assumes the environment provides.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2j",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS25",
+        "key": "AUTH|IF04",
+        "cls": "AUTH",
+        "clsName": "Identity assumption violated",
+        "ifaceId": "IF04",
+        "text": "An actor reaches Serial/UART without being the identity the product assumes, bypassing or forging authentication.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2d",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS26",
+        "key": "INTEG|IF04",
+        "cls": "INTEG",
+        "clsName": "Integrity assumption violated",
+        "ifaceId": "IF04",
+        "text": "Data or firmware crossing Serial/UART is altered in a way the product treats as trusted and unmodified.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2f",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS27",
+        "key": "CONF|IF04",
+        "cls": "CONF",
+        "clsName": "Confidentiality assumption violated",
+        "ifaceId": "IF04",
+        "text": "Information the product assumes is private is observed via Serial/UART (eavesdropping, readout, or leakage).",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2e",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS28",
+        "key": "AVAIL|IF04",
+        "cls": "AVAIL",
+        "clsName": "Availability assumption violated",
+        "ifaceId": "IF04",
+        "text": "Serial/UART is flooded, jammed, or exhausted so the product cannot perform its function when needed.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2h",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS29",
+        "key": "AUTHZ|IF04",
+        "cls": "AUTHZ",
+        "clsName": "Authorization assumption violated",
+        "ifaceId": "IF04",
+        "text": "An actor with some access to Serial/UART escalates beyond the privilege the product intends to grant.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2d",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS30",
+        "key": "FRESH|IF04",
+        "cls": "FRESH",
+        "clsName": "Freshness assumption violated",
+        "ifaceId": "IF04",
+        "text": "A valid Serial/UART message is captured and replayed, and the product acts on stale data as if current.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2f",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS31",
+        "key": "PROV|IF04",
+        "cls": "PROV",
+        "clsName": "Provenance assumption violated",
+        "ifaceId": "IF04",
+        "text": "A component, update, or peer delivered via Serial/UART is not from the source the product assumes (supply-chain / substitution).",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2c",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
+        "damage": ""
+      },
+      {
+        "id": "TS32",
+        "key": "PHYS|IF04",
+        "cls": "PHYS",
+        "clsName": "Physical assumption violated",
+        "ifaceId": "IF04",
+        "text": "Physical or side-channel access at Serial/UART defeats a protection the product assumes the environment provides.",
+        "accepted": false,
+        "feas": {
+          "time": 1,
+          "expertise": 1,
+          "knowledge": 0,
+          "window": 1,
+          "equipment": 1
+        },
+        "imp": {
+          "safety": 0,
+          "operational": 1,
+          "financial": 1,
+          "privacy": 0
+        },
+        "treatment": "",
+        "bearer": "",
+        "annex": "2j",
+        "fcIds": [],
+        "cuIds": [],
+        "assetIds": [],
         "damage": ""
       }
     ],
-    "ifIds": {
-      "Ethernet/IP": "IF01",
-      "USB": "IF02",
-      "Cloud/API": "IF03",
-      "Serial/UART": "IF04"
-    },
+    "cm": null,
     "nextId": {
       "A": 3,
       "IF": 5,

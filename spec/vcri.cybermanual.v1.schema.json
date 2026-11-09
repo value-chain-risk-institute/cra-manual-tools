@@ -1,0 +1,452 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/value-chain-risk-institute/cra-manual-tools/tree/main/spec/vcri.cybermanual.v1.schema.json",
+  "title": "vcri.cybermanual/v1: the Cyber Manual file (the parts other tools use)",
+  "description": "Joshua Marpet and Cairn Viktor, The Value Chain Risk Institute, 2026. CC BY 4.0. See README.md.",
+  "type": "object",
+  "required": [
+    "schema",
+    "tpl",
+    "product",
+    "fc",
+    "cu",
+    "ri"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "pattern": "^vcri\\.cybermanual/v1\\.\\d+$",
+      "description": "Format and version, \"vcri.cybermanual/v1.0\". Readers accept any 1.x."
+    },
+    "generator": {
+      "type": "object",
+      "properties": {
+        "tool": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tool",
+        "version"
+      ]
+    },
+    "tpl": {
+      "type": "string",
+      "description": "Cyber Manual Movement template version, e.g. \"0.39\"."
+    },
+    "nextId": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
+    "product": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "tmv": {
+          "type": "string"
+        },
+        "idguide": {
+          "type": "string"
+        },
+        "additional": {
+          "type": "string"
+        },
+        "family": {
+          "type": "string"
+        }
+      }
+    },
+    "pc": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^PC\\d+$"
+          },
+          "vars": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    "pi": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^PI\\d+$"
+          },
+          "vars": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    "pp": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^PP\\d+$"
+          },
+          "vars": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "proto": {
+            "type": "string"
+          },
+          "pi": {
+            "type": "string"
+          },
+          "port": {
+            "type": "string"
+          },
+          "fc": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    "sp": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^SP\\d+$"
+          },
+          "vars": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "comp": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "desc": {
+            "type": "string"
+          },
+          "refs": {
+            "type": "string"
+          },
+          "source": {
+            "type": "object",
+            "properties": {
+              "tool": {
+                "type": "string",
+                "description": "Who gave the IDs, e.g. \"vcri-tara\" or another tool's name."
+              },
+              "ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              }
+            },
+            "required": [
+              "tool",
+              "ids"
+            ]
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    "cc": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^CC\\d+$"
+          },
+          "vars": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "title": {
+            "type": "string"
+          },
+          "desc": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    "cp": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^CP\\d+$"
+          },
+          "vars": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "title": {
+            "type": "string"
+          },
+          "desc": {
+            "type": "string"
+          },
+          "skill": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    "cz": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^CZ\\d+$"
+          },
+          "vars": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "title": {
+            "type": "string"
+          },
+          "desc": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "access": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    "fc": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^FC\\d+$"
+          },
+          "vars": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "title": {
+            "type": "string"
+          },
+          "desc": {
+            "type": "string"
+          },
+          "rfu": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "core",
+              "ancillary"
+            ]
+          },
+          "cus": {
+            "type": "string",
+            "description": "Comma-separated CU IDs."
+          },
+          "dia": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    "cu": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^CU\\d+$"
+          },
+          "vars": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "affected": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "desc": {
+            "type": "string"
+          },
+          "refs": {
+            "type": "string"
+          },
+          "source": {
+            "type": "object",
+            "properties": {
+              "tool": {
+                "type": "string",
+                "description": "Who gave the IDs, e.g. \"vcri-tara\" or another tool's name."
+              },
+              "ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              }
+            },
+            "required": [
+              "tool",
+              "ids"
+            ]
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    "ri": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^CR\\d+$"
+          },
+          "vars": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "title": {
+            "type": "string"
+          },
+          "desc": {
+            "type": "string"
+          },
+          "fc": {
+            "type": "string",
+            "description": "Comma-separated FC IDs."
+          },
+          "cu": {
+            "type": "string",
+            "description": "Comma-separated CU IDs, or text."
+          },
+          "risk": {
+            "type": "string"
+          },
+          "source": {
+            "type": "object",
+            "properties": {
+              "tool": {
+                "type": "string",
+                "description": "Who gave the IDs, e.g. \"vcri-tara\" or another tool's name."
+              },
+              "ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              }
+            },
+            "required": [
+              "tool",
+              "ids"
+            ]
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    }
+  }
+}

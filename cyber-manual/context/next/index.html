@@ -316,7 +316,7 @@ let M=blank();
 const ANNEX1=[['2b','Secure by default configuration'],['2c','Secure update mechanism'],['2d','Protection from unauthorized access'],['2e','Confidentiality protection'],['2f','Integrity protection'],['2g','Data minimisation'],['2h','Availability protection'],['2i','Minimisation of negative impact on other services'],['2j','Attack surface limitation'],['2k','Impact reduction'],['2l','Recording and monitoring'],['2m','Secure data removal / transfer']];
 function blank(){return {product:{name:'',model:'',version:'',family:''},PC:[],PI:[],LI:[],SP:[],FC:[],CC:[],CP:[],CZ:[],CU:[],RI:[],layout:{},fig:{}};}
 const ID_PREFIX={RI:'CR'}; /* the group renamed risks to circumstances leading to risk (CR), example v0.28, 21 Sep 2026; the internal kind stays RI so saved files keep working */
-function nextId(kind){const n=M[kind].length+1;return (ID_PREFIX[kind]||kind)+String(n).padStart(2,'0');}
+function nextId(kind){const n=1+Math.max(0,...M[kind].map(x=>+((String(x.id||'').match(/(\d+)$/)||[0,0])[1])));return (ID_PREFIX[kind]||kind)+String(n).padStart(2,'0');}
 function add(kind,init={}){
   const b={id:nextId(kind),title:'',desc:''};
   if(kind==='SP')Object.assign(b,{on:[],annex:[]});
@@ -1012,7 +1012,7 @@ function dMentions(text,title){const kw=dKeywords(title);if(!kw.length)return fa
 function isManual(o){return !!(o&&o.tpl&&Array.isArray(o.fc)&&Array.isArray(o.pc)&&!o.FC);}
 function deriveFromManual(m){
   const pad=n=>String(n).padStart(2,'0');
-  const E={};for(const[k,src]of [['PC','pc'],['PI','pi'],['SP','sp'],['CC','cc'],['CP','cp'],['CZ','cz'],['CU','cu'],['FC','fc']])E[k]=(m[src]||[]).map((x,i)=>[k+pad(i+1),x]);
+  const E={};for(const[k,src]of [['PC','pc'],['PI','pi'],['SP','sp'],['CC','cc'],['CP','cp'],['CZ','cz'],['CU','cu'],['FC','fc']])E[k]=(m[src]||[]).map((x,i)=>[x.id&&new RegExp('^'+k+'\\d+$').test(x.id)?x.id:k+pad(i+1),x]);   /* stored IDs since vcri.cybermanual/v1.0 */
   const how={};const put=(kind,i,field,t,rule)=>{const h=how[kind+'|'+i+'|'+field]||(how[kind+'|'+i+'|'+field]={});if(!(t in h))h[t]=rule;};
   const get=(kind,i,field)=>Object.keys(how[kind+'|'+i+'|'+field]||{});
   const LI=[];
@@ -1046,7 +1046,7 @@ function deriveFromManual(m){
   c.CU=E.CU.map(([id,x])=>({id,annex:refs(x.refs),title:x.title||'',desc:x.desc||'',on:get('CU',id,'on')}));
   c.FC=E.FC.map(([id,x])=>{const f={id,title:x.title||'',desc:x.desc||'',rfu:x.rfu||'',core:x.kind==='ancillary'?'ancillary':'core',use:'intended'};
     for(const k of ['pc','pi','cc','cp','cz','cu'])f[k]=get('FC',id,k);f.path=[...f.cp,...f.cc,...f.pi,...f.pc];return f;});   /* R8 */
-  c.RI=(m.ri||[]).map((x,i)=>{const id='CR'+pad(i+1),fc=dNamed(x.fc,['FC']),cu=dNamed(x.cu,['CU']);fc.forEach(t=>put('RI',id,'fc',t,'R6'));cu.forEach(t=>put('RI',id,'cu',t,'R6'));
+  c.RI=(m.ri||[]).map((x,i)=>{const id=/^CR\d+$/.test(x.id||'')?x.id:'CR'+pad(i+1),fc=dNamed(x.fc,['FC']),cu=dNamed(x.cu,['CU']);fc.forEach(t=>put('RI',id,'fc',t,'R6'));cu.forEach(t=>put('RI',id,'cu',t,'R6'));
     return {id,title:x.title||'',desc:x.desc||'',damage:x.risk||'',fc,cu,path:[]};});
   const rules={};for(const[key,h]of Object.entries(how))for(const[t,r]of Object.entries(h))rules[key+'|'+t]=r;
   c.derived={from:p.name||'manual',date:new Date().toISOString().slice(0,10),rules};
@@ -1072,22 +1072,23 @@ const MANUAL_KEY='vcri.cm.manual.v1';
 function svgURI(scope){const svg='<?xml version="1.0" encoding="UTF-8"?>\n'+figureSVG(scope,{sp:scope==='sp',cu:false,proto:true,variant:'',legend:true,fig:(M.fig||{})[scope]||''}).replace(/ data-drag="[^"]*"/g,'').replace(/ fill="#000" fill-opacity="0"/g,' fill="none"');
   return 'data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(svg)));}
 function toManual(){
-  const num={};for(const k of ['PC','PI','SP','FC','CC','CP','CZ','CU','RI'])M[k].forEach((x,i)=>num[x.id]=(k==='RI'?'CR':k)+String(i+1).padStart(2,'0'));
+  /* the manual keeps these IDs (vcri.cybermanual/v1.0): an item's own ID where it has the manual's form, otherwise its position */
+  const num={};for(const k of ['PC','PI','SP','FC','CC','CP','CZ','CU','RI']){const p=k==='RI'?'CR':k;M[k].forEach((x,i)=>num[x.id]=new RegExp('^'+p+'\\d+$').test(x.id||'')?x.id:p+String(i+1).padStart(2,'0'));}
   const ref=id=>{if(id===PRODUCT)return null;const x=findAny(id);return x?num[id]+' '+(x.title||''):'';};
   const refs=a=>(a||[]).map(ref).filter(Boolean).join(', ');
   const ids=a=>(a||[]).map(id=>num[id]).filter(Boolean).join(', ');
   const v=x=>Array.isArray(x.vars)?x.vars.slice():[];
   const d={product:M.product.name||'',model:M.product.model||'',family:M.product.family||''};
-  d.pc=M.PC.map(x=>({title:x.title||'',desc:x.desc||'',vars:v(x)}));
-  d.pi=M.PI.map(x=>({title:x.title||'',desc:x.desc||'',vars:v(x)}));
+  d.pc=M.PC.map(x=>({id:num[x.id],title:x.title||'',desc:x.desc||'',vars:v(x)}));
+  d.pi=M.PI.map(x=>({id:num[x.id],title:x.title||'',desc:x.desc||'',vars:v(x)}));
   d.pp=M.LI.map(x=>({proto:(x.proto||'')+(x.url?' ('+x.url+')':''),pi:x.pi?ref(x.pi)||'':'',port:x.port||'',fc:refs(x.fc),enabled:x.enabled||'',vars:v(x)}));
-  d.sp=M.SP.map(x=>({comp:x.on.includes(PRODUCT)&&!x.on.some(t=>t!==PRODUCT)?'Product: '+(M.product.name||'the product'):refs(x.on),title:x.title||'',desc:x.desc||'',refs:(x.annex||[]).join(','),vars:v(x)}));
-  d.cc=M.CC.map(x=>({title:x.title||'',desc:x.desc||'',vars:v(x)}));
-  d.cp=M.CP.map(x=>({title:x.title||'',desc:x.desc||'',skill:x.skill||'instructed',vars:v(x)}));
-  d.cz=M.CZ.map(x=>({title:x.title||'',desc:x.desc||'',type:x.type||'physical',access:x.access||'controlled',vars:v(x)}));
-  d.fc=M.FC.map(x=>({title:x.title||'',desc:x.desc||'',rfu:x.rfu||'',kind:x.core==='ancillary'?'ancillary':'core',cus:ids(fnCU(x)),dia:svgURI('fc:'+x.id),vars:v(x)}));
-  d.cu=M.CU.map(x=>({affected:[x.on.includes(PRODUCT)?'Product boundary':'',refs(x.on)].filter(Boolean).join(', '),title:x.title||'',desc:x.desc||'',refs:(x.annex||[]).join(','),vars:v(x)}));
-  d.ri=M.RI.map(x=>({title:x.title||'',desc:x.desc||'',fc:ids(x.fc),cu:ids(x.cu),risk:x.damage||'',vars:v(x)}));
+  d.sp=M.SP.map(x=>({id:num[x.id],comp:x.on.includes(PRODUCT)&&!x.on.some(t=>t!==PRODUCT)?'Product: '+(M.product.name||'the product'):refs(x.on),title:x.title||'',desc:x.desc||'',refs:(x.annex||[]).join(','),vars:v(x)}));
+  d.cc=M.CC.map(x=>({id:num[x.id],title:x.title||'',desc:x.desc||'',vars:v(x)}));
+  d.cp=M.CP.map(x=>({id:num[x.id],title:x.title||'',desc:x.desc||'',skill:x.skill||'instructed',vars:v(x)}));
+  d.cz=M.CZ.map(x=>({id:num[x.id],title:x.title||'',desc:x.desc||'',type:x.type||'physical',access:x.access||'controlled',vars:v(x)}));
+  d.fc=M.FC.map(x=>({id:num[x.id],title:x.title||'',desc:x.desc||'',rfu:x.rfu||'',kind:x.core==='ancillary'?'ancillary':'core',cus:ids(fnCU(x)),dia:svgURI('fc:'+x.id),vars:v(x)}));
+  d.cu=M.CU.map(x=>({id:num[x.id],affected:[x.on.includes(PRODUCT)?'Product boundary':'',refs(x.on)].filter(Boolean).join(', '),title:x.title||'',desc:x.desc||'',refs:(x.annex||[]).join(','),vars:v(x)}));
+  d.ri=M.RI.map(x=>({id:num[x.id],title:x.title||'',desc:x.desc||'',fc:ids(x.fc),cu:ids(x.cu),risk:x.damage||'',vars:v(x)}));
   d.dia={product:svgURI('product'),sp:svgURI('sp'),context:svgURI('context')};
   return d;}
 function hasUndo(){try{return !!localStorage.getItem(KEY+'.undo');}catch(e){return false;}}

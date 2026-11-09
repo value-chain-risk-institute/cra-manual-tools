@@ -90,7 +90,7 @@ owns the template, the scenario libraries, and the worked examples.**
 
 ## File formats
 
-[`/spec`](./spec) describes the files the three tools read and write, so other tools can exchange work with them: the TARA file (`vcri.tara/v1`, with stable IDs for assets, interfaces and threat scenarios), the TARA's results in the manual's shape (`vcri.tara-to-manual/v1`), and the parts of the manual file the tools read. Each format is versioned, with JSON Schemas and sample files. The specification is CC BY 4.0: any tool, under any licence, may implement it with credit.
+[`/spec`](./spec) describes the files the three tools read and write, so other tools can exchange work with them: the TARA file (`vcri.tara/v1.0`, with stable IDs for assets, interfaces and threat scenarios), the TARA's results in the manual's shape (`vcri.tara-to-manual/v1.0`), and the manual file itself (`vcri.cybermanual/v1.0`, where every row keeps its ID when others are deleted). Each format is versioned, with JSON Schemas and sample files. The specification is CC BY 4.0: any tool, under any licence, may implement it with credit.
 
 ## Contributing
 

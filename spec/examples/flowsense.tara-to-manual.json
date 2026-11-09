@@ -1,43 +1,65 @@
 {
-  "schema": "vcri.tara-to-manual/v1",
+  "schema": "vcri.tara-to-manual/v1.0",
+  "generator": {
+    "tool": "VCRI TARA Builder",
+    "version": "2026-11-09",
+    "url": "https://valuechainrisk.org/tara/"
+  },
   "tpl": "0.39",
-  "generated": "2026-11-09T00:00:00.000Z",
+  "generated": "2026-11-09T12:00:00.000Z",
   "product": "FlowSense PLC Gateway 200",
   "ri": [
     {
-      "ts": "TS16",
+      "ref": "cr-TS16",
+      "source": {
+        "tool": "vcri-tara",
+        "ids": [
+          "TS16"
+        ]
+      },
       "title": "Physical assumption violated on USB",
       "desc": "Physical or side-channel access at USB defeats a protection the product assumes the environment provides.",
-      "fc": "FC01",
-      "cu": "CU01 Restrict physical access",
-      "risk": "Malware brought in over USB reaches the plant network."
-    },
-    {
-      "ts": "TS23",
-      "title": "Provenance assumption violated on Cloud/API",
-      "desc": "A component, update, or peer delivered via Cloud/API is not from the source the product assumes (supply-chain / substitution).",
-      "fc": "FC04",
-      "cu": "",
-      "risk": "A manipulated update takes over the gateway and sends unsafe commands to the PLC."
+      "fcIds": [],
+      "cuIds": [],
+      "cuRefs": [
+        "cu-TS16"
+      ],
+      "risk": "A USB device plugged in by anyone with access to the cabinet could change the gateway's logic or firmware and disturb the plant."
     }
   ],
   "cu": [
     {
-      "ts": "TS16",
+      "ref": "cu-TS16",
+      "source": {
+        "tool": "vcri-tara",
+        "ids": [
+          "TS16"
+        ]
+      },
       "affected": "",
       "title": "Reduce: Physical on USB",
       "desc": "The operator must act so that: Physical or side-channel access at USB defeats a protection the product assumes the environment provides.",
-      "refs": "2j",
-      "fc": "FC01"
+      "annex": [
+        "2j"
+      ],
+      "fcIds": []
     }
   ],
   "sp": [
     {
-      "ts": "TS23",
+      "ref": "sp-TS23",
+      "source": {
+        "tool": "vcri-tara",
+        "ids": [
+          "TS23"
+        ]
+      },
       "comp": "Cloud/API",
       "title": "Provenance protection on Cloud/API",
       "desc": "Product control addressing: A component, update, or peer delivered via Cloud/API is not from the source the product assumes (supply-chain / substitution).",
-      "refs": "2c"
+      "annex": [
+        "2c"
+      ]
     }
   ]
 }

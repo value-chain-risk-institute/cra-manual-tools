@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/value-chain-risk-institute/cra-manual-tools/tree/main/spec/vcri.tara.v1.schema.json",
-  "title": "vcri.tara/v1: a TARA Builder file",
+  "title": "vcri.tara/v1: a threat analysis and risk assessment",
   "description": "Joshua Marpet and Cairn Viktor, The Value Chain Risk Institute, 2026. CC BY 4.0. See README.md.",
   "type": "object",
   "required": [
@@ -10,7 +10,27 @@
   ],
   "properties": {
     "schema": {
-      "const": "vcri.tara/v1"
+      "type": "string",
+      "pattern": "^vcri\\.tara/v1\\.\\d+$",
+      "description": "Format and version, \"vcri.tara/v1.0\". Readers accept any 1.x."
+    },
+    "generator": {
+      "type": "object",
+      "properties": {
+        "tool": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "tool",
+        "version"
+      ]
     },
     "spec": {
       "type": "string"
@@ -24,14 +44,6 @@
     },
     "data": {
       "type": "object",
-      "required": [
-        "product",
-        "interfaces",
-        "ifIds",
-        "assets",
-        "scenarios",
-        "nextId"
-      ],
       "properties": {
         "product": {
           "type": "object",
@@ -50,34 +62,37 @@
         "interfaces": {
           "type": "array",
           "items": {
-            "type": "string"
-          }
-        },
-        "custIf": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "ifIds": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string",
-            "pattern": "^IF[0-9]{2,}$"
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^IF\\d+$"
+              },
+              "name": {
+                "type": "string"
+              },
+              "inScope": {
+                "type": "boolean"
+              },
+              "custom": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "inScope"
+            ]
           }
         },
         "assets": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": [
-              "id",
-              "name"
-            ],
             "properties": {
               "id": {
                 "type": "string",
-                "pattern": "^A[0-9]{2,}$"
+                "pattern": "^A\\d+$"
               },
               "name": {
                 "type": "string"
@@ -85,30 +100,28 @@
               "damage": {
                 "type": "string"
               }
-            }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
           }
         },
         "scenarios": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": [
-              "id",
-              "cls",
-              "iface",
-              "text",
-              "accepted"
-            ],
             "properties": {
               "id": {
                 "type": "string",
-                "pattern": "^TS[0-9]{2,}$"
+                "pattern": "^TS\\d+$"
               },
               "legacyId": {
                 "type": "string"
               },
               "key": {
-                "type": "string"
+                "type": "string",
+                "description": "<class>|<interface ID>"
               },
               "cls": {
                 "enum": [
@@ -125,12 +138,9 @@
               "clsName": {
                 "type": "string"
               },
-              "iface": {
-                "type": "string"
-              },
               "ifaceId": {
                 "type": "string",
-                "pattern": "^IF[0-9]{2,}$"
+                "pattern": "^IF\\d+$"
               },
               "text": {
                 "type": "string"
@@ -196,42 +206,147 @@
               "treatment": {
                 "enum": [
                   "",
-                  "Reduce (add control)",
-                  "Retain (accept residual)",
-                  "Avoid (remove function)",
-                  "Transfer (contract/insurance)"
+                  "reduce",
+                  "retain",
+                  "avoid",
+                  "transfer"
                 ]
               },
               "bearer": {
                 "enum": [
                   "",
-                  "Manufacturer → security property",
-                  "User → condition of use"
+                  "manufacturer",
+                  "user"
                 ]
               },
               "annex": {
                 "type": "string",
-                "pattern": "^(|2[b-m])$"
+                "pattern": "^(2[b-m])?$"
               },
-              "fc": {
-                "type": "string"
+              "fcIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^FC\\d+$"
+                },
+                "uniqueItems": true
               },
-              "cu": {
-                "type": "string"
+              "cuIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^CU\\d+$"
+                },
+                "uniqueItems": true
+              },
+              "assetIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^A\\d+$"
+                },
+                "uniqueItems": true
               },
               "damage": {
                 "type": "string"
               }
-            }
+            },
+            "required": [
+              "id",
+              "key",
+              "cls",
+              "ifaceId",
+              "text",
+              "accepted",
+              "feas",
+              "imp",
+              "treatment",
+              "bearer",
+              "fcIds",
+              "cuIds"
+            ]
           }
+        },
+        "cm": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "fc": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^FC\\d+$"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "cus": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id"
+                    ]
+                  }
+                },
+                "cu": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^CU\\d+$"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "affected": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id"
+                    ]
+                  }
+                },
+                "sp": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "pattern": "^SP\\d+$"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id"
+                    ]
+                  }
+                },
+                "tpl": {
+                  "type": "string"
+                },
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
         },
         "nextId": {
           "type": "object",
-          "required": [
-            "A",
-            "IF",
-            "TS"
-          ],
           "properties": {
             "A": {
               "type": "integer",
@@ -245,15 +360,21 @@
               "type": "integer",
               "minimum": 1
             }
-          }
-        },
-        "cm": {
-          "type": [
-            "object",
-            "null"
+          },
+          "required": [
+            "A",
+            "IF",
+            "TS"
           ]
         }
-      }
+      },
+      "required": [
+        "product",
+        "interfaces",
+        "assets",
+        "scenarios",
+        "nextId"
+      ]
     }
   }
 }

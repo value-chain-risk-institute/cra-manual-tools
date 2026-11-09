@@ -306,8 +306,13 @@ const pad=(p,i)=>p+String(i+1).padStart(2,"0");
    CU list and one numbered CR list (the EXAMPLE numbers them across the whole manual and repeats a CU or CR under every
    function it belongs to); functions point at their CUs, circumstances point at their function(s). */
 const TPL="0.39"; /* v0.39 (26 Oct 2026) changed wording only; the data model is the v0.38 one */
+/* File format: vcri.cybermanual/v1.0 (9 Nov 2026), next to tpl, the template version: the two change independently. */
+const SCHEMA="vcri.cybermanual/v1.0";
+const GEN={tool:"VCRI CRA Manual Builder",version:"2026-11-09",url:"https://valuechainrisk.org/cra-manual-builder/"};
 const blank=()=>({
+  schema:SCHEMA,
   tpl:TPL,
+  nextId:{},
   meta:{version:"0.1",date:"",author:""},
   references:"",
   product:{name:"",tmv:"",idguide:"",additional:"",family:""},
@@ -486,10 +491,10 @@ function example(){
 }
 
 /* ---------- migration: v0.25 builder JSON, and template v0.29 / v0.30 / v0.32 files, into the v0.38 structure ---------- */
-const fcList=s=>[...new Set((Array.isArray(s)?s.join(","):(s||"")).match(/FC\d\d/g)||[])];
+const fcList=s=>[...new Set((Array.isArray(s)?s.join(","):(s||"")).match(/FC\d+/g)||[])];
 function normRi(r){ /* accepts the pre-CR shape {affected,damage} and the CR shape {fc,cu,risk}; since v0.38 fc may name several functions */
   if(r.fc!==undefined||r.risk!==undefined){const o=Object.assign({title:"",desc:"",fc:"",cu:"",risk:""},r);o.fc=fcList(o.fc).join(", ");return o;}
-  const aff=r.affected||""; const cus=(aff.match(/CU\d\d/g)||[]).join(", ");
+  const aff=r.affected||""; const cus=(aff.match(/CU\d+/g)||[]).join(", ");
   return {title:r.title||"",desc:r.desc||"",fc:fcList(aff).join(", "),cu:cus,risk:r.damage||""};
 }
 function normFc(f){ /* v0.38 gives reasonably foreseeable use its own row; older files carried it inside the description */
@@ -516,7 +521,22 @@ function migrate0(j){
 /* product families (CMM working group, 02 Nov 2026): one manual may cover several family members if it delineates which pieces
    apply to which. product.family lists the members, comma separated; an entry's vars lists the members it applies to (empty = all). */
 const VLISTS=["pc","pi","pp","sp","cc","cp","cz","fc","cu","ri"];
-function migrate(j){const m=migrate0(j);m.product=Object.assign({family:""},m.product);VLISTS.forEach(k=>(m[k]||[]).forEach(x=>{if(!Array.isArray(x.vars))x.vars=[];}));return m;}
+function migrate(j){const m=migrate0(j);m.product=Object.assign({family:""},m.product);VLISTS.forEach(k=>(m[k]||[]).forEach(x=>{if(!Array.isArray(x.vars))x.vars=[];}));
+  assignIds(m,!j.schema);m.schema=SCHEMA;return m;}
+/* Stored IDs (vcri.cybermanual/v1.0, 9 Nov 2026): every row of the ten lists carries its own id, given once and never reused, so a row
+   keeps its number when others are deleted or moved, references like "CU04" keep pointing at the same row, and other tools can refer
+   to it. Deleting a row leaves a gap in the numbering. Files without stored IDs get the numbers they were printed with (their order). */
+const PFX={pc:"PC",pi:"PI",pp:"PP",sp:"SP",cc:"CC",cp:"CP",cz:"CZ",fc:"FC",cu:"CU",ri:"CR"};
+const idNum=(p,id)=>{const r=String(id||"").match(new RegExp("^"+p+"(\\d+)$"));return r?+r[1]:0;};
+function assignIds(m,byPosition){
+  m.nextId=m.nextId&&typeof m.nextId==="object"?m.nextId:{};
+  for(const k of VLISTS){const p=PFX[k],list=m[k]||[],seen=new Set();
+    list.forEach(x=>{if(idNum(p,x.id)&&!seen.has(x.id))seen.add(x.id);else x.id="";});
+    if(byPosition)list.forEach((x,i)=>{const c=pad(p,i);if(!x.id&&!seen.has(c)){x.id=c;seen.add(c);}});
+    let next=Math.max(m.nextId[p]||1,1+Math.max(0,...list.map(x=>idNum(p,x.id))));
+    list.forEach(x=>{if(!x.id)x.id=p+String(next++).padStart(2,"0");});
+    m.nextId[p]=next;}
+}
 function family(){return String(M.product.family||"").split(",").map(x=>x.trim()).filter(Boolean);}
 function onlyFor(it){const f=family(),v=((it&&it.vars)||[]).filter(x=>f.includes(x));return f.length>1&&v.length&&v.length<f.length?v:null;}
 function appliesTo(it,m){const v=onlyFor(it);return !m||!v||v.includes(m);}
@@ -536,12 +556,12 @@ function varPicker(it){
 }
 function famChecks(){ /* contradictions only a family manual can have */
   const f=family(),out=[];if(f.length<2)return out;
-  VLISTS.forEach(k=>M[k].forEach((x,i)=>(x.vars||[]).forEach(v=>{if(!f.includes(v))out.push(`${pad(k.toUpperCase().replace("RI","CR"),i)} names “${v}”, which is not in the product family list; it is treated as applying to every member until you tick its members again.`);})));
-  M.ri.forEach((r,i)=>f.forEach(m=>{if(!appliesTo(r,m))return;const id=pad("CR",i);
-    const fns=fcList(r.fc).map(x=>M.fc[parseInt(x.slice(2),10)-1]).filter(Boolean);
+  VLISTS.forEach(k=>M[k].forEach((x,i)=>(x.vars||[]).forEach(v=>{if(!f.includes(v))out.push(`${x.id} names “${v}”, which is not in the product family list; it is treated as applying to every member until you tick its members again.`);})));
+  M.ri.forEach((r,i)=>f.forEach(m=>{if(!appliesTo(r,m))return;const id=r.id;
+    const fns=fcList(r.fc).map(fcById).filter(Boolean);
     if(fns.length&&!fns.some(fn=>appliesTo(fn,m)))out.push(`${id} applies to ${m}, but none of its functions (${fcList(r.fc).join(", ")}) does, so it appears nowhere in the ${m} edition.`);
-    (r.cu||"").match(/CU\d\d/g)?.forEach(cid=>{const c=cuById(cid);if(c&&!appliesTo(c,m))out.push(`${id} applies to ${m}, but its violated condition of use ${cid} does not.`);});}));
-  M.cu.forEach((c,i)=>f.forEach(m=>{if(!appliesTo(c,m))return;const id=pad("CU",i);const fns=M.fc.filter(fn=>((fn.cus||"").match(/CU\d\d/g)||[]).includes(id));
+    (r.cu||"").match(/CU\d+/g)?.forEach(cid=>{const c=cuById(cid);if(c&&!appliesTo(c,m))out.push(`${id} applies to ${m}, but its violated condition of use ${cid} does not.`);});}));
+  M.cu.forEach((c,i)=>f.forEach(m=>{if(!appliesTo(c,m))return;const id=c.id;const fns=M.fc.filter(fn=>((fn.cus||"").match(/CU\d+/g)||[]).includes(id));
     if(fns.length&&!fns.some(fn=>appliesTo(fn,m)))out.push(`${id} applies to ${m}, but every function it is attached to (${fns.map(fn=>idOf("FC",M.fc,fn)).join(", ")}) is left out for ${m}.`);}));
   return out;
 }
@@ -578,7 +598,7 @@ function sec(ix,title,openState,build){
   build(b); d.append(s,b); return d;
 }
 function simpleList(b,list,prefix,label,addLabel){
-  repeat(b,list,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(list,i),el("span",{class:"rid"},pad(prefix,i)));
+  repeat(b,list,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(list,i),el("span",{class:"rid"},it.id));
     r.append(field(label,it.title,v=>it.title=v)); return r;},addLabel,()=>({title:"",desc:""}));
 }
 const isUpd=f=>/security update/i.test(f.title||"");
@@ -586,6 +606,7 @@ const isUpd=f=>/security update/i.test(f.title||"");
 function fnNum(f){const useFns=M.fc.filter(x=>!isUpd(x)),updFns=M.fc.filter(isUpd);return isUpd(f)?"3.4."+(updFns.indexOf(f)+1):"3.3."+(useFns.indexOf(f)+1);}
 
 function buildForm(){
+  assignIds(M,false);
   const P=$("#editPane"); P.innerHTML="";
   P.append(el("div",{class:"credit",html:'This tool populates the <strong>Cyber Manual Movement’s</strong> Cybersecurity Manual template, <strong>v0.39 of 26 October 2026</strong>, and loads the working group’s Engineering PC example (v0.40 of 26 October 2026, with its diagrams), section by section and in their numbering and tag scheme (P, PC, PI, PP, SP, C, CC, CP, CZ, FC, CU, IPRFU, CR). Chapter 3.3 holds one subchapter per product function with its conditions of use (CU) and circumstances leading to risk (CR) together, as the template does. The template, guidance, boilerplate and the Engineering PC example (including its diagrams, by Sarah Fluchs) are the work of the Cyber Manual Movement working group. This free populator is built on that template by the <strong>Value Chain Risk Institute</strong> and released CC BY 4.0. It does not replace or claim the group’s template.'}));
   P.append(el("div",{class:"note",html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 4v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V7z"/></svg><div>Everything stays in your browser; nothing is uploaded. Fill the form and the manual builds itself on the right, front matter included. <span class="tag mfr">SP</span> = implemented in the product, manufacturer’s responsibility. <span class="tag usr">CU</span> = implemented in the context, user’s responsibility. Chapter 3.3 is derived: every function you list becomes its own subchapter holding the function, its conditions of use and its circumstances leading to risk; the update function lands in 3.4.1. For deriving context and conditions of use from functions, and for the diagrams, use the <a href="/cyber-manual/context/">Context &amp; Conditions of Use Builder</a>.</div>'}));
@@ -609,7 +630,7 @@ function buildForm(){
     b.append(el("h3",{},"2.1.3 Product components (PC) [optional]")); simpleList(b,M.pc,"PC","Title / description","Add product component");
     b.append(el("h3",{},"2.1.4 Product interfaces [optional]: physical (PI)")); simpleList(b,M.pi,"PI","Title / description","Add physical interface");
     b.append(el("h3",{},"2.1.4 Product interfaces: protocols and services (PP)"));
-    repeat(b,M.pp,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(M.pp,i),el("span",{class:"rid"},pad("PP",i)));
+    repeat(b,M.pp,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(M.pp,i),el("span",{class:"rid"},it.id));
       const g=el("div",{class:"grid3"});g.append(field("Protocol / service / URL",it.proto,v=>it.proto=v),field("Physical interface (PIxx)",it.pi,v=>it.pi=v),field("Port",it.port,v=>it.port=v));r.append(g);
       const g2=el("div",{class:"grid2"});g2.append(field("Function(s) (FCxx)",it.fc,v=>it.fc=v),field("Enabled by default",it.enabled,v=>it.enabled=v,{ph:"yes / no"}));r.append(g2);return r;},"Add protocol / service",()=>({proto:"",pi:"",port:"",fc:"",enabled:""}));
     b.append(el("div",{class:"hint"},"List every interface the user can assess, even if it is disabled or used by no function, and say whether each protocol or service is enabled by default. Enabling or disabling it during commissioning or decommissioning belongs in 3.2 or 3.5; enabling it for one function belongs in that function's conditions of use (3.3)."));
@@ -618,21 +639,21 @@ function buildForm(){
   P.append(sec("2.2","Security Properties (SP)",false,b=>{
     b.append(el("h3",{},"2.2.1 Security property diagram [optional]")); b.append(diaField("Security property diagram",()=>M.dia.sp,v=>M.dia.sp=v));
     b.append(el("h3",{},"2.2.2 Security property list"));
-    repeat(b,M.sp,(it,i)=>{const r=el("div",{class:"row pxx"});r.append(rmBtn(M.sp,i),el("span",{class:"rid"},pad("SP",i)));
+    repeat(b,M.sp,(it,i)=>{const r=el("div",{class:"row pxx"});r.append(rmBtn(M.sp,i),el("span",{class:"rid"},it.id));
       const g=el("div",{class:"grid2"});g.append(field("Title",it.title,v=>it.title=v),field("Affected component(s) (P, PCxx, PIxx, PPxx)",it.comp,v=>it.comp=v));r.append(g);
       r.append(field("Description",it.desc,v=>it.desc=v,{ta:true}));
-      r.append(field("Satisfies CRA Annex I Part I (e.g. 2d, 2f), feeds chapter 5",it.refs,v=>it.refs=v,{ph:"2b, 2c…"}));return r;},"Add security property",()=>({comp:"",title:"",desc:"",refs:""}));
+      r.append(field("Satisfies CRA Annex I Part I (e.g. 2d, 2f), feeds chapter 5",it.refs,v=>it.refs=v,{ph:"2b, 2c…"}));if(it.source)r.append(srcHint(it));return r;},"Add security property",()=>({comp:"",title:"",desc:"",refs:""}));
     boilerSelect(b,BOILER.sp,s=>M.sp.push({comp:s.comp||"",title:s.title,desc:s.desc,refs:s.refs||""}),s=>M.sp.some(p=>p.title===s.title));
   }));
 
   P.append(sec("2.3","Context (C): diagram, components, persons, zones",false,b=>{
     b.append(el("h3",{},"2.3.1 Context diagram [optional]")); b.append(diaField("Context diagram",()=>M.dia.context,v=>M.dia.context=v));
     b.append(el("h3",{},"2.3.2 Context components (CC)"));
-    repeat(b,M.cc,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(M.cc,i),el("span",{class:"rid"},pad("CC",i)));r.append(field("Title",it.title,v=>it.title=v),field("Description",it.desc,v=>it.desc=v,{ta:true}));return r;},"Add context component",()=>({title:"",desc:""}));
+    repeat(b,M.cc,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(M.cc,i),el("span",{class:"rid"},it.id));r.append(field("Title",it.title,v=>it.title=v),field("Description",it.desc,v=>it.desc=v,{ta:true}));return r;},"Add context component",()=>({title:"",desc:""}));
     b.append(el("h3",{},"2.3.3 Context persons (CP) [optional]"));
-    repeat(b,M.cp,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(M.cp,i),el("span",{class:"rid"},pad("CP",i)));r.append(field("Title",it.title,v=>it.title=v),field("Description",it.desc,v=>it.desc=v,{ta:true}),el("label",{},"Skill"),seg(it,"skill",["ordinary","instructed","skilled"]));return r;},"Add context person",()=>({title:"",desc:"",skill:"ordinary"}));
+    repeat(b,M.cp,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(M.cp,i),el("span",{class:"rid"},it.id));r.append(field("Title",it.title,v=>it.title=v),field("Description",it.desc,v=>it.desc=v,{ta:true}),el("label",{},"Skill"),seg(it,"skill",["ordinary","instructed","skilled"]));return r;},"Add context person",()=>({title:"",desc:"",skill:"ordinary"}));
     b.append(el("h3",{},"2.3.4 Context zones (CZ) [optional]"));
-    repeat(b,M.cz,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(M.cz,i),el("span",{class:"rid"},pad("CZ",i)));r.append(field("Title",it.title,v=>it.title=v),field("Description",it.desc,v=>it.desc=v,{ta:true}));
+    repeat(b,M.cz,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(M.cz,i),el("span",{class:"rid"},it.id));r.append(field("Title",it.title,v=>it.title=v),field("Description",it.desc,v=>it.desc=v,{ta:true}));
       const g=el("div",{class:"grid2"});g.append(field("Type (physical, communication)",it.type,v=>it.type=v,{ph:"physical + communication"}),field("Access (public, limited, controlled)",it.access,v=>it.access=v,{ph:"controlled"}));r.append(g);return r;},"Add context zone",()=>({title:"",desc:"",type:"physical",access:"limited"}));
   }));
 
@@ -642,7 +663,7 @@ function buildForm(){
   }));
 
   P.append(sec("3.3","Functions (FC): one subchapter each, with its CUs and CRs",false,b=>{
-    repeat(b,M.fc,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(M.fc,i),el("span",{class:"rid"},pad("FC",i)+" · chapter "+fnNum(it)));
+    repeat(b,M.fc,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(M.fc,i),el("span",{class:"rid"},it.id+" · chapter "+fnNum(it)));
       r.append(field("Title",it.title,v=>it.title=v),field("Description",it.desc,v=>it.desc=v,{ta:true}));
       r.append(field("Reasonably foreseeable use [optional]",it.rfu,v=>it.rfu=v,{ta:true,ph:"Likely deviations from this function, e.g. transfer of the PLC programs using the USB port"}));
       r.append(el("label",{},"Core / ancillary functionality"),seg(it,"kind",["core","ancillary"]));
@@ -653,25 +674,25 @@ function buildForm(){
   }));
 
   P.append(sec("CU","Conditions of Use (CU), numbered once, attached per function in 3.3",false,b=>{
-    repeat(b,M.cu,(it,i)=>{const r=el("div",{class:"row cuxx"});r.append(rmBtn(M.cu,i),el("span",{class:"rid"},pad("CU",i)));
+    repeat(b,M.cu,(it,i)=>{const r=el("div",{class:"row cuxx"});r.append(rmBtn(M.cu,i),el("span",{class:"rid"},it.id));
       const g=el("div",{class:"grid2"});g.append(field("Title",it.title,v=>it.title=v),field("Affects (component CC / person CP / zone CZ)",it.affected,v=>it.affected=v,{ph:"CC01, CP02, CZ01"}));r.append(g);
       r.append(field("Description",it.desc,v=>it.desc=v,{ta:true}));
       r.append(field("Relates to CRA Annex I Part I, feeds chapter 5",it.refs,v=>it.refs=v,{ph:"2c, 2d…"}));
-      const used=M.fc.filter(f=>((f.cus||"").match(/CU\d\d/g)||[]).includes(pad("CU",i))).map(f=>idOf("FC",M.fc,f));
-      r.append(el("div",{class:"hint"},used.length?"Appears under "+used.join(", ")+".":"Not attached to any function yet: add "+pad("CU",i)+" to a function in 3.3."));return r;},"Add condition of use",()=>({affected:"",title:"",desc:"",refs:""}));
+      const used=M.fc.filter(f=>((f.cus||"").match(/CU\d+/g)||[]).includes(it.id)).map(f=>f.id);
+      r.append(el("div",{class:"hint"},used.length?"Appears under "+used.join(", ")+".":"Not attached to any function yet: add "+it.id+" to a function in 3.3."));if(it.source)r.append(srcHint(it));return r;},"Add condition of use",()=>({affected:"",title:"",desc:"",refs:""}));
     boilerSelect(b,BOILER.cu,s=>M.cu.push({affected:"",title:s.title,desc:s.desc,refs:s.refs||""}),s=>M.cu.some(c=>c.title===s.title));
   }));
 
   P.append(sec("CR","Circumstances leading to significant cybersecurity risk (CR), per function",false,b=>{
-    repeat(b,M.ri,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(M.ri,i),el("span",{class:"rid"},pad("CR",i)));
+    repeat(b,M.ri,(it,i)=>{const r=el("div",{class:"row"});r.append(rmBtn(M.ri,i),el("span",{class:"rid"},it.id));
       r.append(field("Title",it.title,v=>it.title=v));
       r.append(field("Description (reasonably foreseeable misuse or circumstance leading to risk)",it.desc,v=>it.desc=v,{ta:true}));
       const fw=el("div",{class:"f"}); fw.append(el("label",{},"Function(s) this circumstance belongs to: it appears in each of their 3.3 / 3.4 subchapters"));
       const box=el("div",{style:"display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px"}); const cur=new Set(fcList(it.fc));
-      M.fc.forEach((f,k)=>{const id=pad("FC",k);const lb=el("label",{style:"display:inline-flex;gap:5px;align-items:center;margin:0;cursor:pointer;color:var(--ink)"});const cb=el("input",{type:"checkbox"});cb.checked=cur.has(id);cb.addEventListener("change",()=>{const s=new Set(fcList(it.fc));if(cb.checked)s.add(id);else s.delete(id);it.fc=[...s].sort().join(", ");render();});lb.append(cb,id+" "+(f.title||""));box.append(lb);});
+      M.fc.forEach(f=>{const id=f.id;const lb=el("label",{style:"display:inline-flex;gap:5px;align-items:center;margin:0;cursor:pointer;color:var(--ink)"});const cb=el("input",{type:"checkbox"});cb.checked=cur.has(id);cb.addEventListener("change",()=>{const s=new Set(fcList(it.fc));if(cb.checked)s.add(id);else s.delete(id);it.fc=[...s].sort().join(", ");render();});lb.append(cb,id+" "+(f.title||""));box.append(lb);});
       if(!M.fc.length)box.append(el("span",{class:"hint"},"Add functions in 3.3 first."));
       fw.append(box); r.append(fw);
-      const g=el("div",{class:"grid2"});g.append(field("Violated condition of use (CUxx)",it.cu,v=>it.cu=v,{ph:"CU04"}),field("Potential risk",it.risk,v=>it.risk=v,{ph:"What could happen, from the user's perspective"}));r.append(g);return r;},"Add circumstance",()=>({title:"",desc:"",fc:"",cu:"",risk:""}));
+      const g=el("div",{class:"grid2"});g.append(field("Violated condition of use (CUxx)",it.cu,v=>it.cu=v,{ph:"CU04"}),field("Potential risk",it.risk,v=>it.risk=v,{ph:"What could happen, from the user's perspective"}));r.append(g);if(it.source)r.append(srcHint(it));return r;},"Add circumstance",()=>({title:"",desc:"",fc:"",cu:"",risk:""}));
     boilerSelect(b,BOILER.ri,s=>M.ri.push(normRi({title:s.title,desc:s.desc,affected:s.affected||"",damage:s.damage||""})),s=>M.ri.some(c=>c.title===s.title));
   }));
 
@@ -722,8 +743,10 @@ const or=(v,ph)=>v&&v.trim()?esc(v):`<span class="empty">${ph}</span>`;
 const nl=s=>esc(s).replace(/\n/g,"<br>");
 const lines=s=>(s||"").split("\n").map(x=>x.trim()).filter(Boolean);
 function refChips(refs){if(!refs)return"";return refs.split(",").map(r=>r.trim()).filter(Boolean).map(r=>`<span class="chip">${esc(r)}</span>`).join("");}
-const idOf=(p,list,it)=>pad(p,list.indexOf(it));
-const cuById=id=>M.cu[parseInt(String(id).replace(/\D/g,""),10)-1];
+const idOf=(p,list,it)=>it.id;
+const cuById=id=>M.cu.find(c=>c.id===String(id).trim());
+const fcById=id=>M.fc.find(f=>f.id===String(id).trim());
+const srcHint=it=>el("div",{class:"hint"},"From "+it.source.ids.join(", ")+" ("+(it.source.tool==="vcri-tara"?"the TARA Builder":it.source.tool)+"). Merging that TARA again leaves this row as you edit it.");
 const dia=(src,ph)=>src?`<img class="dia" src="${esc(src)}" alt="">${src.startsWith(EXROOT)?`<div class="credit-dia">Diagram: Cyber Manual Movement Engineering PC example ${src.includes("/v039/")?"v0.40 (diagrams v0.06)":"v0.27"}, Sarah Fluchs, CC BY 4.0.</div>`:""}`:`<p class="empty">${ph}</p>`;
 function crosswalk1(){
   return REQ1.map(([ref,name,lead])=>{
@@ -740,7 +763,7 @@ function crosswalk2(){
 }
 function cuLabel(s){ /* "CU02" becomes "CU02 Regular PLC code integrity checks", as in the EXAMPLE; free text stays as typed */
   if(!s||!s.trim())return '<span class="empty">CU to be added</span>';
-  if(/^\s*(CU\d\d[\s,;]*)+$/.test(s))return s.match(/CU\d\d/g).map(id=>{const c=cuById(id);return esc(id)+(c&&c.title?" "+esc(c.title):"");}).join("<br>");
+  if(/^\s*(CU\d+[\s,;]*)+$/.test(s))return s.match(/CU\d+/g).map(id=>{const c=cuById(id);return esc(id)+(c&&c.title?" "+esc(c.title):"");}).join("<br>");
   return esc(s);
 }
 function cuTable(ids){
@@ -750,12 +773,12 @@ function cuTable(ids){
 function crTable(list){
   const hdr=`<tr><th>ID</th><th>Title and Description<br>(reasonably foreseeable misuse or circumstance leading to risk)</th><th>Violated Condition of Use (CU)</th><th>Potential risk</th></tr>`;
   if(!list.length)return `<table>${hdr}<tr><td colspan="4" class="empty">No circumstances recorded for this function.</td></tr></table>`;
-  return `<table>${hdr}${list.map(r=>`<tr><td class="id">${pad("CR",M.ri.indexOf(r))}</td><td><b>${or(r.title,"title")}</b>${vt(r)}<br>${or(r.desc,"description")}</td><td>${cuLabel(r.cu)}</td><td>${or(r.risk,"not yet specified")}</td></tr>`).join("")}</table>`;
+  return `<table>${hdr}${list.map(r=>`<tr><td class="id">${r.id}</td><td><b>${or(r.title,"title")}</b>${vt(r)}<br>${or(r.desc,"description")}</td><td>${cuLabel(r.cu)}</td><td>${or(r.risk,"not yet specified")}</td></tr>`).join("")}</table>`;
 }
 /* one function subchapter, the template's 3.3.n / 3.4.1 block: Function (FC) table, secure use diagram, CU table, CR table */
 function fnBlock(num,f){
   const id=idOf("FC",M.fc,f);
-  const cuIds=[...new Set((f.cus||"").match(/CU\d\d/g)||[])];
+  const cuIds=[...new Set((f.cus||"").match(/CU\d+/g)||[])];
   const crs=M.ri.filter(r=>fcList(r.fc).includes(id)&&show(r));
   const rfuRow=(!isUpd(f)||(f.rfu||"").trim())?`<tr><td>Reasonably foreseeable use [optional]</td><td>${or(f.rfu,"not yet specified")}</td></tr>`:"";
   return `<h4>${num} Function ${id} ${or(f.title,"&lt;TITLE&gt;")}${vt(f)}</h4>
@@ -766,10 +789,10 @@ function fnBlock(num,f){
   <h5>Circumstances potentially leading to significant cybersecurity risk (CR)</h5>${crTable(crs)}`;
 }
 function looseBlock(num){ /* builder extension: nothing silently disappears when it is not attached to a function */
-  const fcIds=M.fc.map((f,k)=>pad("FC",k));
+  const fcIds=M.fc.map(f=>f.id);
   const loneCR=M.ri.filter(r=>show(r)&&!fcList(r.fc).some(id=>fcIds.includes(id)));
-  const attached=new Set(M.fc.flatMap(f=>(f.cus||"").match(/CU\d\d/g)||[]));
-  const loneCU=M.cu.map((c,i)=>pad("CU",i)).filter(id=>!attached.has(id)&&show(cuById(id)));
+  const attached=new Set(M.fc.flatMap(f=>(f.cus||"").match(/CU\d+/g)||[]));
+  const loneCU=M.cu.filter(c=>!attached.has(c.id)&&show(c)).map(c=>c.id);
   if(!loneCR.length&&!loneCU.length)return "";
   return `<h4>${num} Not yet attached to a function</h4><div class="refnote">Builder note, not part of the template: the template lists conditions of use and circumstances leading to risk only per function. Attach these to a function in the form, or remove them, before you publish.</div>${loneCU.length?`<h5>Conditions of use (CU)</h5>${cuTable(loneCU)}`:""}${loneCR.length?`<h5>Circumstances potentially leading to significant cybersecurity risk (CR)</h5>${crTable(loneCR)}`:""}`;
 }
@@ -784,6 +807,7 @@ function toc(useFns,updFns){
   return `<ul class="toc">${t.map(([s,l])=>`<li style="margin-left:${l*18}px">${esc(s)}</li>`).join("")}</ul>`;
 }
 function render(){
+  assignIds(M,false);
   const d=$("#doc");
   syncView();
   const rows=(list,cols,empty)=>list.some(show)?list.map((it,i)=>show(it)?`<tr>${cols(it,i)}</tr>`:"").join(""):`<tr><td colspan="9" class="empty">${empty}</td></tr>`;
@@ -806,7 +830,7 @@ function render(){
 
   <h3>1.1 Quick reference</h3>
   <table class="kv">
-    <tr><td>Product properties and context</td><td>2.1 Product (P): ${or(M.product.name,"not yet specified")}${M.product.tmv?" · "+esc(M.product.tmv):""}<br>2.2 Security Properties (SP): ${list(M.sp,(p,i)=>pad("SP",i)+" "+esc(p.title))}</td></tr>
+    <tr><td>Product properties and context</td><td>2.1 Product (P): ${or(M.product.name,"not yet specified")}${M.product.tmv?" · "+esc(M.product.tmv):""}<br>2.2 Security Properties (SP): ${list(M.sp,p=>p.id+" "+esc(p.title))}</td></tr>
     <tr><td>How to use the product securely</td><td>3.2 Secure commissioning and setup<br>3.3 Secure use: Conditions of Use (CU) and Circumstances leading to Risk (CR) per product Function (FC): ${list(useFns,f=>idOf("FC",M.fc,f)+" "+esc(f.title))}</td></tr>
     <tr><td>Contact and links</td><td>4.1 Manufacturer information: ${or(M.mfr.name,"not yet specified")}${M.mfr.email?" · "+esc(M.mfr.email):""}${M.mfr.website?" · "+esc(M.mfr.website):""}</td></tr>
   </table>
@@ -826,22 +850,22 @@ function render(){
   ${fam.length>1?(VIEW?`<p>This edition of the manual is for ${esc(VIEW)}, a member of the product family ${esc(fam.join(", "))}. Content that does not apply to ${esc(VIEW)} is left out.</p>`:`<p>This manual covers every member of the product family: ${esc(fam.join(", "))}. Entries marked <span class="var">[… only]</span> apply only to the members named; unmarked entries apply to all of them.</p>`):""}
   ${fchk.length?`<div class="refnote">Builder note, not part of the template: the product family entries contradict each other.<br>${fchk.map(esc).join("<br>")}</div>`:""}
   <h4>2.1.2 Product diagram [optional]</h4>${dia(M.dia.product,"Optional. The product boundary with its components and interfaces.")}
-  ${M.pc.length?`<h4>2.1.3 Product components (PC) list [optional]</h4><table><tr><th>ID</th><th>Title &amp; Description</th></tr>${rows(M.pc,(p,i)=>`<td class="id">${pad("PC",i)}</td><td>${or(p.title,"not yet specified")}${vt(p)}</td>`)}</table>`:""}
+  ${M.pc.length?`<h4>2.1.3 Product components (PC) list [optional]</h4><table><tr><th>ID</th><th>Title &amp; Description</th></tr>${rows(M.pc,p=>`<td class="id">${p.id}</td><td>${or(p.title,"not yet specified")}${vt(p)}</td>`)}</table>`:""}
   ${(M.pi.length||M.pp.length)?`<h4>2.1.4 Product interfaces [optional]</h4>`:""}
-  ${M.pi.length?`<h5>Physical interfaces</h5><table><tr><th>ID</th><th>Title / Description</th></tr>${rows(M.pi,(p,i)=>`<td class="id">${pad("PI",i)}</td><td>${or(p.title,"not yet specified")}${vt(p)}</td>`)}</table>`:""}
-  ${M.pp.length?`<h5>Protocols and services</h5><table><tr><th>ID</th><th>Protocol / Service / URL</th><th>Physical interface</th><th>Port</th><th>Function</th><th>Enabled by default</th></tr>${rows(M.pp,(x,i)=>`<td class="id">${pad("PP",i)}</td><td>${or(x.proto,"not yet specified")}${vt(x)}</td><td>${or(x.pi,"not yet specified")}</td><td>${or(x.port,"not yet specified")}</td><td>${or(x.fc,"not yet specified")}</td><td>${or(x.enabled,"not yet specified")}</td>`)}</table>`:""}
+  ${M.pi.length?`<h5>Physical interfaces</h5><table><tr><th>ID</th><th>Title / Description</th></tr>${rows(M.pi,p=>`<td class="id">${p.id}</td><td>${or(p.title,"not yet specified")}${vt(p)}</td>`)}</table>`:""}
+  ${M.pp.length?`<h5>Protocols and services</h5><table><tr><th>ID</th><th>Protocol / Service / URL</th><th>Physical interface</th><th>Port</th><th>Function</th><th>Enabled by default</th></tr>${rows(M.pp,x=>`<td class="id">${x.id}</td><td>${or(x.proto,"not yet specified")}${vt(x)}</td><td>${or(x.pi,"not yet specified")}</td><td>${or(x.port,"not yet specified")}</td><td>${or(x.fc,"not yet specified")}</td><td>${or(x.enabled,"not yet specified")}</td>`)}</table>`:""}
 
   <h3>2.2 Security Properties (SP)</h3>
   <h4>2.2.1 Security property diagram [optional]</h4>${dia(M.dia.sp,"Optional. The product diagram with the Security Properties marked on the components they protect.")}
   <h4>2.2.2 Security property list</h4>
-  <table><tr><th>ID</th><th>Affected component(s)</th><th>Title &amp; Description</th></tr>${rows(M.sp,(p,i)=>`<td class="id">${pad("SP",i)}</td><td>${or(p.comp,"not yet specified")}</td><td><b>${or(p.title,"property")}</b>${vt(p)} ${refChips(p.refs)}<br>${or(p.desc,"description")}</td>`,"Add security properties (implemented in the product)")}</table>
+  <table><tr><th>ID</th><th>Affected component(s)</th><th>Title &amp; Description</th></tr>${rows(M.sp,p=>`<td class="id">${p.id}</td><td>${or(p.comp,"not yet specified")}</td><td><b>${or(p.title,"property")}</b>${vt(p)} ${refChips(p.refs)}<br>${or(p.desc,"description")}</td>`,"Add security properties (implemented in the product)")}</table>
 
   <h3>2.3 Context (C)</h3>
   <h4>2.3.1 Context diagram [optional]</h4>${dia(M.dia.context,"Optional. The Context &amp; Conditions of Use Builder draws it from the lists below.")}
   <h4>2.3.2 Context component (CC) list</h4>
-  <table><tr><th>ID</th><th>Title &amp; Description</th></tr>${rows(M.cc,(c,i)=>`<td class="id">${pad("CC",i)}</td><td><b>${or(c.title,"not yet specified")}</b>${vt(c)}${c.desc?"<br>"+esc(c.desc):""}</td>`,"Add context components: what outside the product is needed to describe its functions")}</table>
-  ${M.cp.length?`<h4>2.3.3 Context person (CP) list [optional]</h4><table><tr><th>ID</th><th>Title &amp; Description</th><th>Skill (ordinary, instructed, skilled)</th></tr>${rows(M.cp,(c,i)=>`<td class="id">${pad("CP",i)}</td><td><b>${or(c.title,"not yet specified")}</b>${vt(c)}${c.desc?"<br>"+esc(c.desc):""}</td><td>${or(c.skill,"not yet specified")}</td>`)}</table>`:""}
-  ${M.cz.length?`<h4>2.3.4 Context zone (CZ) list [optional]</h4><table><tr><th>ID</th><th>Title &amp; Description</th><th>Type (physical, communication)</th><th>Access (public, limited, controlled)</th></tr>${rows(M.cz,(c,i)=>`<td class="id">${pad("CZ",i)}</td><td><b>${or(c.title,"not yet specified")}</b>${vt(c)}${c.desc?"<br>"+esc(c.desc):""}</td><td>${or(c.type,"not yet specified")}</td><td>${or(c.access,"not yet specified")}</td>`)}</table>`:""}
+  <table><tr><th>ID</th><th>Title &amp; Description</th></tr>${rows(M.cc,c=>`<td class="id">${c.id}</td><td><b>${or(c.title,"not yet specified")}</b>${vt(c)}${c.desc?"<br>"+esc(c.desc):""}</td>`,"Add context components: what outside the product is needed to describe its functions")}</table>
+  ${M.cp.length?`<h4>2.3.3 Context person (CP) list [optional]</h4><table><tr><th>ID</th><th>Title &amp; Description</th><th>Skill (ordinary, instructed, skilled)</th></tr>${rows(M.cp,c=>`<td class="id">${c.id}</td><td><b>${or(c.title,"not yet specified")}</b>${vt(c)}${c.desc?"<br>"+esc(c.desc):""}</td><td>${or(c.skill,"not yet specified")}</td>`)}</table>`:""}
+  ${M.cz.length?`<h4>2.3.4 Context zone (CZ) list [optional]</h4><table><tr><th>ID</th><th>Title &amp; Description</th><th>Type (physical, communication)</th><th>Access (public, limited, controlled)</th></tr>${rows(M.cz,c=>`<td class="id">${c.id}</td><td><b>${or(c.title,"not yet specified")}</b>${vt(c)}${c.desc?"<br>"+esc(c.desc):""}</td><td>${or(c.type,"not yet specified")}</td><td>${or(c.access,"not yet specified")}</td>`)}</table>`:""}
 
   <h2>3 How to use the product securely</h2>
   <p>This chapter describes the secure use of the product across its lifecycle.</p>
@@ -936,17 +960,42 @@ function importSbom(json){
   alert(`Imported ${comps.length} components into 2.1.3 (product components) and set the SBOM formats in 4.4.`);
 }
 
-/* ---------- merge from the VCRI TARA Builder (vcri.tara-to-manual/v1): append, never replace ----------
-   Files from TARA v0.29 carry one function per circumstance; files from the v0.38 TARA may name several ("FC01, FC02")
-   and may suggest which function a condition-of-use candidate belongs to (fc); both shapes merge here. */
+/* ---------- merge from a TARA tool (vcri.tara-to-manual/v1.x): append, never overwrite ----------
+   v1.0 rows carry a local ref, a source {tool, ids} and ID lists: fcIds (functions), cuIds (conditions of use already in the manual),
+   cuRefs (condition-of-use candidates in the same file). A row whose source is already in the manual is not added again, so merging the
+   same TARA a second time adds only what is new and keeps the user's edits; rows from that tool whose source is gone are listed for
+   checking. The shape before v1 was final (9 Nov: ts, and fc and cu as text) still merges. */
 function mergeTara(t){
-  const before={ri:M.ri.length,cu:M.cu.length,sp:M.sp.length};
-  (t.ri||[]).forEach(r=>{if(!M.ri.some(x=>x.title===r.title))M.ri.push(normRi(r));});
-  (t.cu||[]).forEach(c=>{if(M.cu.some(x=>x.title===c.title))return;M.cu.push({affected:c.affected||"",title:c.title||"",desc:c.desc||"",refs:c.refs||""});
-    const id=pad("CU",M.cu.length-1);fcList(c.fc).forEach(fid=>{const f=M.fc[parseInt(fid.slice(2),10)-1];if(f&&!((f.cus||"").match(/CU\d\d/g)||[]).includes(id))f.cus=f.cus&&f.cus.trim()?f.cus+", "+id:id;});});
-  (t.sp||[]).forEach(p=>{if(!M.sp.some(x=>x.title===p.title))M.sp.push({comp:p.comp||"",title:p.title||"",desc:p.desc||"",refs:p.refs||""});});
+  assignIds(M,false);
+  const before={ri:M.ri.length,cu:M.cu.length,sp:M.sp.length},kept=[];
+  const v10=/^vcri\.tara-to-manual\/v1\.\d+/.test(t.schema||"");
+  const srcOf=r=>r&&r.source&&Array.isArray(r.source.ids)&&r.source.ids.length?{tool:String(r.source.tool||"unknown"),ids:r.source.ids.map(String)}:(r&&r.ts?{tool:"vcri-tara",ids:[String(r.ts)]}:null);
+  const keyOf=s=>s.tool+"|"+[...s.ids].sort().join(",");
+  const existing=(list,r,s)=>s?list.find(x=>x.source&&keyOf(x.source)===keyOf(s)):list.find(x=>x.title===r.title);
+  const fcIdsOf=r=>(Array.isArray(r.fcIds)?r.fcIds:fcList(r.fc)).filter(fcById);
+  const annexOf=r=>Array.isArray(r.annex)?r.annex.join(","):(r.refs||"");
+  const add=(list,row,s)=>{if(s)row.source=s;delete row.ts;list.push(row);assignIds(M,false);return row;};
+  const refMap={};
+  (t.cu||[]).forEach(c=>{const s=srcOf(c);let row=existing(M.cu,c,s);   /* conditions first, so circumstances can point at them */
+    if(row)kept.push(row.id);
+    else{row=add(M.cu,{affected:c.affected||"",title:c.title||"",desc:c.desc||"",refs:annexOf(c)},s);
+      fcIdsOf(c).forEach(fid=>{const f=fcById(fid);const cur=(f.cus||"").match(/CU\d+/g)||[];if(!cur.includes(row.id))f.cus=cur.length?f.cus+", "+row.id:row.id;});}
+    if(c.ref)refMap[c.ref]=row.id;});
+  (t.ri||[]).forEach(r=>{const s=srcOf(r);const old=existing(M.ri,r,s);if(old){kept.push(old.id);return;}
+    if(!v10){add(M.ri,normRi(r),s);return;}
+    const cus=[...new Set([...(r.cuIds||[]),...(r.cuRefs||[]).map(x=>refMap[x]).filter(Boolean)])];
+    add(M.ri,{title:r.title||"",desc:r.desc||"",fc:fcIdsOf(r).join(", "),cu:cus.join(", "),risk:r.risk||""},s);});
+  (t.sp||[]).forEach(p=>{const s=srcOf(p);const old=existing(M.sp,p,s);if(old){kept.push(old.id);return;}
+    add(M.sp,{comp:p.comp||"",title:p.title||"",desc:p.desc||"",refs:annexOf(p)},s);});
+  const sent=[...(t.ri||[]),...(t.cu||[]),...(t.sp||[])].map(srcOf).filter(Boolean);
+  const tools=new Set(sent.map(s=>s.tool)),now=new Set(sent.flatMap(s=>s.ids.map(id=>s.tool+"|"+id)));
+  const stale=[...M.cu,...M.ri,...M.sp].filter(x=>x.source&&tools.has(x.source.tool)&&!x.source.ids.some(id=>now.has(x.source.tool+"|"+id))).map(x=>x.id);
   buildForm();render();
-  alert(`Merged from the TARA Builder${t.product?" for "+t.product:""}: ${M.ri.length-before.ri} circumstances (CR) into 3.3 under their functions, ${M.cu.length-before.cu} condition-of-use candidates into the CU list, ${M.sp.length-before.sp} security-property candidates into 2.2. Edit the drafted titles; nothing already in the manual was changed.`);
+  const who=t.generator&&t.generator.tool?t.generator.tool:"the TARA Builder";
+  alert(`Merged from ${who}${t.product?" for "+t.product:""}: ${M.ri.length-before.ri} circumstances (CR) into 3.3 under their functions, ${M.cu.length-before.cu} condition-of-use candidates into the CU list, ${M.sp.length-before.sp} security-property candidates into 2.2.`+
+    (kept.length?`\n\nAlready in the manual from an earlier merge, left as they are: ${[...new Set(kept)].join(", ")}.`:"")+
+    (stale.length?`\n\nThese came from that TARA, but their scenarios are no longer in what it sent: ${stale.join(", ")}. Check whether they still apply.`:"")+
+    `\n\nEdit the drafted titles; nothing already in the manual was changed.`);
 }
 
 /* ---------- save (08 Nov 2026): explicit, in this browser only ----------
@@ -983,6 +1032,7 @@ function applyContext(d){
   if(!confirm(msg))return;
   UNDO=snapshot();
   for(const k of VLISTS)M[k]=JSON.parse(JSON.stringify(d[k]||[]));
+  assignIds(M,true);   /* the Context builder's IDs where it sends them; otherwise the order they arrive in */
   for(const k of ["product","sp","context"])if(d.dia&&d.dia[k])M.dia[k]=d.dia[k];
   if(!M.product.name&&d.product)M.product.name=d.product;
   if(!M.product.tmv&&d.model)M.product.tmv=d.model;
@@ -1003,12 +1053,15 @@ $("#example").addEventListener("click",()=>{M=example();buildForm();render();});
 $("#print").addEventListener("click",()=>window.print());
 $("#view").addEventListener("change",e=>{VIEW=e.target.value;render();});
 $("#expJson").addEventListener("click",()=>{
-  const blob=new Blob([JSON.stringify(M,null,2)],{type:"application/json"});
+  assignIds(M,false);const out=Object.assign({schema:SCHEMA,generator:GEN},M,{schema:SCHEMA,generator:GEN});
+  const blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json"});
   const a=el("a",{href:URL.createObjectURL(blob),download:(M.product.name||"cyber-manual").replace(/\W+/g,"-").toLowerCase()+".cybermanual.json"});a.click();URL.revokeObjectURL(a.href);
 });
 function loadJson(j){ /* returns a message for the user, or "" */
   if(j.pxx||j.cuxx)return "This file is from the v0.20 builder. Its sections map differently; please re-enter in the v0.38 structure.";
-  if(j.schema==="vcri.tara-to-manual/v1"){mergeTara(j);return "";}
+  const v=/^vcri\.(tara-to-manual|cybermanual)\/v(\d+)/.exec(j.schema||"");
+  if(v&&+v[2]>1)return `This file uses a newer format (${j.schema}) than this builder reads. Check for a newer version of the builder.`;
+  if(v&&v[1]==="tara-to-manual"){mergeTara(j);return "";}
   const was25=!j.tpl, old=j.tpl&&!["0.38",TPL].includes(j.tpl);
   M=migrate(j);buildForm();render();
   if(was25)return "Imported a v0.25 builder file and moved its contents into the template v0.38 structure. Check 2.1.4 (protocols), 3.2, 3.4 and 3.5.";
