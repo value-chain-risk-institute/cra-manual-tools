@@ -4,7 +4,7 @@ Version 1.0, 9 November 2026. Joshua Marpet and Cairn Viktor, The Value Chain Ri
 
 Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Anyone may implement, copy or adapt this specification, in any tool under any licence, provided they give credit. Suggested credit: "File formats by Joshua Marpet and Cairn Viktor, The Value Chain Risk Institute (CC BY 4.0)."
 
-This document describes the files the three tools in this repository read and write, so other tools can read and write them too. It was written for TARAflow (Jürgen Messerer, bbv), which plans an importer and an export to the manual. Any other tool is welcome to do the same.
+This document describes the files the three tools in this repository read and write, so other tools can read and write them too. It was prompted by TARAflow (Jürgen Messerer, bbv), which may implement an importer and an export to the manual. Any tool is welcome to do the same.
 
 There are three formats:
 
