@@ -3,7 +3,9 @@
 Cairn Viktor, 8 November 2026. Sources read 8 November 2026 (Claude in Chrome for the support portal, then its public Zendesk article API; Nabu Casa's own PDFs from github.com/NabuCasa/support). Facts not found are marked NOT FOUND and are not invented in the example.
 
 ## Manufacturer and conformity
-- Manufacturer: Nabu Casa, Inc., 15 Hubble Suite 200, Irvine, CA 92618; green@nabucasa.com (datasheet v2.0, 4 Aug 2025; EU DoC).
+- Manufacturer: Nabu Casa, Inc., 15 Hubble Suite 200, Irvine, CA 92618; green@nabucasa.com (datasheets v1.1 and v2.0; the EU DoC prints the postal address but no email).
+- CONTACT ADDRESS DOES NOT WORK (checked 11 Nov 2026): our note of 8 November to green@nabucasa.com was rejected with "The email account that you tried to reach does not exist" (status 5.1.3). The address is still printed on both datasheets in github.com/NabuCasa/support (static/docs/green/). The example keeps it, because it is what the manufacturer's documentation states, and flags it here.
+- nabucasa.com (read 11 Nov 2026) gives a different postal address: 1500 Valley House Drive Suite 210, Rohnert Park, CA 94928, USA. The datasheets and the DoC say Irvine. Flag for the group.
 - EU DoC (issued 3 Jul 2026, signed Paulus Schoutsen), model NC-GREEN-1175: RoHS 2011/65/EU, EMC 2014/30/EU, LVD 2014/35/EU, ErP 2009/125/EC. Standards: EN IEC 63000:2018; EN 62368-1:2014 + A11:2017; EN IEC 55014-1/-2:2021, EN 55032:2015+A11:2020, EN IEC 61000-3-2:2019+A1:2021, EN 61000-3-3:2013+A2:2021, EN 55035:2017+A11:2020; EN 50563:2011/A1:2013. No RED (no radio). No CRA (not yet applicable).
 - Datasheet v2.0 lists model NC-GREEN-9703 (SKU changed from NC-GREEN-1175 on 5 Aug 2025); the DoC still names NC-GREEN-1175. Flag for the group.
 - Conformity marks: CE, FCC. Made in PRC.

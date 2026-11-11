@@ -63,4 +63,4 @@ We wrote to all three projects on 8 November and asked them to correct us. Two h
 
 - OpenWrt One: Luka Perkov replied on the openwrt-adm list on 10 November. The example no longer suggests the OpenWrt project could be an open-source software steward, because a steward is a legal person and the project is not one. The support section now says the release policy covers OpenWrt software releases and that the project declares no support period for hardware it does not sell.
 - KeePassXC: the KeePassXC Team replied by email on 8 November. The team generally supports the latest release, and no SBOM is published at the moment (dependencies are in the vcpkg.json manifest and the wiki). Both were NOT FOUND before.
-- Home Assistant Green: no reply yet. Unchanged at version 0.1.
+- Home Assistant Green: our note never arrived. The contact address printed on the product datasheets (green@nabucasa.com) was rejected as a mailbox that does not exist. The fact sheet records this. The example is unchanged at version 0.1 while we find another way to reach Nabu Casa.
