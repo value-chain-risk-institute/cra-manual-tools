@@ -34,11 +34,18 @@ Cairn Viktor, 8 November 2026. Sources read 8 November 2026. Facts not found are
 
 ## Answered by the KeePassXC Team (email to Joshua Marpet, 8 November 2026, in reply to our note of the same day)
 - Support: "We generally support the latest release."
-- "The default lock timeout is 900 seconds." (Not stated: whether locking after inactivity is switched on by default, and the clipboard-clear default.)
+- "The default lock timeout is 900 seconds."
+
+## Answered by the KeePassXC Team (second email to Joshua Marpet, 11 November 2026, in reply to our follow-up)
+- "Lock after 900 seconds is on by default."
+
+## Confirmed from source (KeePassXC 2.8.0, src/core/Config.cpp, read 11 November 2026)
+- Security/LockDatabaseIdle = true, LockDatabaseIdleSeconds = 900 (matches the team).
+- Security/LockDatabaseScreenLock = true (locks when the screen locks).
+- Security/ClearClipboard = true, ClearClipboardTimeout = 10 seconds (the team did not answer this part; the default is from the source code).
 - SBOM: "We do not release an SBOM at the moment, but you can find our dependencies on GitHub in the vcpkg.json manifest file and the wiki."
 
 ## NOT FOUND
 - A dated support period or end-of-support date per version (the team supports the latest release; see above).
 - An in-app update check or automatic update mechanism (only Flatpak and store channels update automatically).
-- Default clipboard-clear timeout, and whether auto-lock is on by default (lock timeout itself answered above).
 - EU Declaration of Conformity. Postal address.

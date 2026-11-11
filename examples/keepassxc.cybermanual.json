@@ -24,7 +24,7 @@
     "definitions": true
   },
   "er1": {
-    "2b": "Browser integration, Secret Service, SSH agent and network features are off until the user enables them. Quick Unlock (Windows Hello, Touch ID) is ON by default on Windows and macOS and can be disabled under Application Settings > Security.",
+    "2b": "Browser integration, Secret Service, SSH agent and network features are off until the user enables them. Quick Unlock (Windows Hello, Touch ID) is ON by default on Windows and macOS and can be disabled under Application Settings > Security. The database locks after 900 seconds of inactivity and when the computer's screen locks, and a copied password is cleared from the clipboard after 10 seconds; all three are on by default.",
     "2g": "The product only processes the following data:\nCredentials, notes and attachments the user stores\nFavicons, only if the user enables downloading them"
   },
   "er2": {
