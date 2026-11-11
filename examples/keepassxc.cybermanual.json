@@ -1,8 +1,8 @@
 {
   "tpl": "0.39",
   "meta": {
-    "version": "0.1",
-    "date": "2026-11-08",
+    "version": "0.2",
+    "date": "2026-11-11",
     "author": "Cairn Viktor for the Value Chain Risk Institute (illustrative example, not the manufacturer's manual)"
   },
   "references": "keepassxc.org/download\nkeepassxc.org/verifying-signatures\nkeepassxc.org/audits\nkeepassxc.org/docs (FAQ) and keepassxc.org/docs/KeePassXC_UserGuide\ngithub.com/keepassxreboot/keepassxc/blob/develop/SECURITY.md",
@@ -10,7 +10,7 @@
     "name": "KeePassXC",
     "tmv": "KeePassXC 2.8.0 (released 21 October 2026)",
     "idguide": "NOT FOUND in the public documentation read on 8 November 2026.",
-    "additional": "Illustrative example for the Cyber Manual Movement, built by the Value Chain Risk Institute with the CRA Manual Builder from public documentation read on 8 November 2026. It is NOT the manufacturer's manual and makes no claim about CRA conformity. Gaps are marked NOT FOUND rather than filled in.\nDesktop password manager for Windows, macOS and Linux, licensed GPL v3. Password managers are listed in CRA Annex III, Class I. KeePassXC is developed by a volunteer team, and its Windows installer names DroidMonkey Apps, LLC as publisher. Whether anyone is a CRA manufacturer here, or the non-commercial and open-source steward provisions apply, is left to the working group.",
+    "additional": "Illustrative example for the Cyber Manual Movement, built by the Value Chain Risk Institute with the CRA Manual Builder from public documentation read on 8 November 2026. It is NOT the manufacturer's manual and makes no claim about CRA conformity. Gaps are marked NOT FOUND rather than filled in.\nDesktop password manager for Windows, macOS and Linux, licensed GPL v3. Password managers are listed in CRA Annex III, Class I. KeePassXC is developed by a volunteer team, and its Windows installer names DroidMonkey Apps, LLC as publisher. Whether anyone is a CRA manufacturer here, or the non-commercial and open-source steward provisions apply, is left to the working group.\nVersion 0.2, 11 November 2026: corrected and completed from the KeePassXC Team's reply by email (8 November 2026). The fact sheet beside this file quotes it.",
     "family": ""
   },
   "dia": {
@@ -29,7 +29,7 @@
   },
   "er2": {
     "v-test": "Independent reviews: ANSSI Security Visa ANSSI-CSPN-2025/16 (17 November 2025, valid to 17 November 2028, version 2.7.9 on Windows 10) and an application security review by Zaur Molotnikov (19 January 2023, version 2.7.4). Reports are published at keepassxc.org/audits.",
-    "v-sbom": "NOT FOUND in the public documentation read on 8 November 2026.",
+    "v-sbom": "No SBOM is published at the moment (KeePassXC Team, by email, 8 November 2026).",
     "v-pub": "NOT FOUND in the public documentation read on 8 November 2026.",
     "v-cvd": "SECURITY.md: report privately through a GitHub Security Advisory, private Matrix messages to named team members, or email. No public channels for first reports. Reporters should not go to a CVE Numbering Authority before the team confirms, unless the team has not responded within 30 days.",
     "v-contact": "team@keepassxc.org (encryption recommended)",
@@ -353,7 +353,7 @@
   "updates": {
     "note": "Install new releases from the channel used for installation. Flatpak (recommended on Linux) and store channels can update automatically; website downloads are replaced with the new signed package. Verify signatures as described at keepassxc.org/verifying-signatures.",
     "disableAuto": "No in-app update mechanism was found in the documentation read; automatic updating depends on the distribution channel.",
-    "end": "NOT FOUND: no support period is published."
+    "end": "The team generally supports the latest release (KeePassXC Team, by email, 8 November 2026). No dated support period is published."
   },
   "decommission": "Delete the database files, key files and backups from every location they were stored.\nRemove the browser extension, then uninstall KeePassXC.",
   "mfr": {
@@ -372,7 +372,7 @@
     "link": "NOT FOUND: no EU Declaration of Conformity located on 8 November 2026."
   },
   "sbom": {
-    "access": "NOT FOUND in the public documentation read on 8 November 2026.",
-    "format": "NOT FOUND"
+    "access": "No SBOM is published at the moment. Dependencies are listed in the vcpkg.json manifest in the GitHub repository and in the project wiki (KeePassXC Team, by email, 8 November 2026).",
+    "format": "None published"
   }
 }

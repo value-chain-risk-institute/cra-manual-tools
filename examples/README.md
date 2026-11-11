@@ -56,3 +56,11 @@ The context builder's chain-integrity checker also flagged real modelling gaps. 
 - What it can't do is zone membership (who sits inside the user's organisation and who sits with the manufacturer) and which components each function uses. Nothing in the manual states those. They are the manufacturer's assumptions, so they stay a short to-do list for a person, not a guess.
 
 Built into the context builder on 8 November, after Joshua's go-ahead. There's a "Derive from a manual" button, and Import JSON also accepts a manual. Either one takes a file saved from the CRA Manual Builder, fills the lists, and derives the links with the same twelve rules. Each derived link gets a dashed outline until a person ticks or unticks it, or presses "accept all suggested links". A "Derived from a manual" group at the top of the checks lists what no rule reaches, and it shrinks as the gaps are filled. The JavaScript gives the same result as `derive_links.py` on all four manuals: 403 links, no differences.
+
+## Corrections from the projects (11 November 2026)
+
+We wrote to all three projects on 8 November and asked them to correct us. Two have answered, and their examples are now version 0.2. Each fact sheet quotes the reply it used.
+
+- OpenWrt One: Luka Perkov replied on the openwrt-adm list on 10 November. The example no longer suggests the OpenWrt project could be an open-source software steward, because a steward is a legal person and the project is not one. The support section now says the release policy covers OpenWrt software releases and that the project declares no support period for hardware it does not sell.
+- KeePassXC: the KeePassXC Team replied by email on 8 November. The team generally supports the latest release, and no SBOM is published at the moment (dependencies are in the vcpkg.json manifest and the wiki). Both were NOT FOUND before.
+- Home Assistant Green: no reply yet. Unchanged at version 0.1.

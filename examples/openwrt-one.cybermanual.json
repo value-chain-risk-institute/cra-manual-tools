@@ -1,8 +1,8 @@
 {
   "tpl": "0.39",
   "meta": {
-    "version": "0.1",
-    "date": "2026-11-08",
+    "version": "0.2",
+    "date": "2026-11-11",
     "author": "Cairn Viktor for the Value Chain Risk Institute (illustrative example, not the manufacturer's manual)"
   },
   "references": "openwrt.org/toh/openwrt/one (last modified 2026-10-23)\nopenwrt.org/docs/guide-developer/security (last modified 2026-10-22)\nsfconservancy.org/activities/openwrt-one.html\none.openwrt.org/hardware/ (schematics and datasheets)",
@@ -10,7 +10,7 @@
     "name": "OpenWrt One",
     "tmv": "OpenWrt One (FCC ID 2BLLI-HW24) running OpenWrt 25.12.6",
     "idguide": "NOT FOUND in the public documentation read on 8 November 2026.",
-    "additional": "Illustrative example for the Cyber Manual Movement, built by the Value Chain Risk Institute with the CRA Manual Builder from public documentation read on 8 November 2026. It is NOT the manufacturer's manual and makes no claim about CRA conformity. Gaps are marked NOT FOUND rather than filled in.\nHardware manufactured by Banana Pi in collaboration with the OpenWrt project; the firmware is the OpenWrt project's. Which party is the CRA manufacturer, and whether the OpenWrt project acts as an open-source software steward, is left to the working group.\nFlash sizes conflict between sources: the OpenWrt wiki (edited 23 Oct 2026) says 256 MiB NAND and 16 MiB NOR; the Software Freedom Conservancy page says 128 MiB NAND and 4 MiB NOR. This example uses the wiki figures.",
+    "additional": "Illustrative example for the Cyber Manual Movement, built by the Value Chain Risk Institute with the CRA Manual Builder from public documentation read on 8 November 2026. It is NOT the manufacturer's manual and makes no claim about CRA conformity. Gaps are marked NOT FOUND rather than filled in.\nHardware manufactured by Banana Pi in collaboration with the OpenWrt project; the firmware is the OpenWrt project's. Which party is the CRA manufacturer is left to the working group. The OpenWrt project is not a legal person, so it is not listed as an open-source software steward (reply on the openwrt-adm list, 10 November 2026).\nFlash sizes conflict between sources: the OpenWrt wiki (edited 23 Oct 2026) says 256 MiB NAND and 16 MiB NOR; the Software Freedom Conservancy page says 128 MiB NAND and 4 MiB NOR. This example uses the wiki figures.\nVersion 0.2, 11 November 2026: corrected and completed from a reply on the openwrt-adm mailing list (10 November 2026). The fact sheet beside this file quotes it.",
     "family": ""
   },
   "dia": {
@@ -401,7 +401,7 @@
   "updates": {
     "note": "Updates are user-initiated: LuCI System > Attended Sysupgrade, owut upgrade on the command line, the web Firmware Selector, or a USB drive read by the bootloader (hold Reset at power-on). Package fixes can arrive in about two days; kernel fixes need a new minor release image.",
     "disableAuto": "The product does not install updates automatically.",
-    "end": "Per OpenWrt release, not per device: 25.12 is Supported with end of life to be announced. A release reaches End of Life one year after its initial release or six months after the next major release, whichever is later. No hardware support period is published."
+    "end": "Per OpenWrt release, not per device: 25.12 is Supported with end of life to be announced. A release reaches End of Life one year after its initial release or six months after the next major release, whichever is later. No hardware support period is published: the release policy covers OpenWrt software releases, and the project does not declare one for hardware it does not sell (reply on the openwrt-adm list, 10 November 2026)."
   },
   "decommission": "Use NOR recovery to factory re-flash the entire NAND, which removes the configuration, Wi-Fi keys and passwords.\nRemove any USB drive or NVMe SSD; they keep their data.",
   "mfr": {

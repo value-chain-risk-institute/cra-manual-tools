@@ -38,12 +38,20 @@ Cairn Viktor, 8 November 2026. Read through Claude in Chrome on 8 November 2026.
 - Hardening build options on by default: format-security, stack-protector regular, FORTIFY_SOURCE=1, RELRO full, PIE for network-exposed binaries, kernel seccomp. SELinux off.
 
 ## CRA roles (to state carefully in the example)
-- Hardware: Banana Pi (per openwrt.org "BananaPi OpenWrt One page"); distribution via SFC-listed distributors. Software: OpenWrt project (open-source steward candidate). Who is the CRA "manufacturer" of the shipped product is a question for the group, not asserted here.
+- Hardware: Banana Pi (per openwrt.org "BananaPi OpenWrt One page"); distribution via SFC-listed distributors. Software: OpenWrt project. NOT a steward candidate: corrected 10 Nov 2026, see the reply below. Who is the CRA "manufacturer" of the shipped product is a question for the group, not asserted here.
 
 ## Software Freedom Conservancy page (sfconservancy.org/activities/openwrt-one.html, read 2026-11-08)
 - "Manufactured in collaboration with Banana Pi." From US$125 with case. Official retailers: AliExpress, Joom (others listed as unofficial).
 - Claims: "will never be locked down and is forever unbrickable"; copyleft-compliant source release from the start; mikroBUS expansion header.
 - CONFLICT with the wiki: SFC says 128 MiB SPI NAND + 4 MiB SPI NOR and 12 V USB-PD; the wiki (edited 2026-10-23) says 256 MiB NAND, 16 MiB NOR, 15 V 2 A. The example uses the wiki figures and flags the conflict for the group; batch differences are possible.
+
+## Reply from Luka Perkov on the openwrt-adm mailing list, 10 November 2026
+- Hardware support period: "The release support policy on the wiki covers OpenWrt software releases and the project should not declare one for hardware it doesn't sell."
+- Steward: "an open-source software steward means a legal person. Since OpenWrt isn't one, it should not be listed as such."
+- Standards: "The harmonised standard for routers, modems and switches (ETSI EN 304 627) is still being drafted." (His statement; not checked by us against ETSI.)
+- Dates: "obligations for manufacturers regarding SRP started on September 11, 2026, and full CRA compliance will be obligatory for all products with digital elements by December 11, 2027."
+- "This is an important topic that requires dedicated attention separate from usual development activities."
+- He answered our question 3 only; questions 1 and 2 are still open.
 
 ## NOT FOUND (left blank or marked in the example)
 - Product support period end date for the hardware.

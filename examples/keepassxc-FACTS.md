@@ -32,8 +32,13 @@ Cairn Viktor, 8 November 2026. Sources read 8 November 2026. Facts not found are
 ## CRA framing (for the group, not asserted)
 - Developed by a volunteer team; the Windows binaries are published by DroidMonkey Apps, LLC. Whether any party is a CRA "manufacturer" (commercial activity) or the project falls under the open-source steward or non-commercial provisions is a question for the group. Password managers are listed in Annex III Class I.
 
+## Answered by the KeePassXC Team (email to Joshua Marpet, 8 November 2026, in reply to our note of the same day)
+- Support: "We generally support the latest release."
+- "The default lock timeout is 900 seconds." (Not stated: whether locking after inactivity is switched on by default, and the clipboard-clear default.)
+- SBOM: "We do not release an SBOM at the moment, but you can find our dependencies on GitHub in the vcpkg.json manifest file and the wiki."
+
 ## NOT FOUND
-- A stated support period or end-of-support policy per version.
+- A dated support period or end-of-support date per version (the team supports the latest release; see above).
 - An in-app update check or automatic update mechanism (only Flatpak and store channels update automatically).
-- Default clipboard-clear and auto-lock timeouts (not stated in the user guide pages read).
-- SBOM publication. EU Declaration of Conformity. Postal address.
+- Default clipboard-clear timeout, and whether auto-lock is on by default (lock timeout itself answered above).
+- EU Declaration of Conformity. Postal address.

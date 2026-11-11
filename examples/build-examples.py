@@ -21,7 +21,7 @@ def TD(*pairs): return [{"title": a, "desc": b} for a, b in pairs]
 
 # ---------------------------------------------------------------- OpenWrt One
 o = base("OpenWrt One", "OpenWrt One (FCC ID 2BLLI-HW24) running OpenWrt 25.12.6",
-    "Hardware manufactured by Banana Pi in collaboration with the OpenWrt project; the firmware is the OpenWrt project's. Which party is the CRA manufacturer, and whether the OpenWrt project acts as an open-source software steward, is left to the working group.\n"
+    "Hardware manufactured by Banana Pi in collaboration with the OpenWrt project; the firmware is the OpenWrt project's. Which party is the CRA manufacturer is left to the working group. The OpenWrt project is not a legal person, so it is not listed as an open-source software steward (reply on the openwrt-adm list, 10 November 2026).\n"
     "Flash sizes conflict between sources: the OpenWrt wiki (edited 23 Oct 2026) says 256 MiB NAND and 16 MiB NOR; the Software Freedom Conservancy page says 128 MiB NAND and 4 MiB NOR. This example uses the wiki figures.",
     "openwrt.org/toh/openwrt/one (last modified 2026-10-23)\nopenwrt.org/docs/guide-developer/security (last modified 2026-10-22)\nsfconservancy.org/activities/openwrt-one.html\none.openwrt.org/hardware/ (schematics and datasheets)")
 o["pc"] = T("MediaTek MT7981BA SoC (Filogic 820, 2 cores, 1.3 GHz)", "MediaTek MT7976CN Wi-Fi 6 radio", "1 GB DDR4 RAM",
@@ -95,7 +95,7 @@ o["commissioning"] = ("Set the NAND/NOR switch to NAND (up).\nConnect a computer
     "Set the Wi-Fi country code before enabling Wi-Fi.\nCheck that a supported release is installed and upgrade if not.")
 o["updates"] = {"note": "Updates are user-initiated: LuCI System > Attended Sysupgrade, owut upgrade on the command line, the web Firmware Selector, or a USB drive read by the bootloader (hold Reset at power-on). Package fixes can arrive in about two days; kernel fixes need a new minor release image.",
     "disableAuto": "The product does not install updates automatically.",
-    "end": "Per OpenWrt release, not per device: 25.12 is Supported with end of life to be announced. A release reaches End of Life one year after its initial release or six months after the next major release, whichever is later. No hardware support period is published."}
+    "end": "Per OpenWrt release, not per device: 25.12 is Supported with end of life to be announced. A release reaches End of Life one year after its initial release or six months after the next major release, whichever is later. No hardware support period is published: the release policy covers OpenWrt software releases, and the project does not declare one for hardware it does not sell (reply on the openwrt-adm list, 10 November 2026)."}
 o["decommission"] = "Use NOR recovery to factory re-flash the entire NAND, which removes the configuration, Wi-Fi keys and passwords.\nRemove any USB drive or NVMe SSD; they keep their data."
 o["mfr"] = {"name": "Banana Pi (hardware), with the OpenWrt project (firmware). CRA role allocation is for the working group.", "address": NF, "email": "contact@openwrt.org (OpenWrt project)",
             "website": "openwrt.org/toh/openwrt/one", "updatesUrl": "firmware-selector.openwrt.org", "advisoriesUrl": "openwrt.org/docs/guide-developer/security"}
@@ -126,7 +126,7 @@ k["sp"] = [
 k["er1"] = {"2b": "Browser integration, Secret Service, SSH agent and network features are off until the user enables them. Quick Unlock (Windows Hello, Touch ID) is ON by default on Windows and macOS and can be disabled under Application Settings > Security.",
             "2g": "The product only processes the following data:\nCredentials, notes and attachments the user stores\nFavicons, only if the user enables downloading them"}
 k["er2"] = {"v-test": "Independent reviews: ANSSI Security Visa ANSSI-CSPN-2025/16 (17 November 2025, valid to 17 November 2028, version 2.7.9 on Windows 10) and an application security review by Zaur Molotnikov (19 January 2023, version 2.7.4). Reports are published at keepassxc.org/audits.",
-            "v-sbom": NF, "v-pub": NF,
+            "v-sbom": "No SBOM is published at the moment (KeePassXC Team, by email, 8 November 2026).", "v-pub": NF,
             "v-cvd": "SECURITY.md: report privately through a GitHub Security Advisory, private Matrix messages to named team members, or email. No public channels for first reports. Reporters should not go to a CVE Numbering Authority before the team confirms, unless the team has not responded within 30 days.",
             "v-contact": "team@keepassxc.org (encryption recommended)",
             "v-dist": "Packages are signed and published with SHA-256 digests; see chapter 3.4."}
@@ -169,13 +169,13 @@ k["commissioning"] = ("Download from keepassxc.org or an official channel and ve
     "Set a strong master password; optionally add a key file or hardware key.\nDecide whether Quick Unlock should stay enabled.\nSet up a backup of the database.")
 k["updates"] = {"note": "Install new releases from the channel used for installation. Flatpak (recommended on Linux) and store channels can update automatically; website downloads are replaced with the new signed package. Verify signatures as described at keepassxc.org/verifying-signatures.",
     "disableAuto": "No in-app update mechanism was found in the documentation read; automatic updating depends on the distribution channel.",
-    "end": "NOT FOUND: no support period is published."}
+    "end": "The team generally supports the latest release (KeePassXC Team, by email, 8 November 2026). No dated support period is published."}
 k["decommission"] = "Delete the database files, key files and backups from every location they were stored.\nRemove the browser extension, then uninstall KeePassXC."
 k["mfr"] = {"name": "KeePassXC Team (volunteer project); Windows binaries published by DroidMonkey Apps, LLC. CRA role allocation is for the working group.",
             "address": NF, "email": "team@keepassxc.org", "website": "keepassxc.org", "updatesUrl": "keepassxc.org/download", "advisoriesUrl": NF}
 k["vuln"] = {"contact": "GitHub Security Advisory on keepassxreboot/keepassxc, or team@keepassxc.org (encrypt if possible)", "policy": "github.com/keepassxreboot/keepassxc/blob/develop/SECURITY.md"}
 k["doc"] = {"link": "NOT FOUND: no EU Declaration of Conformity located on 8 November 2026."}
-k["sbom"] = {"access": NF, "format": ""}
+k["sbom"] = {"access": "No SBOM is published at the moment. Dependencies are listed in the vcpkg.json manifest in the GitHub repository and in the project wiki (KeePassXC Team, by email, 8 November 2026).", "format": "None published"}
 
 # ---------------------------------------------------------------- Home Assistant Green
 h = base("Home Assistant Green", "NC-GREEN-9703 (datasheet v2.0); the EU Declaration of Conformity names NC-GREEN-1175",
@@ -247,6 +247,10 @@ h["vuln"] = {"contact": "GitHub Security Advisory (see home-assistant.io/securit
 h["doc"] = {"link": "raw.githubusercontent.com/NabuCasa/support/refs/heads/main/static/docs/green/Green_DoC_EU.pdf (RoHS, EMC, LVD, ErP; no CRA, which does not yet apply)"}
 h["sbom"] = {"access": NF, "format": ""}
 
+# Corrections from the projects themselves, 11 November 2026 (sources in the FACTS sheets). Home Assistant Green is unchanged.
+for m_, who in ((o, "a reply on the openwrt-adm mailing list (10 November 2026)"), (k, "the KeePassXC Team's reply by email (8 November 2026)")):
+    m_["meta"].update(version="0.2", date="2026-11-11")
+    m_["product"]["additional"] += "\nVersion 0.2, 11 November 2026: corrected and completed from " + who + ". The fact sheet beside this file quotes it."
 for slug, m in (("openwrt-one", o), ("keepassxc", k), ("home-assistant-green", h)):
     for key in ("pc","pi","pp","sp","cc","cp","cz","fc","cu","ri"):
         m.setdefault(key, [])
