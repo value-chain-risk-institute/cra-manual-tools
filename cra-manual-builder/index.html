@@ -260,6 +260,7 @@ details.menu .mlist svg{width:15px;height:15px;flex:none}
   <div class="tools">
     <label class="btn" id="viewL" hidden title="Product family: print the manual for every member, or one member's edition with what does not apply to it left out">Manual for <select id="view" aria-label="Manual for which family member"></select></label>
     <details class="menu"><summary class="btn">File</summary><div class="mlist">
+    <button class="btn" id="newManual" title="Clear the screen and start a blank manual. Your saved copy stays until you press Save, and undo brings this one back."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15h6"/></svg>New manual</button>
     <button class="btn" id="example"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>Load the example</button>
     <button class="btn" id="impJson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 9l-2 3 2 3M16 9l2 3-2 3"/></svg>Open from a file…</button>
     <button class="btn" id="expJson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5-5 5 5M12 5v10"/></svg>Save to a file</button>
@@ -1085,7 +1086,8 @@ $("#save").addEventListener("click",saveNow);
 $("#bringCtx").addEventListener("click",()=>bringIn("context"));$("#bringTara").addEventListener("click",()=>bringIn("tara"));
 
 /* ---------- wiring ---------- */
-$("#example").addEventListener("click",()=>{M=example();buildForm();render();});
+$("#newManual").addEventListener("click",()=>{UNDO=snapshot();M=blank();NOTE="new manual started";buildForm();render();});
+$("#example").addEventListener("click",()=>{UNDO=snapshot();M=example();NOTE="example loaded";buildForm();render();});
 $("#print").addEventListener("click",()=>window.print());
 $("#view").addEventListener("change",e=>{VIEW=e.target.value;render();});
 $("#expJson").addEventListener("click",()=>{
