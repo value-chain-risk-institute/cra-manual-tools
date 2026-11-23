@@ -16,7 +16,7 @@ What a manual already says, read mechanically:
   R12 as R10, for persons            -> CP.via
 Measured by score_links.py; on the working group's Engineering PC example (held out): 76% precision, 67% recall (8 Nov 2026).
 Everything R7 proposes is marked "suggested"; anything no rule reaches is listed as a gap for a person.
-Cairn Viktor for the Value Chain Risk Institute, 2026-11-08. CC BY 4.0."""
+Cairn Viktor for the Value Chain Risk Institute, 2026-11-08. Apache-2.0."""
 import re
 
 P = "PRODUCT"

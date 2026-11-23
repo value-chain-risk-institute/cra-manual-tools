@@ -102,8 +102,11 @@ tools, and precision is the point.
 
 ## License
 
-[CC BY 4.0](./LICENSE). Use, adapt, and redistribute with attribution to the
-Value Chain Risk Institute and the Cyber Manual Movement. SPDX: `CC-BY-4.0`.
+The software (the builders and scripts) is under the [Apache License 2.0](./LICENSE), SPDX `Apache-2.0`. The file-format specification and schemas in [`/spec`](./spec), the method documents and the examples are under [CC BY 4.0](./LICENSE-DOCS), SPDX `CC-BY-4.0`. Credit: Joshua Marpet and Cairn Viktor, The Value Chain Risk Institute, and the Cyber Manual Movement ([NOTICE](./NOTICE)).
+
+The Cyber Manual Movement's template, guidance and boilerplate are the working group's own work and are not licensed by this repository.
+
+Until 23 November 2026 the software was released under CC BY 4.0; copies taken before then keep that licence.
 
 ---
 
